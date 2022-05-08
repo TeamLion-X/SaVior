@@ -61,7 +61,7 @@ async def startupmessage():
         if BOTLOG:
             Config.SAVIORUBLOGO = await savior.tgbot.send_file(
                 BOTLOG_CHATID,
-                "https://telegra.ph/file/68616eddf4645edf9b9d0.jpg",
+                "https://telegra.ph/file/bbbce3712287e3c8dd5d4.jpg",
                 caption="**Your SaVior has been started successfully.**",
                 buttons=[(Button.url("Support", "https://t.me/SaViorSupport"),)],
             )
@@ -196,7 +196,7 @@ async def spams():
     if spam == "ON":
         import glob
 
-        path = "userbot/plugins/Spam/*.py"
+        path = "userbot/assistant/spam/*.py"
         files = glob.glob(path)
         for name in files:
             with open(name) as f:
