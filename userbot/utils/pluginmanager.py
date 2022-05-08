@@ -70,7 +70,7 @@ def start_spam(shortname):
         from pathlib import Path
 
         path = Path(f"userbot/assistant/spam/{shortname}.py")
-        name = "userbot.plugins.Spam.{}".format(shortname)
+        name = "userbot.asssistant.spam.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
@@ -82,7 +82,7 @@ def start_spam(shortname):
         from pathlib import Path
 
         path = Path(f"userbot/assistant/spam/{shortname}.py")
-        name = "userbot.plugins.Spam.{}".format(shortname)
+        name = "userbot.assistant.spam.{}".format(shortname)
         spec = importlib.util.spec_from_file_location(name, path)
         mod = importlib.util.module_from_spec(spec)
         mod.tgbot = savior.tgbot
