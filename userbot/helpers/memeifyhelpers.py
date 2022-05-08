@@ -7,7 +7,7 @@ from colour import Color as asciiColor
 from PIL import Image, ImageDraw, ImageFont
 from wand.color import Color
 from wand.drawing import Drawing
-from wand.image import Image as swtimage
+from wand.image import Image as saviorimage
 
 from .utils import _saviorutils
 
@@ -50,7 +50,7 @@ def get_warp_length(width):
     return int((20.0 / 1024.0) * (width + 0.0))
 
 
-async def swt_meme(CNG_FONTS, topString, bottomString, filename, endname):
+async def savior_meme(CNG_FONTS, topString, bottomString, filename, endname):
     img = Image.open(filename)
     imageSize = img.size
     # find biggest font size that works
@@ -96,8 +96,8 @@ async def swt_meme(CNG_FONTS, topString, bottomString, filename, endname):
     img.save(endname)
 
 
-async def swt_meeme(upper_text, lower_text, CNG_FONTS, picture_name, endname):
-    main_image = swtimage(filename=picture_name)
+async def savior_meeme(upper_text, lower_text, CNG_FONTS, picture_name, endname):
+    main_image = saviorimage(filename=picture_name)
     main_image.resize(
         1024, int(((main_image.height * 1.0) / (main_image.width * 1.0)) * 1024.0)
     )

@@ -75,7 +75,7 @@ def file_check():
         )
     if not os.path.exists(special):
         urllib.request.urlretrieve(
-            "https://github.com/TgCatUB/CatUserbot-Resources/blob/master/Resources/Spotify/ArialUnicodeMS.ttf?raw=true",
+            "https://github.com/TheSaVior/SaVior-Resources/blob/master/Resources/Spotify/ArialUnicodeMS.ttf?raw=true",
             special,
         )
 
@@ -254,7 +254,7 @@ async def process(msg, user, client, reply, event, replied=None):  # sourcery no
         canvas.paste(top, (pfpbg.width, 0))
         canvas.paste(middle, (pfpbg.width, top.height))
         canvas.paste(bottom, (pfpbg.width, top.height + middle.height))
-        canvas = await swtdoctype(docname, docsize, doctype, canvas)
+        canvas = await saviordoctype(docname, docsize, doctype, canvas)
         y = 80 if text else 0
     else:
         canvas.paste(pfpbg, (0, 0))
@@ -386,7 +386,7 @@ async def get_entity(msg):
     return bold, mono, italic, link
 
 
-async def swtdoctype(name, size, htype, canvas):
+async def saviordoctype(name, size, htype, canvas):
     font = ImageFont.truetype("./temp/Roboto-Medium.ttf", 38)
     doc = Image.new("RGBA", (130, 130), (29, 29, 29, 255))
     draw = ImageDraw.Draw(doc)
