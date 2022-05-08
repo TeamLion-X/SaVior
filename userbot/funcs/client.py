@@ -31,7 +31,7 @@ from .data import _sudousers_list, blacklist_chats_list, sudo_enabled_cmds
 from .events import *
 from .fasttelethon import download_file, upload_file
 from .logger import logging
-from .managers import edit_delete
+from .managers import eod
 from .pluginManager import get_message_link, restart_script
 
 LOGS = logging.getLogger(__name__)
@@ -48,8 +48,8 @@ REGEX_ = REGEX()
 sudo_enabledcmds = sudo_enabled_cmds()
 
 
-class LionXClient(TelegramClient):
-    def lion_cmd(
+class SaViorClient(TelegramClient):
+    def savior_cmd(
         self: TelegramClient,
         pattern: str or tuple = None,
         info: Union[str, Dict[str, Union[str, List[str], Dict[str, str]]]]
@@ -96,25 +96,23 @@ class LionXClient(TelegramClient):
             ):
                 REGEX_.regex1 = REGEX_.regex2 = re.compile(pattern)
             else:
-                reg1 = "\\" + Config.COMMAND_HAND_LER
-                reg2 = "\\" + Config.SUDO_COMMAND_HAND_LER
+                reg1 = "\\" + Config.HANDLER
+                reg2 = "\\" + Config.SUDO_HANDLER
                 REGEX_.regex1 = re.compile(reg1 + pattern)
                 REGEX_.regex2 = re.compile(reg2 + pattern)
 
         def decorator(func):  # sourcery no-metrics
             async def wrapper(check):  # sourcery no-metrics
                 if groups_only and not check.is_group:
-                    return await edit_delete(
-                        check, "`I don't think this is a group.`", 10
-                    )
+                    return await eod(check, "`I don't think this is a group.`", 10)
                 if private_only and not check.is_private:
-                    return await edit_delete(
+                    return await eod(
                         check, "`I don't think this is a personal Chat.`", 10
                     )
                 try:
                     await func(check)
-                except events.StopPropagation:
-                    raise events.StopPropagation
+                except events.StopPropagation as e:
+                    raise events.StopPropagation from e
                 except KeyboardInterrupt:
                     pass
                 except MessageNotModifiedError:
@@ -122,25 +120,21 @@ class LionXClient(TelegramClient):
                 except MessageIdInvalidError:
                     LOGS.error("Message was deleted or cant be found")
                 except BotInlineDisabledError:
-                    await edit_delete(check, "`Turn on Inline mode for our bot`", 10)
+                    await eod(check, "`Turn on Inline mode for our bot`", 10)
                 except ChatSendStickersForbiddenError:
-                    await edit_delete(
-                        check, "`I guess i can't send stickers in this chat`", 10
-                    )
+                    await eod(check, "`I guess i can't send stickers in this chat`", 10)
                 except BotResponseTimeoutError:
-                    await edit_delete(
-                        check, "`The bot didnt answer to your query in time`", 10
-                    )
+                    await eod(check, "`The bot didnt answer to your query in time`", 10)
                 except ChatSendMediaForbiddenError:
-                    await edit_delete(check, "`You can't send media in this chat`", 10)
+                    await eod(check, "`You can't  send media in this chat`", 10)
                 except AlreadyInConversationError:
-                    await edit_delete(
+                    await eod(
                         check,
                         "`A conversation is already happening with the given chat. try again after some time.`",
                         10,
                     )
                 except ChatSendInlineForbiddenError:
-                    await edit_delete(
+                    await eod(
                         check, "`You can't send inline messages in this chat.`", 10
                     )
                 except FloodWaitError as e:
@@ -171,16 +165,16 @@ class LionXClient(TelegramClient):
                             "date": datetime.datetime.now(),
                         }
                         ftext += "\n\n--------END USERBOT TRACEBACK LOG--------"
-                        command = 'git log --pretty=format:"%an: %s" -5'
                         ftext += "\n\n\nLast 5 commits:\n"
+                        command = 'git log --pretty=format:"%an: %s" -5'
                         output = (await runcmd(command))[:2]
                         result = output[0] + output[1]
                         ftext += result
                         pastelink = await paste_message(
                             ftext, pastetype="s", markdown=False
                         )
-                        text = "**LionX Error report**\n\n"
-                        link = "[here](https://t.me/LionXSupport)"
+                        text = "**SaVior Error report**\n\n"
+                        link = "[here](https://t.me/SaViorSupport)"
                         text += "If you wanna you can report it"
                         text += f"- just forward this message {link}.\n"
                         text += (
@@ -191,7 +185,7 @@ class LionXClient(TelegramClient):
                             Config.PRIVATE_GROUP_BOT_API_ID, text, link_preview=False
                         )
 
-            from .session import lionub
+            from .session import savior
 
             if not func.__doc__ is None:
                 CMD_INFO[command[0]].append((func.__doc__).strip())
@@ -204,18 +198,18 @@ class LionXClient(TelegramClient):
                     except BaseException:
                         LOADED_CMDS.update({command[0]: [wrapper]})
                 if edited:
-                    lionub.add_event_handler(
+                    savior.add_event_handler(
                         wrapper,
                         MessageEdited(pattern=REGEX_.regex1, outgoing=True, **kwargs),
                     )
-                lionub.add_event_handler(
+                savior.add_event_handler(
                     wrapper,
                     NewMessage(pattern=REGEX_.regex1, outgoing=True, **kwargs),
                 )
                 if allow_sudo and gvarstatus("sudoenable") is not None:
                     if command is None or command[0] in sudo_enabledcmds:
                         if edited:
-                            lionub.add_event_handler(
+                            savior.add_event_handler(
                                 wrapper,
                                 MessageEdited(
                                     pattern=REGEX_.regex2,
@@ -223,7 +217,7 @@ class LionXClient(TelegramClient):
                                     **kwargs,
                                 ),
                             )
-                        lionub.add_event_handler(
+                        savior.add_event_handler(
                             wrapper,
                             NewMessage(
                                 pattern=REGEX_.regex2,
@@ -239,8 +233,8 @@ class LionXClient(TelegramClient):
                 except BaseException:
                     LOADED_CMDS.update({file_test: [func]})
                 if edited:
-                    lionub.add_event_handler(func, events.MessageEdited(**kwargs))
-                lionub.add_event_handler(func, events.NewMessage(**kwargs))
+                    savior.add_event_handler(func, events.MessageEdited(**kwargs))
+                savior.add_event_handler(func, events.NewMessage(**kwargs))
             return wrapper
 
         return decorator
@@ -249,16 +243,18 @@ class LionXClient(TelegramClient):
         self: TelegramClient,
         disable_errors: bool = False,
         edited: bool = False,
+        forword=False,
         **kwargs,
     ) -> callable:  # sourcery no-metrics
         kwargs["func"] = kwargs.get("func", lambda e: e.via_bot_id is None)
+        kwargs.setdefault("forwards", forword)
 
         def decorator(func):
             async def wrapper(check):
                 try:
                     await func(check)
-                except events.StopPropagation:
-                    raise events.StopPropagation
+                except events.StopPropagation as e:
+                    raise events.StopPropagation from e
                 except KeyboardInterrupt:
                     pass
                 except MessageNotModifiedError:
@@ -296,9 +292,9 @@ class LionXClient(TelegramClient):
                         pastelink = await paste_message(
                             ftext, pastetype="s", markdown=False
                         )
-                        text = "**LionX Error report**\n\n"
-                        link = "[here](https://t.me/LionXSupport)"
-                        text += "If you wanna you can report it"
+                        text = "**SaVior Error report**\n\n"
+                        link = "[here](https://t.me/SaViorSupport)"
+                        text += "If U Want To Report This Error Then"
                         text += f"- just forward this message {link}.\n"
                         text += (
                             "Nothing is logged except the fact of error and date\n\n"
@@ -308,12 +304,12 @@ class LionXClient(TelegramClient):
                             Config.PRIVATE_GROUP_BOT_API_ID, text, link_preview=False
                         )
 
-            from .session import lionub
+            from .session import savior
 
             if edited is True:
-                lionub.tgbot.add_event_handler(func, events.MessageEdited(**kwargs))
+                savior.tgbot.add_event_handler(func, events.MessageEdited(**kwargs))
             else:
-                lionub.tgbot.add_event_handler(func, events.NewMessage(**kwargs))
+                savior.tgbot.add_event_handler(func, events.NewMessage(**kwargs))
 
             return wrapper
 
@@ -335,14 +331,14 @@ class LionXClient(TelegramClient):
         self.running_processes.clear()
 
 
-LionXClient.fast_download_file = download_file
-LionXClient.fast_upload_file = upload_file
-LionXClient.reload = restart_script
-LionXClient.get_msg_link = get_message_link
-LionXClient.check_testcases = checking
+SaViorClient.fast_download_file = download_file
+SaViorClient.fast_upload_file = upload_file
+SaViorClient.reload = restart_script
+SaViorClient.get_msg_link = get_message_link
+SaViorClient.check_testcases = checking
 try:
     send_message_check = TelegramClient.send_message
 except AttributeError:
-    LionXClient.send_message = send_message
-    LionXClient.send_file = send_file
-    LionXClient.edit_message = edit_message
+    SaViorClient.send_message = send_message
+    SaViorClient.send_file = send_file
+    SaViorClient.edit_message = edit_message

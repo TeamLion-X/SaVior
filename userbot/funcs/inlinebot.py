@@ -6,14 +6,13 @@ import re
 import time
 from uuid import uuid4
 
-from telethon import Button, types
+from telethon import Button, custom, types
 from telethon.errors import QueryIdInvalidError
 from telethon.events import CallbackQuery, InlineQuery
 from youtubesearchpython import VideosSearch
 
-from userbot import lionub
-
 from ..Config import Config
+from ..funcs.session import savior
 from ..helpers.functions import rand_key
 from ..helpers.functions.utube import (
     download_button,
@@ -22,16 +21,16 @@ from ..helpers.functions.utube import (
     result_formatter,
     ytsearch_data,
 )
-from ..plugins import mention
+from ..plugins import ALIVE_NAME, USERID, SaVior_grp, mention
 from ..sql_helper.globals import gvarstatus
 from . import CMD_INFO, GRP_INFO, PLG_INFO, check_owner
 from .logger import logging
 
 LOGS = logging.getLogger(__name__)
 
+MEDIA_PATH_REGEX = re.compile(r"(:?\<\bmedia:(:?(?:.*?)+)\>)")
 BTN_URL_REGEX = re.compile(r"(\[([^\[]+?)\]\<buttonurl:(?:/{0,2})(.+?)(:same)?\>)")
-LIONLOGO = "https://telegra.ph/file/ddc5fa84192641f0915e3.jpg"
-tr = Config.COMMAND_HAND_LER
+tr = Config.HANDLER
 
 
 def getkey(val):
@@ -52,20 +51,50 @@ def ibuild_keyboard(buttons):
     return keyb
 
 
-def main_menu():
-    text = f"𝐋𝐢𝐨𝐧𝐗 𝐇𝐞𝐥𝐩 𝐌𝐞𝐧𝐮\
-        \n𝐏𝐫𝐨𝐯𝐢𝐝𝐞𝐝 𝐁𝐲 {mention}"
+@savior.tgbot.on(CallbackQuery(data=re.compile(b"help_k_minu")))
+@check_owner
+async def on_plug_in_callback_query_handler(event):
     buttons = [
-        (Button.inline("🪄 Info", data="check"),),
-        (Button.inline(f"🎀 Admin ({len(GRP_INFO['admin'])})", data="admin_menu"),),
-        (Button.inline(f"💥 Fun ({len(GRP_INFO['fun'])})", data="fun_menu"),),
         (
-            Button.inline(f"💼 Tools ({len(GRP_INFO['tools'])})", data="tools_menu"),
-            Button.inline(f"✨ Utils ({len(GRP_INFO['utils'])})", data="utils_menu"),
+            Button.inline(f"Admin ({len(GRP_INFO['admin'])})", data="admin_menu"),
+            Button.inline(f"Bot ({len(GRP_INFO['bot'])})", data="bot_menu"),
         ),
-        (Button.inline("Close", data="close"),),
+        (
+            Button.inline(f"Fun ({len(GRP_INFO['fun'])})", data="fun_menu"),
+            Button.inline(f"Misc ({len(GRP_INFO['misc'])})", data="misc_menu"),
+        ),
+        (
+            Button.inline(f"Tools ({len(GRP_INFO['tools'])})", data="tools_menu"),
+            Button.inline(f"Utils ({len(GRP_INFO['utils'])})", data="utils_menu"),
+        ),
+        (
+            Button.inline(f"Extra ({len(GRP_INFO['extra'])})", data="extra_menu"),
+            Button.inline(f"Useless ({len(GRP_INFO['useless'])})", data="useless_menu"),
+        ),
+        (Button.inline(f"✨Main Menu", data="mainmenu"),),
     ]
+    await event.edit(
+        f"💝『{mention}』💝",
+        buttons=buttons,
+        link_preview=False,
+    )
 
+
+def main_menu():
+    tol = gvarstatus("BOT_USERNAME")
+    text = f"⚜ {mention}  ⚜"
+    buttons = [
+        [custom.Button.inline("✨Info", data="check")],
+        [
+            custom.Button.inline("🔹 Plugins 🔹", data="help_k_minu"),
+            Button.url("✨ Assistant ✨", f"https://t.me/{tol}"),
+        ],
+        [
+            custom.Button.inline("⚜ Alive ⚜", data="stats"),
+            Button.url("Support 🇮🇳", "https://t.me/SaViorUpdates"),
+        ],
+        [custom.Button.inline("❌", data="clise")],
+    ]
     return text, buttons
 
 
@@ -86,17 +115,19 @@ def paginate_help(
     category_pgno=0,
 ):  # sourcery no-metrics
     try:
-        number_of_rows = int(gvarstatus("NO_OF_ROWS_IN_HELP") or 5)
+        number_of_rows = int(gvarstatus("ROWS_IN_HELP") or 7)
     except (ValueError, TypeError):
-        number_of_rows = 5
+        number_of_rows = 7
     try:
-        number_of_cols = int(gvarstatus("NO_OF_COLUMNS_IN_HELP") or 2)
+        number_of_cols = int(gvarstatus("COLUMNS_IN_HELP") or 2)
     except (ValueError, TypeError):
         number_of_cols = 2
-    HELP_EMOJI = gvarstatus("HELP_EMOJI") or " "
+    LOL_EMOJI = gvarstatus("HELP_EMOJI") or "💫"
+    lal = [x for x in LOL_EMOJI.split()]
+    HELP_EMOJI = random.choice(lal)
     helpable_plugins = [p for p in loaded_plugins if not p.startswith("_")]
     helpable_plugins = sorted(helpable_plugins)
-    if len(HELP_EMOJI) == 2:
+    if len(LOL_EMOJI) == 2:
         if plugins:
             modules = [
                 Button.inline(
@@ -149,18 +180,19 @@ def paginate_help(
     modulo_page = page_number % max_num_pages
     if plugins:
         if len(pairs) > number_of_rows:
-
             pairs = pairs[
                 modulo_page * number_of_rows : number_of_rows * (modulo_page + 1)
             ] + [
                 (
-                    Button.inline("🔻", data=f"{prefix}_prev({modulo_page})_plugin"),
-                    Button.inline("🔹 Menu", data="mainmenu"),
-                    Button.inline("🔺", data=f"{prefix}_next({modulo_page})_plugin"),
+                    Button.inline("⬅️", data=f"{prefix}_prev({modulo_page})_plugin"),
+                    Button.inline(
+                        f"{HELP_EMOJI} Back {HELP_EMOJI}", data="help_k_minu"
+                    ),
+                    Button.inline("➡️", data=f"{prefix}_next({modulo_page})_plugin"),
                 )
             ]
         else:
-            pairs = pairs + [(Button.inline("🔹 Menu", data="mainmenu"),)]
+            pairs = pairs + [(Button.inline("⬅️ Back", data="help_k_minu"),)]
     elif len(pairs) > number_of_rows:
         if category_pgno < 0:
             category_pgno = len(pairs) + category_pgno
@@ -169,15 +201,15 @@ def paginate_help(
         ] + [
             (
                 Button.inline(
-                    "🔻",
+                    "⬅️",
                     data=f"{prefix}_prev({modulo_page})_command_{category_plugins}_{category_pgno}",
                 ),
                 Button.inline(
-                    "🔙",
+                    f"{HELP_EMOJI} Back {HELP_EMOJI}",
                     data=f"back_plugin_{category_plugins}_{category_pgno}",
                 ),
                 Button.inline(
-                    "🔺",
+                    "➡️",
                     data=f"{prefix}_next({modulo_page})_command_{category_plugins}_{category_pgno}",
                 ),
             )
@@ -188,7 +220,7 @@ def paginate_help(
         pairs = pairs + [
             (
                 Button.inline(
-                    "🔙",
+                    "⬅️ Back",
                     data=f"back_plugin_{category_plugins}_{category_pgno}",
                 ),
             )
@@ -196,7 +228,7 @@ def paginate_help(
     return pairs
 
 
-@lionub.tgbot.on(InlineQuery)
+@savior.tgbot.on(InlineQuery)
 async def inline_handler(event):  # sourcery no-metrics
     builder = event.builder
     result = None
@@ -213,25 +245,20 @@ async def inline_handler(event):  # sourcery no-metrics
         match2 = re.findall(inf, query)
         hid = re.compile("hide (.*)")
         match3 = re.findall(hid, query)
-        if query.startswith("**LionX"):
+        if query.startswith("**SaVior"):
             buttons = [
+                (Button.url(f"{ALIVE_NAME}", f"tg://openmessage?user_id={USERID}"),),
                 (
                     Button.inline("Stats", data="stats"),
-                    Button.url("Repo", "https://github.com/TeamLionX/LionX"),
-                )
+                    Button.url("Repo", "https://github.com/TheSaVior/SAVIOR"),
+                ),
             ]
             ALIVE_PIC = gvarstatus("ALIVE_PIC")
-            IALIVE_PIC = gvarstatus("IALIVE_PIC")
-            if IALIVE_PIC:
-                LION = [x for x in IALIVE_PIC.split()]
-                PIC = list(LION)
-                I_IMG = random.choice(PIC)
-            if not IALIVE_PIC and ALIVE_PIC:
-                LION = [x for x in ALIVE_PIC.split()]
-                PIC = list(LION)
-                I_IMG = random.choice(PIC)
-            elif not IALIVE_PIC:
-                I_IMG = None
+            if ALIVE_PIC is None:
+                I_IMG = "https://telegra.ph/file/0f383e3f3bbbbea721892.jpg"
+            else:
+                lol = list(ALIVE_PIC.split())
+                I_IMG = random.choice(lol)
             if I_IMG and I_IMG.endswith((".jpg", ".png")):
                 result = builder.photo(
                     I_IMG,
@@ -241,22 +268,79 @@ async def inline_handler(event):  # sourcery no-metrics
             elif I_IMG:
                 result = builder.document(
                     I_IMG,
-                    title="Alive lion",
+                    title="Alive SaVior",
                     text=query,
                     buttons=buttons,
                 )
             else:
                 result = builder.article(
-                    title="Alive lion",
+                    title="Alive SaVior",
                     text=query,
                     buttons=buttons,
                 )
+            await event.answer([result] if result else None)
+        if query.startswith("**⚜ SaVior"):
+            grp_username = gvarstatus("GROUP_USERNAME") or "SaViorSupport"
+            chnl_username = gvarstatus("CHANNEL_USERNAME") or "SaViorUpdates"
+            buttons = [
+                (Button.url(f"{ALIVE_NAME}", f"tg://openmessage?user_id={USERID}"),),
+                (
+                    Button.url("Group", f"t.me/{grp_username}"),
+                    Button.url("Channel", f"t.me/{chnl_username}"),
+                ),
+            ]
+            ALIVE_PIC = gvarstatus("ALIVE_PIC")
+            if ALIVE_PIC is None:
+                IMG = "https://telegra.ph/file/0f383e3f3bbbbea721892.jpg"
+            else:
+                PIC = list(ALIVE_PIC.split())
+                IMG = random.choice(PIC)
+            if IMG and IMG.endswith((".jpg", ".png")):
+                result = builder.photo(
+                    IMG,
+                    text=query,
+                    buttons=buttons,
+                )
+            elif IMG:
+                result = builder.document(
+                    IMG,
+                    title="Alive SaVior",
+                    text=query,
+                    buttons=buttons,
+                )
+            else:
+                result = builder.article(
+                    title="Alive SaVior",
+                    text=query,
+                    buttons=buttons,
+                )
+            await event.answer([result] if result else None)
+        elif query == "repo":
+            result = builder.article(
+                title="Repository",
+                text=f"**⚜ SaViorary Af SaVior ⚜**",
+                buttons=[
+                    [Button.url("♥️ 𝙏𝙪𝙩𝙤𝙧𝙞𝙖𝙡 ♥", "https://youtube.com/channel/UCpK9FDzSBNARadfW7zVWozA")],
+                    [Button.url("📍 𝙍𝙚𝙥𝙤 📍", "https://github.com/TheSaVior/SaVior")],
+                    [
+                        Button.url(
+                            "❣️ 𝘿𝙚𝙥𝙡𝙤𝙮❣️",
+                            "https://heroku.com/deploy?template=https://github.com/TheSaVior/SAVIOR",
+                        )
+                    ],
+                ],
+            )
             await event.answer([result] if result else None)
         elif query.startswith("Inline buttons"):
             markdown_note = query[14:]
             prev = 0
             note_data = ""
             buttons = []
+            media = None
+            saviormedia = MEDIA_PATH_REGEX.search(markdown_note)
+            if saviormedia:
+                media = saviormedia.group(2)
+                markdown_note = markdown_note.replace(saviormedia.group(0), "")
             for match in BTN_URL_REGEX.finditer(markdown_note):
                 n_escapes = 0
                 to_check = match.start(1) - 1
@@ -278,12 +362,26 @@ async def inline_handler(event):  # sourcery no-metrics
                 note_data += markdown_note[prev:]
             message_text = note_data.strip()
             tl_ib_buttons = ibuild_keyboard(buttons)
-            result = builder.article(
-                title="Inline creator",
-                text=message_text,
-                buttons=tl_ib_buttons,
-                link_preview=False,
-            )
+            if media and media.endswith((".jpg", ".png")):
+                result = builder.photo(
+                    media,
+                    text=message_text,
+                    buttons=tl_ib_buttons,
+                )
+            elif media:
+                result = builder.document(
+                    media,
+                    title="Inline creator",
+                    text=message_text,
+                    buttons=tl_ib_buttons,
+                )
+            else:
+                result = builder.article(
+                    title="Inline creator",
+                    text=message_text,
+                    buttons=tl_ib_buttons,
+                    link_preview=False,
+                )
             await event.answer([result] if result else None)
         elif match:
             query = query[7:]
@@ -300,13 +398,13 @@ async def inline_handler(event):  # sourcery no-metrics
                 try:
                     u = await event.client.get_entity(u)
                     if u.username:
-                        nadan = f"@{u.username}"
+                        SAVIOR = f"@{u.username}"
                     else:
-                        nadan = f"[{u.first_name}](tg://user?id={u.id})"
+                        SAVIOR = f"[{u.first_name}](tg://user?id={u.id})"
                     u = int(u.id)
                 except ValueError:
                     # ValueError: Could not find the input entity
-                    nadan = f"[user](tg://user?id={u})"
+                    SAVIOR = f"[user](tg://user?id={u})"
             except ValueError:
                 # if u is username
                 try:
@@ -314,19 +412,19 @@ async def inline_handler(event):  # sourcery no-metrics
                 except ValueError:
                     return
                 if u.username:
-                    nadan = f"@{u.username}"
+                    SAVIOR = f"@{u.username}"
                 else:
-                    nadan = f"[{u.first_name}](tg://user?id={u.id})"
+                    SAVIOR = f"[{u.first_name}](tg://user?id={u.id})"
                 u = int(u.id)
             except Exception:
                 return
             timestamp = int(time.time() * 2)
             newtroll = {str(timestamp): {"userid": u, "text": txct}}
 
-            buttons = [Button.inline("show message 🔐", data=f"troll_{timestamp}")]
+            buttons = [Button.inline("Show Message", data=f"troll_{timestamp}")]
             result = builder.article(
                 title="Troll Message",
-                text=f"Only {nadan} cannot access this message!",
+                text=f"🌹 Only This : {SAVIOR} cannot access this message !",
                 buttons=buttons,
             )
             await event.answer([result] if result else None)
@@ -350,13 +448,13 @@ async def inline_handler(event):  # sourcery no-metrics
                 try:
                     u = await event.client.get_entity(u)
                     if u.username:
-                        nadan = f"@{u.username}"
+                        SAVIOR = f"@{u.username}"
                     else:
-                        nadan = f"[{u.first_name}](tg://user?id={u.id})"
+                        SAVIOR = f"[{u.first_name}](tg://user?id={u.id})"
                     u = int(u.id)
                 except ValueError:
                     # ValueError: Could not find the input entity
-                    nadan = f"[user](tg://user?id={u})"
+                    SAVIOR = f"[user](tg://user?id={u})"
             except ValueError:
                 # if u is username
                 try:
@@ -364,19 +462,19 @@ async def inline_handler(event):  # sourcery no-metrics
                 except ValueError:
                     return
                 if u.username:
-                    nadan = f"@{u.username}"
+                    SAVIOR = f"@{u.username}"
                 else:
-                    nadan = f"[{u.first_name}](tg://user?id={u.id})"
+                    SAVIOR = f"[{u.first_name}](tg://user?id={u.id})"
                 u = int(u.id)
             except Exception:
                 return
             timestamp = int(time.time() * 2)
             newsecret = {str(timestamp): {"userid": u, "text": txct}}
 
-            buttons = [Button.inline("show message 🔐", data=f"secret_{timestamp}")]
+            buttons = [Button.inline("Show Message 🔐", data=f"secret_{timestamp}")]
             result = builder.article(
                 title="secret message",
-                text=f"🔒 A whisper message to {nadan}, Only he/she can open it.",
+                text=f"🔒 A whisper message to {SAVIOR}, Only he/she can open it.",
                 buttons=buttons,
             )
             await event.answer([result] if result else None)
@@ -399,7 +497,7 @@ async def inline_handler(event):  # sourcery no-metrics
             buttons = [Button.inline("Read Message ", data=f"hide_{timestamp}")]
             result = builder.article(
                 title="Hidden Message",
-                text=f"✖✖✖",
+                text=f"✖️✖️✖️✖️✖️",
                 buttons=buttons,
             )
             await event.answer([result] if result else None)
@@ -409,14 +507,37 @@ async def inline_handler(event):  # sourcery no-metrics
             else:
                 json.dump(newhide, open(hide, "w"))
         elif string == "help":
+            oso = gvarstatus("HELP_IMG")
+            if oso is None:
+                help_pic = "https://telegra.ph/file/144d8ea74fef8ca12253c.jpg"
+            else:
+                lol = [x for x in oso.split()]
+                PIC = list(lol)
+                help_pic = random.choice(PIC)
             _result = main_menu()
-            result = builder.article(
-                title="© LionX Help",
-                description="Help menu for LionX",
-                text=_result[0],
-                buttons=_result[1],
-                link_preview=False,
-            )
+            if oso == "OFF":
+                result = builder.article(
+                    title="© SaVior Help",
+                    description="Help menu for SaVior",
+                    text=_result[0],
+                    buttons=_result[1],
+                    link_preview=False,
+                )
+            elif help_pic.endswith((".jpg", ".png")):
+                result = builder.photo(
+                    help_pic,
+                    text=_result[0],
+                    buttons=_result[1],
+                    link_preview=False,
+                )
+            elif help_pic:
+                result = builder.document(
+                    help_pic,
+                    text=_result[0],
+                    title="SaVior Help Menu",
+                    buttons=_result[1],
+                    link_preview=False,
+                )
             await event.answer([result] if result else None)
         elif str_y[0].lower() == "ytdl" and len(str_y) == 2:
             link = get_yt_video_id(str_y[1].strip())
@@ -514,103 +635,111 @@ async def inline_handler(event):  # sourcery no-metrics
             await event.answer([result] if result else None)
         elif string == "pmpermit":
             buttons = [
-                Button.inline(text="Show Options.", data="show_pmpermit_options"),
+                Button.inline(text="Open Menu", data="show_pmpermit_options"),
             ]
-            PM_PIC = gvarstatus("PM_PIC")
+            PM_PIC = (
+                gvarstatus("PM_PIC")
+                or "https://telegra.ph/file/77df40692bd1990b460b8.jpg"
+            )
             if PM_PIC:
-                LION = [x for x in PM_PIC.split()]
-                PIC = list(LION)
-                LIONIMG = random.choice(PIC)
+                savior = [x for x in PM_PIC.split()]
+                PIC = list(savior)
+                SAVIOR_IMG = random.choice(PIC)
             else:
-                LIONIMG = None
+                SAVIOR_IMG = None
             query = gvarstatus("pmpermit_text")
-            if LIONIMG and LIONIMG.endswith((".jpg", ".jpeg", ".png")):
+            if SAVIOR_IMG and SAVIOR_IMG.endswith((".jpg", ".jpeg", ".png")):
                 result = builder.photo(
-                    LIONIMG,
-                    # title="Alive lion",
+                    SAVIOR_IMG,
+                    # title="Alive SaVior",
                     text=query,
                     buttons=buttons,
                 )
-            elif LIONIMG:
+            elif SAVIOR_IMG:
                 result = builder.document(
-                    LIONIMG,
-                    title="Alive lion",
+                    SAVIOR_IMG,
+                    title="Alive SaVior",
                     text=query,
                     buttons=buttons,
                 )
             else:
                 result = builder.article(
-                    title="Alive lion",
+                    title="Alive SaVior",
                     text=query,
                     buttons=buttons,
                 )
             await event.answer([result] if result else None)
-    else:
-        buttons = [
-            (
-                Button.url("Source code", "https://github.com/TeamLionX/LionX"),
-                Button.url(
-                    "Deploy",
-                    "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2FTeamLionX%2FHeroku&template=https%3A%2F%2Fgithub.com%2FTeamLionX%2FHeroku",
-                ),
-            )(
-                Button.url("Support", "https://t.me/LionXSupport"),
+        elif string == " ":
+            buttons = [
+                (
+                    Button.url("Source code", "https://github.com/TheSaVior/SAVIOR"),
+                    Button.url(
+                        "Deploy",
+                        "https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2FTheSaVior%2FSAVIOR&template=https%3A%2F%2Fgithub.com%2FTheSaVior%2FSAVIOR",
+                    ),
+                )
+            ]
+            ALV_PIC = "https://telegra.ph/file/68616eddf4645edf9b9d0.jpg"
+            markup = event.client.build_reply_markup(buttons)
+            photo = types.InputWebDocument(
+                url=ALV_PIC, size=0, mime_type="image/jpeg", attributes=[]
             )
-        ]
-        markup = event.client.build_reply_markup(buttons)
-        photo = types.InputWebDocument(
-            url=LIONLOGO, size=0, mime_type="image/jpeg", attributes=[]
-        )
-        text, msg_entities = await event.client._parse_message_text(
-            "𝐃𝐞𝐩𝐥𝐨𝐲 𝐘𝐨𝐮𝐫 𝐎𝐰𝐧 𝐋𝐢𝐨𝐧𝐗 .", "md"
-        )
-        result = types.InputBotInlineResult(
-            id=str(uuid4()),
-            type="photo",
-            title="𝙇𝙞𝙤𝙣𝙓",
-            description="Deploy yourself",
-            url="https://github.com/TeamLionX/LionX",
-            thumb=photo,
-            content=photo,
-            send_message=types.InputBotInlineMessageMediaAuto(
-                reply_markup=markup, message=text, entities=msg_entities
-            ),
-        )
-        await event.answer([result] if result else None)
+            text, msg_entities = await event.client._parse_message_text(
+                f"⚜ **ṠḀṼḭṏṙ** ⚜\n------------\n🔹 Owner ~ {mention}\n\n✨Support ~ {SaVior_grp}",
+                "md",
+            )
+            result = types.InputBotInlineResult(
+                id=str(uuid4()),
+                type="photo",
+                title=f"ṠḀṼḭṏṙ",
+                description=f"ṠḀṼḭṏṙ\nhttps://t.me/SaViorSupport",
+                url="https://github.com/TheSaVior/SAVIOR",
+                thumb=photo,
+                content=photo,
+                send_message=types.InputBotInlineMessageMediaAuto(
+                    reply_markup=markup, message=text, entities=msg_entities
+                ),
+            )
+            await event.answer([result] if result else None)
+        else:
+            await event.answer([result] if result else None)
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(b"close")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(b"clise")))
 @check_owner
 async def on_plug_in_callback_query_handler(event):
     buttons = [
-        (Button.inline("Menu", data="mainmenu"),),
+        (Button.inline("Open", data="mainmenu"),),
     ]
-    await event.edit("Closed", buttons=buttons)
+    await event.edit(
+        f"📜 Help Menu Closed\n\n🔹 By : {mention}\n\n             [©️ṠḀṼḭṏṙ](https://t.me/SaViorSupport)",
+        buttons=buttons,
+        link_preview=False,
+    )
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(b"check")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(b"check")))
 async def on_plugin_callback_query_handler(event):
     text = f"𝙿𝚕𝚞𝚐𝚒𝚗𝚜: {len(PLG_INFO)}\
         \n𝙲𝚘𝚖𝚖𝚊𝚗𝚍𝚜: {len(CMD_INFO)}\
         \n\n{tr}𝚑𝚎𝚕𝚙 <𝚙𝚕𝚞𝚐𝚒𝚗> : 𝙵𝚘𝚛 𝚜𝚙𝚎𝚌𝚒𝚏𝚒𝚌 𝚙𝚕𝚞𝚐𝚒𝚗 𝚒𝚗𝚏𝚘.\
         \n{tr}𝚑𝚎𝚕𝚙 -𝚌 <𝚌𝚘𝚖𝚖𝚊𝚗𝚍> : 𝙵𝚘𝚛 𝚊𝚗𝚢 𝚌𝚘𝚖𝚖𝚊𝚗𝚍 𝚒𝚗𝚏𝚘.\
-        \n{tr}𝚜 <𝚚𝚞𝚎𝚛𝚢> : 𝚃𝚘 𝚜𝚎𝚊𝚛𝚌𝚑 𝚊𝚗𝚢 𝚌𝚘𝚖𝚖𝚊𝚗𝚍𝚜.\
         "
     await event.answer(text, cache_time=0, alert=True)
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(b"(.*)_menu")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(b"(.*)_menu")))
 @check_owner
 async def on_plug_in_callback_query_handler(event):
     category = str(event.pattern_match.group(1).decode("UTF-8"))
     buttons = paginate_help(0, GRP_INFO[category], category)
-    text = f"**Category: **{category}\
-        \n**Total plugins :** {len(GRP_INFO[category])}\
-        \n**Total Commands:** {command_in_category(category)}"
+    text = f"**📜Category: **{category}\
+        \n**🔹Total plugins :** {len(GRP_INFO[category])}\
+        \n**🕹Total Commands:** {command_in_category(category)}"
     await event.edit(text, buttons=buttons)
 
 
-@lionub.tgbot.on(
+@savior.tgbot.on(
     CallbackQuery(
         data=re.compile(b"back_([a-z]+)_([a-z_1-9]+)_([0-9]+)_?([a-z1-9]+)?_?([0-9]+)?")
     )
@@ -622,9 +751,9 @@ async def on_plug_in_callback_query_handler(event):
     pgno = int(event.pattern_match.group(3).decode("UTF-8"))
     if mtype == "plugin":
         buttons = paginate_help(pgno, GRP_INFO[category], category)
-        text = f"**Category: **`{category}`\
-            \n**Total plugins :** __{len(GRP_INFO[category])}__\
-            \n**Total Commands:** __{command_in_category(category)}__"
+        text = f"**📜Category: **`{category}`\
+            \n**🔹Total plugins :** __{len(GRP_INFO[category])}__\
+            \n**🕹Total Commands:** __{command_in_category(category)}__"
     else:
         category_plugins = str(event.pattern_match.group(4).decode("UTF-8"))
         category_pgno = int(event.pattern_match.group(5).decode("UTF-8"))
@@ -636,20 +765,20 @@ async def on_plug_in_callback_query_handler(event):
             category_plugins=category_plugins,
             category_pgno=category_pgno,
         )
-        text = f"**Plugin: **`{category}`\
-                \n**Category: **__{getkey(category)}__\
-                \n**Total Commands:** __{len(PLG_INFO[category])}__"
+        text = f"**🔹Plugin: **`{category}`\
+                \n**📜Category: **__{getkey(category)}__\
+                \n**🕹Total Commands:** __{len(PLG_INFO[category])}__"
     await event.edit(text, buttons=buttons)
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(rb"mainmenu")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(rb"mainmenu")))
 @check_owner
 async def on_plug_in_callback_query_handler(event):
     _result = main_menu()
     await event.edit(_result[0], buttons=_result[1])
 
 
-@lionub.tgbot.on(
+@savior.tgbot.on(
     CallbackQuery(data=re.compile(rb"(.*)_prev\((.+?)\)_([a-z]+)_?([a-z]+)?_?(.*)?"))
 )
 @check_owner
@@ -670,9 +799,9 @@ async def on_plug_in_callback_query_handler(event):
             category_plugins=category_plugins,
             category_pgno=category_pgno,
         )
-        text = f"**Plugin: **`{category}`\
-                \n**Category: **__{getkey(category)}__\
-                \n**Total Commands:** __{len(PLG_INFO[category])}__"
+        text = f"**🔹Plugin: **`{category}`\
+                \n**📜Category: **__{getkey(category)}__\
+                \n**🕹Total Commands:** __{len(PLG_INFO[category])}__"
         try:
             return await event.edit(text, buttons=buttons)
         except Exception as e:
@@ -680,7 +809,7 @@ async def on_plug_in_callback_query_handler(event):
     await event.edit(buttons=buttons)
 
 
-@lionub.tgbot.on(
+@savior.tgbot.on(
     CallbackQuery(data=re.compile(rb"(.*)_next\((.+?)\)_([a-z]+)_?([a-z]+)?_?(.*)?"))
 )
 @check_owner
@@ -708,7 +837,7 @@ async def on_plug_in_callback_query_handler(event):
     await event.edit(buttons=buttons)
 
 
-@lionub.tgbot.on(
+@savior.tgbot.on(
     CallbackQuery(
         data=re.compile(b"(.*)_cmdhelp_([a-z_1-9]+)_([0-9]+)_([a-z]+)_([0-9]+)")
     )
@@ -723,14 +852,14 @@ async def on_plug_in_callback_query_handler(event):
     buttons = [
         (
             Button.inline(
-                "🔙",
+                "⬅️ Back ",
                 data=f"back_command_{category}_{pgno}_{category_plugins}_{category_pgno}",
             ),
-            Button.inline("Menu", data="mainmenu"),
+            Button.inline("Main Menu", data="mainmenu"),
         )
     ]
-    text = f"**Command :** `{tr}{cmd}`\
-        \n**Plugin :** `{category}`\
-        \n**Category :** `{category_plugins}`\
-        \n\n**✘ Intro :**\n{CMD_INFO[cmd][0]}"
+    text = f"**🕹Command :** `{tr}{cmd}`\
+        \n**🔹Plugin :** `{category}`\
+        \n**📍Category :** `{category_plugins}`\
+        \n\n**📜 Intro :**\n{CMD_INFO[cmd][0]}"
     await event.edit(text, buttons=buttons)
