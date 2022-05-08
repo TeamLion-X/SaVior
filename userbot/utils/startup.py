@@ -61,7 +61,7 @@ async def startupmessage():
         if BOTLOG:
             Config.SAVIORUBLOGO = await savior.tgbot.send_file(
                 BOTLOG_CHATID,
-                "https://telegra.ph/file/294b4dbdb74334fb0a8c1.jpg",
+                "https://telegra.ph/file/68616eddf4645edf9b9d0.jpg",
                 caption="**Your SaVior has been started successfully.**",
                 buttons=[(Button.url("Support", "https://t.me/SaViorSupport"),)],
             )
