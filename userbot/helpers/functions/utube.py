@@ -31,11 +31,11 @@ name_dl = (
 )
 
 
-async def yt_search(swt):
+async def yt_search(savior):
     try:
-        swt = urllib.parse.quote(swt)
+        savior = urllib.parse.quote(savior)
         html = urllib.request.urlopen(
-            f"https://www.youtube.com/results?search_query={swt}"
+            f"https://www.youtube.com/results?search_query={savior}"
         )
         user_data = re.findall(r"watch\?v=(\S{11})", html.read().decode())
         video_link = []
@@ -87,8 +87,8 @@ class YT_Search_X:
 ytsearch_data = YT_Search_X()
 
 """
-async def yt_data(swt):
-    params = {"format": "json", "url": swt}
+async def yt_data(savior):
+    params = {"format": "json", "url": savior}
     url = "https://www.youtube.com/oembed"  # https://stackoverflow.com/questions/29069444/returning-the-urls-as-a-list-from-a-youtube-search-query
     query_string = urllib.parse.urlencode(params)
     url = f"{url}?{query_string}"

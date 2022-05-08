@@ -62,12 +62,12 @@ async def admin_groups(savior):
 # https://github.com/pokurt/LyndaRobot/blob/7556ca0efafd357008131fa88401a8bb8057006f/lynda/modules/helper_funcs/string_handling.py#L238
 
 
-async def extract_time(swt, time_val):
+async def extract_time(savior, time_val):
     if any(time_val.endswith(unit) for unit in ("s", "m", "h", "d", "w")):
         unit = time_val[-1]
         time_num = time_val[:-1]  # type: str
         if not time_num.isdigit():
-            await swt.edit("Invalid time amount specified.")
+            await savior.edit("Invalid time amount specified.")
             return None
         if unit == "s":
             bantime = int(time.time() + int(time_num) * 1)
@@ -81,12 +81,12 @@ async def extract_time(swt, time_val):
             bantime = int(time.time() + int(time_num) * 7 * 24 * 60 * 60)
         else:
             # how even...?
-            await swt.edit(
+            await savior.edit(
                 f"__Invalid time type specified. Expected s,  m , h , d or w but got:__ {time_val[-1]}"
             )
             return None
         return bantime
-    await swt.edit(
+    await savior.edit(
         f"__Invalid time type specified. Expected s,  m , h , d or w but got: __{time_val[-1]}"
     )
     return None

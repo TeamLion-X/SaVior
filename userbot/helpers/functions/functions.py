@@ -144,10 +144,10 @@ async def animator(media, mainevent, textevent):
 
 async def hide_inlinebot(borg, bot_name, text, chat_id, reply_to_id, c_lick=0):
     sticcers = await borg.inline_query(bot_name, f"{text}.")
-    cat = await sticcers[c_lick].click("me", hide_via=True)
-    if cat:
-        await borg.send_file(int(chat_id), cat, reply_to=reply_to_id)
-        await cat.delete()
+    savior = await sticcers[c_lick].click("me", hide_via=True)
+    if savior:
+        await borg.send_file(int(chat_id), savior, reply_to=reply_to_id)
+        await savior.delete()
 
 
 async def make_inline(text, borg, chat_id, reply_to_id):
@@ -222,7 +222,7 @@ async def clippy(borg, msg, chat_id, reply_to_id):
         try:
             msg = await conv.send_file(msg)
         except YouBlockedUserError:
-            await catub(unblock("clippy"))
+            await savior(unblock("clippy"))
             msg = await conv.send_file(msg)
         pic = await conv.get_response()
         await borg.send_read_acknowledge(conv.chat_id)
@@ -383,7 +383,7 @@ def higlighted_text(
             )
             source_img = Image.alpha_composite(source_img, trans)
             output_text.append(list_text[i])
-        output_img = f"./temp/cat{pic_no}.jpg"
+        output_img = f"./temp/savior{pic_no}.jpg"
         output.append(output_img)
         source_img.save(output_img, "png")
         if album_limit and (album_limit - 1) == pic_no:
