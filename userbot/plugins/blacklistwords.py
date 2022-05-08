@@ -2,25 +2,25 @@ import re
 
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..sql_helper import blacklist_sql as sql
 from ..utils import is_admin
 
-plugin_category = "admin"
+menu_category = "admin"
 
 
-@lionub.lion_cmd(incoming=True, groups_only=True)
+@savior.savior_cmd(incoming=True, groups_only=True)
 async def on_new_message(event):
     name = event.raw_text
     snips = sql.get_chat_blacklist(event.chat_id)
-    lionadmin = await is_admin(event.client, event.chat_id, event.client.uid)
-    if not lionadmin:
+    savioradmin = await is_admin(event.client, event.chat_id, event.client.uid)
+    if not savioradmin:
         return
     for snip in snips:
         pattern = f"( |^|[^\\w]){re.escape(snip)}( |$|[^\\w])"
-        if re.search(pattern, name, flags=re.IGNORECASE):
+        if re.search(pattern, name, types=re.IGNORECASE):
             try:
                 await event.delete()
             except Exception:
@@ -34,9 +34,9 @@ async def on_new_message(event):
             break
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="addblacklist ((.|\n)*)",
-    command=("addblacklist", plugin_category),
+    command=("addblacklist", menu_category),
     info={
         "header": "To add blacklist words to database",
         "description": "The given word or words will be added to blacklist in that specific chat if any user sends then the message gets deleted.",
@@ -57,15 +57,17 @@ async def _(event):
 
     for trigger in to_blacklist:
         sql.add_to_blacklist(event.chat_id, trigger.lower())
-    await edit_or_reply(
+    await eor(
         event,
-        f"Added {len(to_blacklist)} triggers to the blacklist in the current chat",
+        "Added {} triggers to the blacklist in the current chat".format(
+            len(to_blacklist)
+        ),
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="rmblacklist ((.|\n)*)",
-    command=("rmblacklist", plugin_category),
+    command=("rmblacklist", menu_category),
     info={
         "header": "To remove blacklist words from database",
         "description": "The given word or words will be removed from blacklist in that specific chat",
@@ -87,14 +89,12 @@ async def _(event):
         bool(sql.rm_from_blacklist(event.chat_id, trigger.lower()))
         for trigger in to_unblacklist
     )
-    await edit_or_reply(
-        event, f"Removed {successful} / {len(to_unblacklist)} from the blacklist"
-    )
+    await eor(event, f"Removed {successful} / {len(to_unblacklist)} from the blacklist")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="listblacklist$",
-    command=("listblacklist", plugin_category),
+    command=("listblacklist", menu_category),
     info={
         "header": "To show the black list words",
         "description": "Shows you the list of blacklist words in that specific chat",
@@ -112,4 +112,4 @@ async def _(event):
             OUT_STR += f"👉 {trigger} \n"
     else:
         OUT_STR = "No Blacklists found. Start saving using `.addblacklist`"
-    await edit_or_reply(event, OUT_STR)
+    await eor(event, OUT_STR)

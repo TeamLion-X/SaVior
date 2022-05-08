@@ -5,25 +5,35 @@ import aiohttp
 import requests
 from github import Github
 from pySmartDL import SmartDL
+from telethon.errors import ChatSendInlineForbiddenError as noin
+from telethon.errors.rpcerrorlist import BotMethodInvalidError as dedbot
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.utils import reply_id
 from . import reply_id
 
 LOGS = logging.getLogger(os.path.basename(__name__))
 ppath = os.path.join(os.getcwd(), "temp", "githubuser.jpg")
-plugin_category = "utils"
+menu_category = "misc"
+from . import SaVior_channel
 
 GIT_TEMP_DIR = "./temp/"
 
+msg = f"""
+**⚜ 𝙻𝚎𝚐𝚎𝚗𝚍𝚊𝚛𝚢 𝙰𝚏 𝙻𝚎𝚐𝚎𝚗𝚍𝙱𝚘𝚝 ⚜**
+  •        [♥️ 𝚁𝚎𝚙𝚘 ♥️](https://github.com/TheSaVior/SAVIOR)
+  •        [♦️ Deploy ♦️](https://dashboard.heroku.com/new?button-url=https%3A%2F%2Fgithub.com%2FTheSaVior%2FSAVIOR&template=https%3A%2F%2Fgithub.com%2FTheSaVior%2FSAVIOR)
+  •  ©️ {SaVior_channel} ™
+"""
 
-@lionub.lion_cmd(
+
+@savior.savior_cmd(
     pattern="repo$",
-    command=("repo", plugin_category),
+    command=("repo", menu_category),
     info={
         "header": "Source code link of userbot",
         "usage": [
@@ -33,21 +43,23 @@ GIT_TEMP_DIR = "./temp/"
 )
 async def source(e):
     "Source code link of userbot"
-    await edit_or_reply(
-        e,
-        "Click [here](https://github.com/TeamLionX/LionX) to open this bot source code\
-        \nClick [here](https://github.com/TeamLionX/LionX) to open supported link for heroku",
-    )
+    reply_to_id = await reply_id(e)
+    try:
+        savior = await e.client.inline_query(Config.BOT_USERNAME, "repo")
+        await savior[0].click(e.chat_id, reply_to=reply_to_id, hide_via=True)
+        await e.delete()
+    except (noin, dedbot):
+        await eor(e, msg)
 
 
-@lionub.lion_cmd(
-    pattern=r"github( -l(\d+))? ([\s\S]*)",
-    command=("github", plugin_category),
+@savior.savior_cmd(
+    pattern="github( -l(\d+))? ([\s\S]*)",
+    command=("github", menu_category),
     info={
         "header": "Shows the information about an user on GitHub of given username",
         "flags": {"-l": "repo limit : default to 5"},
-        "usage": ".github [flag] [username]",
-        "examples": [".github TeamLionX", ".github -l5 TeamLionX"],
+        "usage": "{tr}github [type] [username]",
+        "examples": ["{tr}github TheSaVior", "{tr}github -l5 TheSaVior"],
     },
 )
 async def _(event):
@@ -58,8 +70,8 @@ async def _(event):
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as request:
             if request.status == 404:
-                return await edit_delete(event, f"`{username} not found`")
-            lionevent = await edit_or_reply(event, "`fetching github info ...`")
+                return await eod(event, f"`{username} not found`")
+            saviorevent = await eor(event, "`fetching github info ...`")
             result = await request.json()
             photo = result["avatar_url"]
             if result["bio"]:
@@ -68,7 +80,7 @@ async def _(event):
             sec_res = requests.get(result["repos_url"])
             if sec_res.status_code == 200:
                 limit = event.pattern_match.group(2)
-                limit = int(limit) if limit else 5
+                limit = 5 if not limit else int(limit)
                 for repo in sec_res.json():
                     repos.append(f"[{repo['name']}]({repo['html_url']})")
                     limit -= 1
@@ -103,12 +115,12 @@ async def _(event):
                 reply_to=reply_to,
             )
             os.remove(ppath)
-            await lionevent.delete()
+            await saviorevent.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="commit$",
-    command=("commit", plugin_category),
+    command=("commit", menu_category),
     info={
         "header": "To commit the replied plugin to github.",
         "description": "It uploads the given file to your github repo in **userbot/plugins** folder\
@@ -120,20 +132,18 @@ async def _(event):
 async def download(event):
     "To commit the replied plugin to github."
     if Config.GITHUB_ACCESS_TOKEN is None:
-        return await edit_delete(
-            event, "`Please ADD Proper Access Token from github.com`", 5
-        )
+        return await eod(event, "`Please ADD Proper Access Token from github.com`", 5)
     if Config.GIT_REPO_NAME is None:
-        return await edit_delete(
+        return await eod(
             event, "`Please ADD Proper Github Repo Name of your userbot`", 5
         )
-    mone = await edit_or_reply(event, "`Processing ...`")
+    mone = await eor(event, "`Processing ...`")
     if not os.path.isdir(GIT_TEMP_DIR):
         os.makedirs(GIT_TEMP_DIR)
     start = datetime.now()
     reply_message = await event.get_reply_message()
     if not reply_message or not reply_message.media:
-        return await edit_delete(
+        return await eod(
             event, "__Reply to a file which you want to commit in your github.__"
         )
     try:
@@ -143,7 +153,9 @@ async def download(event):
     else:
         end = datetime.now()
         ms = (end - start).seconds
-        await mone.edit(f"Downloaded to `{downloaded_file_name}` in {ms} seconds.")
+        await mone.edit(
+            "Downloaded to `{}` in {} seconds.".format(downloaded_file_name, ms)
+        )
         await mone.edit("Committing to Github....")
         await git_commit(downloaded_file_name, mone)
 

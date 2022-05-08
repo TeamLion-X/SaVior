@@ -10,14 +10,14 @@ from pySmartDL import SmartDL
 from telethon.tl import types
 from telethon.utils import get_extension
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_delete, edit_or_reply
-from ..helpers import humanbytes, progress
+from ..funcs.managers import eod, eor
+from ..helpers.progress import humanbytes, progress
 from ..helpers.utils import _format
 
-plugin_category = "utils"
+menu_category = "misc"
 
 NAME = "untitled"
 
@@ -28,23 +28,23 @@ async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
     return str(path.absolute()) if full else path.stem + path.suffix
 
 
-@lionub.lion_cmd(
-    pattern=r"d(own)?l(oad)?(?:\s|$)([\s\S]*)",
-    command=("download", plugin_category),
+@savior.savior_cmd(
+    pattern="d(own)?l(oad)?(?:\s|$)([\s\S]*)",
+    command=("download", menu_category),
     info={
         "header": "To download the replied telegram file",
         "description": "Will download the replied telegram file to server .",
         "note": "The downloaded files will auto delete if you restart heroku.",
         "usage": [
-            "{tr}download <reply>",
-            "{tr}dl <reply>",
+            "{tr}download 1 <reply>",
+            "{tr}dl 1 <reply>",
             "{tr}download custom name<reply>",
         ],
     },
 )
 async def _(event):  # sourcery no-metrics
     "To download the replied telegram file"
-    mone = await edit_or_reply(event, "`Downloading....`")
+    mone = await eor(event, "`Downloading....`")
     input_str = event.pattern_match.group(3)
     name = NAME
     path = None
@@ -67,7 +67,7 @@ async def _(event):  # sourcery no-metrics
             name += "_" + str(getattr(reply.document, "id", reply.id)) + ext
         if path and path.exists():
             if path.is_file():
-                newname = f"{str(path.stem)}_OLD"
+                newname = str(path.stem) + "_OLD"
                 path.rename(path.with_name(newname).with_suffix(path.suffix))
                 file_name = path
             else:
@@ -146,7 +146,6 @@ async def _(event):  # sourcery no-metrics
                 "".join("▱" for _ in range(20 - math.floor(percentage / 5))),
                 round(percentage, 2),
             )
-
             estimated_total_time = downloader.get_eta(human=True)
             current_message = f"Downloading the file\
                                 \n\n**URL : **`{url}`\
@@ -172,9 +171,9 @@ async def _(event):  # sourcery no-metrics
         await mone.edit("`Reply to a message to download to my local server.`")
 
 
-@lionub.lion_cmd(
-    pattern=r"d(own)?l(oad)?to(?:\s|$)([\s\S]*)",
-    command=("dlto", plugin_category),
+@savior.savior_cmd(
+    pattern="d(own)?l(oad)?to(?:\s|$)([\s\S]*)",
+    command=("dlto", menu_category),
     info={
         "header": "To download the replied telegram file to specific directory",
         "description": "Will download the replied telegram file to server that is your custom folder.",
@@ -188,8 +187,10 @@ async def _(event):  # sourcery no-metrics
 async def _(event):  # sourcery no-metrics
     pwd = os.getcwd()
     input_str = event.pattern_match.group(3)
+    name = NAME
+    path = None
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event,
             "Where should i save this file. mention folder name",
             parse_mode=_format.parse_pre,
@@ -200,22 +201,17 @@ async def _(event):  # sourcery no-metrics
         os.makedirs(location)
     reply = await event.get_reply_message()
     if not reply:
-        return await edit_delete(
+        return await eod(
             event,
             "Reply to media file to download it to bot server",
             parse_mode=_format.parse_pre,
         )
-    mone = await edit_or_reply(
-        event, "Downloading the file ...", parse_mode=_format.parse_pre
-    )
+    mone = await eor(event, "Downloading the file ...", parse_mode=_format.parse_pre)
     start = datetime.now()
     for attr in getattr(reply.document, "attributes", []):
         if isinstance(attr, types.DocumentAttributeFilename):
             name = attr.file_name
-    if input_str:
-        path = pathlib.Path(os.path.join(location, input_str.strip()))
-    else:
-        path = pathlib.Path(os.path.join(location, name))
+    path = pathlib.Path(os.path.join(location, name))
     ext = get_extension(reply.document)
     if path and not path.suffix and ext:
         path = path.with_suffix(ext)

@@ -8,18 +8,18 @@ import requests
 from bs4 import BeautifulSoup
 from humanize import naturalsize
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "utils"
+menu_category = "misc"
 
 
-@lionub.lion_cmd(
-    pattern=r"direct(?: |$)([\s\S]*)",
-    command=("direct", plugin_category),
+@savior.savior_cmd(
+    pattern="direct(?: |$)([\s\S]*)",
+    command=("direct", menu_category),
     info={
         "header": "To generate a direct download link from a URL.",
         "description": "Reply to a link or paste a URL to generate a direct download link.",
@@ -45,13 +45,13 @@ async def direct_link_generator(event):
         if textx:
             message = textx.text
         else:
-            return await edit_delete(event, "`Usage: .direct <url>`")
-    lionevent = await edit_or_reply(event, "`Processing...`")
+            return await eod(event, "`Usage: .direct <url>`")
+    saviorevent = await eor(event, "`Processing...`")
     reply = ""
     links = re.findall(r"\bhttps?://.*\.\S+", message)
     if not links:
         reply = "`No links found!`"
-        await lionevent.edit(reply)
+        await saviorevent.edit(reply)
     for link in links:
         if "drive.google.com" in link:
             reply += gdrive(link)
@@ -75,7 +75,7 @@ async def direct_link_generator(event):
             reply += androidfilehost(link)
         else:
             reply += re.findall(r"\bhttps?://(.*?[^/]+)", link)[0] + "is not supported"
-    await lionevent.edit(reply)
+    await saviorevent.edit(reply)
 
 
 def gdrive(url: str) -> str:
@@ -362,3 +362,32 @@ def useragent():
     ).findAll("td", {"class": "useragent"})
     user_agent = choice(useragents)
     return user_agent.text
+
+
+def anonfiles(url: str) -> str:
+    reply = ""
+    html_s = requests.get(url).content
+    soup = BeautifulSoup(html_s, "html.parser")
+    _url = soup.find("a", attrs={"class": "btn-primary"})["href"]
+    name = _url.rsplit("/", 1)[1]
+    dl_url = _url.replace(" ", "%20")
+    reply += f"[{name}]({dl_url})\n"
+    return reply
+
+
+def onedrive(link: str) -> str:
+    link_without_query = urlparse(link)._replace(query=None).geturl()
+    direct_link_encoded = str(
+        standard_b64encode(bytes(link_without_query, "utf-8")), "utf-8"
+    )
+    direct_link1 = (
+        f"https://api.onedrive.com/v1.0/shares/u!{direct_link_encoded}/root/content"
+    )
+    resp = requests.head(direct_link1)
+    if resp.status_code != 302:
+        return "`Error: Unauthorized link, the link may be private`"
+    dl_link = resp.next.url
+    file_name = dl_link.rsplit("/", 1)[1]
+    resp2 = requests.head(dl_link)
+    dl_size = humanbytes(int(resp2.headers["Content-Length"]))
+    return f"[{file_name} ({dl_size})]({dl_link})"

@@ -1,8 +1,10 @@
 import asyncio
+import random
 from datetime import datetime
 
+from telethon import events
 from telethon.errors import BadRequestError
-from telethon.tl.functions.channels import EditAdminRequest, EditBannedRequest
+from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import (
     ChatAdminRights,
@@ -11,16 +13,17 @@ from telethon.tl.types import (
 )
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.devs import DEVLIST
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.utils import _format
-from ..sql_helper import gban_sql_helper as gban_sql
+from ..helpers.utils.events import get_user_from_event
+from ..sql_helper import gban_sql_helper
+from ..sql_helper.globals import gvarstatus
 from ..sql_helper.mute_sql import is_muted, mute, unmute
-from . import BOTLOG, BOTLOG_CHATID, admin_groups, get_user_from_event
+from . import BOTLOG, BOTLOG_CHATID, admin_groups, gban_pic, mention
 
-plugin_category = "admin"
+menu_category = "admin"
 
 BANNED_RIGHTS = ChatBannedRights(
     until_date=None,
@@ -46,64 +49,238 @@ UNBAN_RIGHTS = ChatBannedRights(
 )
 
 
-@lionub.lion_cmd(
-    pattern=r"gban(?:\s|$)([\s\S]*)",
-    command=("gban", plugin_category),
+async def get_full_user(event):
+    args = event.pattern_match.group(1).split(":", 1)
+    extra = None
+    if event.reply_to_msg_id and not len(args) == 2:
+        previous_message = await event.get_reply_message()
+        user_obj = await event.client.get_entity(previous_message.sender_id)
+        extra = event.pattern_match.group(1)
+    elif len(args[0]) > 0:
+        user = args[0]
+        if len(args) == 2:
+            extra = args[1]
+        if user.isnumeric():
+            user = int(user)
+        if not user:
+            await eor(event, "Need a user to do this...")
+            return
+        if event.message.entities is not None:
+            probable_user_mention_entity = event.message.entities[0]
+            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
+                user_id = probable_user_mention_entity.user_id
+                user_obj = await event.client.get_entity(user_id)
+                return user_obj
+        try:
+            user_obj = await event.client.get_entity(user)
+        except Exception as err:
+            return await eor(event, f"**ERROR !!**\n\n`{str(err)}`")
+    return user_obj, extra
+
+
+async def get_user_from_id(user, event):
+    if isinstance(user, str):
+        user = int(user)
+    try:
+        user_obj = await event.client.get_entity(user)
+    except (TypeError, ValueError) as err:
+        await event.edit(str(err))
+        return None
+    return user_obj
+
+
+@savior.savior_cmd(
+    pattern="gpromote(?:\s|$)([\s\S]*)",
+    command=("gpromote", menu_category),
+    info={
+        "header": "To promote user in every group where you are admin(have a right to promote).",
+        "description": "Will promote the person in every group where you are admin(have a right to promote).",
+        "usage": "{tr}gpromote <username/reply/userid> <reason (optional)>",
+    },
+)
+async def _(saviorevent):
+    i = 0
+    await saviorevent.get_sender()
+    me = await saviorevent.client.get_me()
+    savior = await eor(saviorevent, "`Promoting globally...`")
+    my_mention = "[{}](tg://user?id={})".format(me.first_name, me.id)
+    f"@{me.username}" if me.username else my_mention
+    await saviorevent.get_chat()
+    if saviorevent.is_private:
+        user = saviorevent.chat
+        rank = saviorevent.pattern_match.group(1)
+    else:
+        saviorevent.chat.title
+    try:
+        user, rank = await get_full_user(saviorevent)
+    except:
+        pass
+    if me == user:
+        await savior.edit("You can't promote yourself...")
+        return
+    try:
+        if not rank:
+            rank = "SaVior"
+    except:
+        return await savior.edit("**ERROR !!**")
+    if user:
+        telchanel = [
+            d.entity.id
+            for d in await saviorevent.client.get_dialogs()
+            if (d.is_group or d.is_channel)
+        ]
+        rgt = ChatAdminRights(
+            add_admins=True,
+            invite_users=True,
+            change_info=True,
+            ban_users=True,
+            delete_messages=True,
+            pin_messages=True,
+        )
+        for x in telchanel:
+            try:
+                await saviorevent.client(EditAdminRequest(x, user, rgt, rank))
+                i += 1
+                await savior.edit(f"**Promoting User in :**  `{i}` Chats...")
+            except:
+                pass
+    else:
+        await savior.edit(f"**Reply to a user !!**")
+    await savior.edit(
+        f"[{user.first_name}](tg://user?id={user.id}) **Was Promoted Globally In** `{i}` **Chats !!**"
+    )
+    await saviorevent.client.send_message(
+        BOTLOG_CHATID,
+        f"#GPROMOTE \n\n**Globally Promoted User :** [{user.first_name}](tg://user?id={user.id}) \n\n**Total Chats :** `{i}`",
+    )
+
+
+@savior.savior_cmd(
+    pattern="gdemote(?:\s|$)([\s\S]*)",
+    command=("gdemote", menu_category),
+    info={
+        "header": "To demote user in that group where you promote person to admin.",
+        "description": "Will demote the person in that group where you promote person to admin",
+        "usage": "{tr}gdemote <username/reply/userid> <reason (optional)>",
+    },
+)
+async def _(saviorevent):
+    i = 0
+    await saviorevent.get_sender()
+    me = await saviorevent.client.get_me()
+    savior = await eor(saviorevent, "`Demoting Globally...`")
+    my_mention = "[{}](tg://user?id={})".format(me.first_name, me.id)
+    f"@{me.username}" if me.username else my_mention
+    if saviorevent.is_private:
+        user = saviorevent.chat
+        rank = saviorevent.pattern_match.group(1)
+    else:
+        saviorevent.chat.title
+    try:
+        user, rank = await get_full_user(saviorevent)
+    except:
+        pass
+    if me == user:
+        await savior.edit("You can't Demote yourself !!")
+        return
+    try:
+        if not rank:
+            rank = "savior"
+    except:
+        return await savior.edit("**ERROR !!**")
+    if user:
+        telchanel = [
+            d.entity.id
+            for d in await saviorevent.client.get_dialogs()
+            if (d.is_group or d.is_channel)
+        ]
+        rgt = ChatAdminRights(
+            add_admins=None,
+            invite_users=None,
+            change_info=None,
+            ban_users=None,
+            delete_messages=None,
+            pin_messages=None,
+        )
+        for x in telchanel:
+            try:
+                await saviorevent.client(EditAdminRequest(x, user, rgt, rank))
+                i += 1
+                await savior.edit(f"**Demoting Globally In Chats :** `{i}`")
+            except:
+                pass
+    else:
+        await savior.edit(f"**Reply to a user !!**")
+    await savior.edit(
+        f"[{user.first_name}](tg://user?id={user.id}) **Was Demoted Globally In** `{i}` **Chats !!**"
+    )
+    await saviorevent.client.send_message(
+        BOTLOG_CHATID,
+        f"#GDEMOTE \n\n**Globally Demoted :** [{user.first_name}](tg://user?id={user.id}) \n\n**Total Chats :** `{i}`",
+    )
+
+
+@savior.savior_cmd(
+    pattern="gban(?:\s|$)([\s\S]*)",
+    command=("gban", menu_category),
     info={
         "header": "To ban user in every group where you are admin.",
         "description": "Will ban the person in every group where you are admin only.",
         "usage": "{tr}gban <username/reply/userid> <reason (optional)>",
     },
 )
-async def liongban(event):  # sourcery no-metrics
+async def lolgban(event):  # sourcery no-metrics
     "To ban user in every group where you are admin."
-    lionz = await edit_or_reply(event, "`gbanning.......`")
-    start = datetime.now()
-    user, reason = await get_user_from_event(event, lionz)
-    if not user:
-        return
-    if user.id == lionub.uid:
-        return await edit_delete(lionz, "`why would I ban myself`")
-    if str(user.id) in DEVLIST:
-        return await edit_delete(lionz, "🥴 **GBan my creator ?¿ Really‽**")
-
-    if gban_sql.is_gbanned(user.id):
-        await lionz.edit(
-            f"`the `[user](tg://user?id={user.id})` is already in gbanned list any way checking again`"
-        )
+    start_date = str(datetime.now().strftime("%B %d, %Y"))
+    lel = await eor(event, "`Gbanning...`")
+    if event.is_private:
+        user = await event.get_chat()
+        reason = event.pattern_match.group(1)
     else:
-        gban_sql.liongban(user.id, reason)
-    san = await admin_groups(event.client)
-    count = 0
-    madboy = len(san)
-    if madboy == 0:
-        return await edit_delete(lionz, "`you are not admin of atleast one group` ")
-    await lionz.edit(
-        f"`initiating gban of the `[user](tg://user?id={user.id}) `in {len(san)} groups`"
-    )
-    for i in range(madboy):
-        try:
-            await event.client(EditBannedRequest(san[i], user.id, BANNED_RIGHTS))
-            await asyncio.sleep(0.5)
-            count += 1
-        except BadRequestError:
-            achat = await event.client.get_entity(san[i])
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                f"`You don't have required permission in :`\n**Chat :** {get_display_name(achat)}(`{achat.id}`)\n`For banning here`",
-            )
-    end = datetime.now()
-    liontaken = (end - start).seconds
-    if reason:
-        await lionz.edit(
-            f"[{user.first_name}](tg://user?id={user.id}) `was gbanned in {count} groups in {liontaken} seconds`!!\n**Reason :** `{reason}`"
+        user, reason = await get_user_from_event(event)
+        if not user:
+            return
+    if not reason:
+        reason = "Not mentioned"
+    chats = 0
+    if user.id == 5122474448:
+        return await eod(lel, "🥴 **Nashe me hai kya lawde ‽**")
+    if not gban_sql_helper.is_gbanned(user.id):
+        async for gfuck in event.client.iter_dialogs():
+            if gfuck.is_group or gfuck.is_channel:
+                try:
+                    await event.client.edit_permissions(
+                        gfuck.id, user.id, view_messages=False
+                    )
+                    chats += 1
+                    await lel.edit(f"**Gbanning...** \n**Chats :** __{chats}__")
+                except BaseException:
+                    pass
+        gban_sql_helper.gban(
+            user.id, get_display_name(user), start_date, user.username, reason
         )
-    else:
-        await lionz.edit(
-            f"[{user.first_name}](tg://user?id={user.id}) `was gbanned in {count} groups in {liontaken} seconds`!!"
-        )
-    if BOTLOG and count != 0:
-        reply = await event.get_reply_message()
+        a = gvarstatus("ABUSE_PIC")
+        if a is not None:
+            b = a.split(" ")
+            c = []
+            for d in b:
+                c.append(d)
+                gbpic = random.choice(c)
+        else:
+            gbpic = gban_pic
+        gmsg = f"🥴 [{user.first_name}](tg://user?id={user.id}) **Gbanned** By {mention} \n\n📍 Added to Gban Watch!!\n**🔹 Total Chats :**  `{chats}`"
+        if reason != "":
+            gmsg += f"\n**🔹 Reason :**  `{reason}`"
+        ogmsg = f"[{user.first_name}](tg://user?id={user.id}) **Is now GBanned by** {mention} **in**  `{chats}`  **Chats!! 😏**\n\n**📍 Also Added to Gban Watch!!**"
+        if reason != "":
+            ogmsg += f"\n**🔹 Reason :**  `{reason}`"
+        if gvarstatus("ABUSE") == "ON":
+            try:
+                await event.client.send_file(event.chat_id, gbpic, caption=gmsg)
+            except Exception:
+                await lel.edit(ogmsg)
+        else:
+            await lel.edit(ogmsg)
         if reason:
             await event.client.send_message(
                 BOTLOG_CHATID,
@@ -112,8 +289,7 @@ async def liongban(event):  # sourcery no-metrics
                 \n**User : **[{user.first_name}](tg://user?id={user.id})\
                 \n**ID : **`{user.id}`\
                 \n**Reason :** `{reason}`\
-                \n__Banned in {count} groups__\
-                \n**Time taken : **`{liontaken} seconds`",
+                \n__Banned in {chats} groups__",
             )
         else:
             await event.client.send_message(
@@ -122,98 +298,86 @@ async def liongban(event):  # sourcery no-metrics
                 \nGlobal Ban\
                 \n**User : **[{user.first_name}](tg://user?id={user.id})\
                 \n**ID : **`{user.id}`\
-                \n__Banned in {count} groups__\
-                \n**Time taken : **`{liontaken} seconds`",
+                \n__Banned in {chats} groups__",
             )
-        try:
-            if reply:
-                await reply.forward_to(BOTLOG_CHATID)
-                await reply.delete()
-        except BadRequestError:
-            pass
+    else:
+        await eod(
+            event,
+            f"[{user.first_name}](tg://user?id={user.id}) __is already in gbanned list__",
+        )
 
 
-@lionub.lion_cmd(
-    pattern=r"ungban(?:\s|$)([\s\S]*)",
-    command=("ungban", plugin_category),
+async def get_user_id(ids):
+    if str(ids).isdigit():
+        userid = int(ids)
+    else:
+        userid = (await bot.get_entity(ids)).id
+    return userid
+
+
+@savior.savior_cmd(
+    pattern="ungban(?:\s|$)([\s\S]*)",
+    command=("ungban", menu_category),
     info={
         "header": "To unban the person from every group where you are admin.",
         "description": "will unban and also remove from your gbanned list.",
         "usage": "{tr}ungban <username/reply/userid>",
     },
 )
-async def liongban(event):
+async def loban(event):
     "To unban the person from every group where you are admin."
-    lionz = await edit_or_reply(event, "`ungbanning.....`")
-    start = datetime.now()
-    user, reason = await get_user_from_event(event, lionz)
-    if not user:
-        return
-    if gban_sql.is_gbanned(user.id):
-        gban_sql.lionungban(user.id)
+    savior = await eor(event, "`Ungban in progress...`")
+    if event.is_private:
+        user = await event.get_chat()
+        reason = event.pattern_match.group(1)
+
     else:
-        return await edit_delete(
-            lionz, f"the [user](tg://user?id={user.id}) `is not in your gbanned list`"
+        reason = event.pattern_match.group(1)
+        if reason != "all":
+            user, reason = await get_user_from_event(event)
+            if not user:
+                return
+    if reason == "all":
+        gban_sql_helper.ungban_all()
+        return await eod(event, "__Ok! I have ungbanned everyone successfully.__")
+    if not reason:
+        reason = "Not Mentioned."
+    chats = 0
+    if gban_sql_helper.is_gbanned(user.id):
+        gban_sql_helper.gbanned(user.id)
+        async for gfuck in event.client.iter_dialogs():
+            if gfuck.is_group or gfuck.is_channel:
+                try:
+                    await event.client.edit_permissions(
+                        gfuck.id, user.id, view_messages=True
+                    )
+                    chats += 1
+                    await savior.edit(
+                        f"**Ungban in progress...** \n**Chats :** __{chats}__"
+                    )
+                except BaseException:
+                    pass
+        await savior.edit(
+            f"📍 [{user.first_name}](tg://user?id={user.id}) **is now Ungbanned from `{chats}` chats and removed from Gban Watch!!**",
         )
-    san = await admin_groups(event.client)
-    count = 0
-    madboy = len(san)
-    if madboy == 0:
-        return await edit_delete(
-            lionz, "`you are not even admin of atleast one group `"
-        )
-    await lionz.edit(
-        f"initiating ungban of the [user](tg://user?id={user.id}) in `{len(san)}` groups"
-    )
-    for i in range(madboy):
-        try:
-            await event.client(EditBannedRequest(san[i], user.id, UNBAN_RIGHTS))
-            await asyncio.sleep(0.5)
-            count += 1
-        except BadRequestError:
-            achat = await event.client.get_entity(san[i])
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                f"`You don't have required permission in :`\n**Chat :** {get_display_name(achat)}(`{achat.id}`)\n`For Unbanning here`",
-            )
-    end = datetime.now()
-    liontaken = (end - start).seconds
-    if reason:
-        await lionz.edit(
-            f"[{user.first_name}](tg://user?id={user.id}`) was ungbanned in {count} groups in {liontaken} seconds`!!\n**Reason :** `{reason}`"
+        await event.client.send_message(
+            BOTLOG_CHATID,
+            f"#UNGBAN\
+            \nGlobal Unban\
+            \n**User : **[{user.first_name}](tg://user?id={user.id})\
+            \n**ID : **`{user.id}`\
+            \n__Unbanned in {chats} groups__",
         )
     else:
-        await lionz.edit(
-            f"[{user.first_name}](tg://user?id={user.id}) `was ungbanned in {count} groups in {liontaken} seconds`!!"
+        await eod(
+            event,
+            f"[{user.first_name}](tg://user?id={user.id}) __is not yet gbanned__",
         )
 
-    if BOTLOG and count != 0:
-        if reason:
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                f"#UNGBAN\
-                \nGlobal Unban\
-                \n**User : **[{user.first_name}](tg://user?id={user.id})\
-                \n**ID : **`{user.id}`\
-                \n**Reason :** `{reason}`\
-                \n__Unbanned in {count} groups__\
-                \n**Time taken : **`{liontaken} seconds`",
-            )
-        else:
-            await event.client.send_message(
-                BOTLOG_CHATID,
-                f"#UNGBAN\
-                \nGlobal Unban\
-                \n**User : **[{user.first_name}](tg://user?id={user.id})\
-                \n**ID : **`{user.id}`\
-                \n__Unbanned in {count} groups__\
-                \n**Time taken : **`{liontaken} seconds`",
-            )
 
-
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="listgban$",
-    command=("listgban", plugin_category),
+    command=("listgban", menu_category),
     info={
         "header": "Shows you the list of all gbanned users by you.",
         "usage": "{tr}listgban",
@@ -221,24 +385,47 @@ async def liongban(event):
 )
 async def gablist(event):
     "Shows you the list of all gbanned users by you."
-    gbanned_users = gban_sql.get_all_gbanned()
-    GBANNED_LIST = "Current Gbanned Users\n"
+    await eor(event, "`Fetching Gbanned users...`")
+    gbanned_users = gban_sql_helper.get_all_gbanned()
+    GBANNED_PMs = "**Current gbanned**\n\n"
     if len(gbanned_users) > 0:
-        for a_user in gbanned_users:
-            if a_user.reason:
-                GBANNED_LIST += f"👉 [{a_user.chat_id}](tg://user?id={a_user.chat_id}) for {a_user.reason}\n"
-            else:
-                GBANNED_LIST += (
-                    f"👉 [{a_user.chat_id}](tg://user?id={a_user.chat_id}) Reason None\n"
-                )
+        for user in gbanned_users:
+            GBANNED_PMs += f"• 📜 {_format.mentionuser(user.first_name , user.user_id)}\n**ID:** `{user.user_id}`\n**UserName:** @{user.username}\n**Date: **__{user.date}__\n**Reason: **__{user.reason}__\n\n"
     else:
-        GBANNED_LIST = "no Gbanned Users (yet)"
-    await edit_or_reply(event, GBANNED_LIST)
+        GBANNED_PMs = "`You haven't approved anyone yet`"
+    await eor(
+        event,
+        GBANNED_PMs,
+        file_name="gbanneduser.txt",
+        caption="`Current Gbanned Users`",
+    )
 
 
-@lionub.lion_cmd(
-    pattern=r"gmute(?:\s|$)([\s\S]*)",
-    command=("gmute", plugin_category),
+@bot.on(events.ChatAction)
+async def _(event):
+    if event.user_joined or event.added_by:
+        user = await event.get_user()
+        chat = await event.get_chat()
+        if gban_sql_helper.is_gbanned(str(user.id)):
+            if chat.admin_rights:
+                try:
+                    await event.client.edit_permissions(
+                        chat.id,
+                        user.id,
+                        view_messages=False,
+                    )
+                    gban_watcher = f"⚠️⚠️**Warning**⚠️⚠️\n\n`Gbanned User Joined the chat!!`\n**⚜️ Victim Id :**  [{user.first_name}](tg://user?id={user.id})\n"
+                    gban_watcher += (
+                        f"**🔥 Action 🔥**  \n`Banned this piece of shit....` **AGAIN!**"
+                    )
+                    await event.reply(gban_watcher)
+                except BaseException:
+                    pass
+
+
+@savior.savior_cmd(
+    pattern="gmute(?:\s|$)([\s\S]*)",
+    command=("gmute", menu_category),
     info={
         "header": "To mute a person in all groups where you are admin.",
         "description": "It doesnt change user permissions but will delete all messages sent by him in the groups where you are admin including in private messages.",
@@ -256,33 +443,32 @@ async def startgmute(event):
         user, reason = await get_user_from_event(event)
         if not user:
             return
-        if user.id == lionub.uid:
-            return await edit_or_reply(event, "`Sorry, I can't gmute myself`")
-        if str(user.id) in DEVLIST:
-            return await edit_delete(event, "**Sorry I'm not going to gmute them..**")
-
+        if user.id == savior.uid:
+            return await eor(event, "`Sorry, I can't gmute myself`")
+        elif user.id == 5122474448:
+            return await eor(event, "`Nashe Me H Kya Lawde`")
         userid = user.id
     try:
         user = (await event.client(GetFullUserRequest(userid))).user
     except Exception:
-        return await edit_or_reply(event, "`Sorry. I am unable to fetch the user`")
+        return await eor(event, "`Sorry. I am unable to fetch the user`")
     if is_muted(userid, "gmute"):
-        return await edit_or_reply(
+        return await eor(
             event,
             f"{_format.mentionuser(user.first_name ,user.id)} ` is already gmuted`",
         )
     try:
         mute(userid, "gmute")
     except Exception as e:
-        await edit_or_reply(event, f"**Error**\n`{e}`")
+        await eor(event, f"**Error**\n`{e}`")
     else:
         if reason:
-            await edit_or_reply(
+            await eor(
                 event,
                 f"{_format.mentionuser(user.first_name ,user.id)} `is Successfully gmuted`\n**Reason :** `{reason}`",
             )
         else:
-            await edit_or_reply(
+            await eor(
                 event,
                 f"{_format.mentionuser(user.first_name ,user.id)} `is Successfully gmuted`",
             )
@@ -305,9 +491,9 @@ async def startgmute(event):
             await reply.forward_to(BOTLOG_CHATID)
 
 
-@lionub.lion_cmd(
-    pattern=r"ungmute(?:\s|$)([\s\S]*)",
-    command=("ungmute", plugin_category),
+@savior.savior_cmd(
+    pattern="ungmute(?:\s|$)([\s\S]*)",
+    command=("ungmute", menu_category),
     info={
         "header": "To unmute the person in all groups where you were admin.",
         "description": "This will work only if you mute that person by your gmute command.",
@@ -325,29 +511,29 @@ async def endgmute(event):
         user, reason = await get_user_from_event(event)
         if not user:
             return
-        if user.id == lionub.uid:
-            return await edit_or_reply(event, "`Sorry, I can't gmute myself`")
+        if user.id == savior.uid:
+            return await eor(event, "`Sorry, I can't gmute myself`")
         userid = user.id
     try:
         user = (await event.client(GetFullUserRequest(userid))).user
     except Exception:
-        return await edit_or_reply(event, "`Sorry. I am unable to fetch the user`")
+        return await eor(event, "`Sorry. I am unable to fetch the user`")
     if not is_muted(userid, "gmute"):
-        return await edit_or_reply(
+        return await eor(
             event, f"{_format.mentionuser(user.first_name ,user.id)} `is not gmuted`"
         )
     try:
         unmute(userid, "gmute")
     except Exception as e:
-        await edit_or_reply(event, f"**Error**\n`{e}`")
+        await eor(event, f"**Error**\n`{e}`")
     else:
         if reason:
-            await edit_or_reply(
+            await eor(
                 event,
                 f"{_format.mentionuser(user.first_name ,user.id)} `is Successfully ungmuted`\n**Reason :** `{reason}`",
             )
         else:
-            await edit_or_reply(
+            await eor(
                 event,
                 f"{_format.mentionuser(user.first_name ,user.id)} `is Successfully ungmuted`",
             )
@@ -367,60 +553,57 @@ async def endgmute(event):
             )
 
 
-@lionub.lion_cmd(incoming=True)
+@savior.savior_cmd(incoming=True)
 async def watcher(event):
     if is_muted(event.sender_id, "gmute"):
         await event.delete()
 
 
-@lionub.lion_cmd(
-    pattern=r"gkick(?:\s|$)([\s\S]*)",
-    command=("gkick", plugin_category),
+@savior.savior_cmd(
+    pattern="gkick(?:\s|$)([\s\S]*)",
+    command=("gkick", menu_category),
     info={
         "header": "kicks the person in all groups where you are admin.",
         "usage": "{tr}gkick <username/reply/userid> <reason (optional)>",
     },
 )
-async def liongkick(event):  # sourcery no-metrics
+async def lolgkick(event):  # sourcery no-metrics
     "kicks the person in all groups where you are admin"
-    lionz = await edit_or_reply(event, "`gkicking.......`")
+    saviore = await eor(event, "`gkicking.......`")
     start = datetime.now()
-    user, reason = await get_user_from_event(event, lionz)
+    user, reason = await get_user_from_event(event, saviore)
     if not user:
         return
-    if user.id == lionub.uid:
-        return await edit_delete(lionz, "`why would I kick myself`")
-    if str(user.id) in DEVLIST:
-        return await edit_delete(lionz, "**😒 I'm not going to gkick my developer!!**")
-
-    san = await admin_groups(event.client)
+    if user.id == savior.uid:
+        return await eod(saviore, "`why would I kick myself`")
+    tale = await admin_groups(event.client)
     count = 0
-    madboy = len(san)
-    if madboy == 0:
-        return await edit_delete(lionz, "`you are not admin of atleast one group` ")
-    await lionz.edit(
-        f"`initiating gkick of the `[user](tg://user?id={user.id}) `in {len(san)} groups`"
+    SAVIOR = len(tale)
+    if SAVIOR == 0:
+        return await eod(saviore, "`you are not admin of atleast one group` ")
+    await saviore.edit(
+        f"`initiating gkick of the `[user](tg://user?id={user.id}) `in {len(tale)} groups`"
     )
-    for i in range(madboy):
+    for i in range(SAVIOR):
         try:
-            await event.client.kick_participant(san[i], user.id)
+            await event.client.kick_participant(tale[i], user.id)
             await asyncio.sleep(0.5)
             count += 1
         except BadRequestError:
-            achat = await event.client.get_entity(san[i])
+            achat = await event.client.get_entity(tale[i])
             await event.client.send_message(
                 BOTLOG_CHATID,
                 f"`You don't have required permission in :`\n**Chat :** {get_display_name(achat)}(`{achat.id}`)\n`For kicking there`",
             )
     end = datetime.now()
-    liontaken = (end - start).seconds
+    saviortaken = (end - start).seconds
     if reason:
-        await lionz.edit(
-            f"[{user.first_name}](tg://user?id={user.id}) `was gkicked in {count} groups in {liontaken} seconds`!!\n**Reason :** `{reason}`"
+        await saviore.edit(
+            f"[{user.first_name}](tg://user?id={user.id}) `was gkicked in {count} groups in {saviortaken} seconds`!!\n**Reason :** `{reason}`"
         )
     else:
-        await lionz.edit(
-            f"[{user.first_name}](tg://user?id={user.id}) `was gkicked in {count} groups in {liontaken} seconds`!!"
+        await saviore.edit(
+            f"[{user.first_name}](tg://user?id={user.id}) `was gkicked in {count} groups in {saviortaken} seconds`!!"
         )
 
     if BOTLOG and count != 0:
@@ -434,7 +617,7 @@ async def liongkick(event):  # sourcery no-metrics
                 \n**ID : **`{user.id}`\
                 \n**Reason :** `{reason}`\
                 \n__Kicked in {count} groups__\
-                \n**Time taken : **`{liontaken} seconds`",
+                \n**Time taken : **`{saviortaken} seconds`",
             )
         else:
             await event.client.send_message(
@@ -444,369 +627,7 @@ async def liongkick(event):  # sourcery no-metrics
                 \n**User : **[{user.first_name}](tg://user?id={user.id})\
                 \n**ID : **`{user.id}`\
                 \n__Kicked in {count} groups__\
-                \n**Time taken : **`{liontaken} seconds`",
+                \n**Time taken : **`{saviortaken} seconds`",
             )
         if reply:
             await reply.forward_to(BOTLOG_CHATID)
-
-
-async def get_full_user(event):
-    args = event.pattern_match.group(1).split(":", 1)
-    extra = None
-    if event.reply_to_msg_id and len(args) != 2:
-        previous_message = await event.get_reply_message()
-        user_obj = await event.client.get_entity(previous_message.sender_id)
-        extra = event.pattern_match.group(1)
-    elif len(args[0]) > 0:
-        user = args[0]
-        if len(args) == 2:
-            extra = args[1]
-        if user.isnumeric():
-            user = int(user)
-        if not user:
-            await event.edit("`Itz not possible without an user ID`")
-            return
-        if event.message.entities is not None:
-            probable_user_mention_entity = event.message.entities[0]
-            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
-                user_id = probable_user_mention_entity.user_id
-                user_obj = await event.client.get_entity(user_id)
-                return user_obj
-        try:
-            user_obj = await event.client.get_entity(user)
-        except Exception as err:
-            return await event.edit("Error... Please report at @LionxSupport", str(err))
-    return user_obj, extra
-
-
-hehe = "admin"
-lala = "owner"
-
-
-async def get_user_from_id(user, event):
-    if isinstance(user, str):
-        user = int(user)
-    try:
-        user_obj = await event.client.get_entity(user)
-    except (TypeError, ValueError) as err:
-        await event.edit(str(err))
-        return None
-    return user_obj
-
-
-@lionub.lion_cmd(
-    pattern="gpromote ?(.*)",
-    command=("gpromote", plugin_category),
-    info={
-        "header": "To promote an user in every group where you are admin.",
-        "description": "Will promote the person in every group where you are admin only.",
-        "usage": "{tr}gpromote <username/reply/userid> <reason (optional)>",
-    },
-)
-async def gben(userbot):
-    dc = lion = userbot
-    i = 0
-    await dc.get_sender()
-    me = await userbot.client.get_me()
-    await lion.edit("`promoting...`")
-    my_mention = f"[{me.first_name}](tg://user?id={me.id})"
-    f"@{me.username}" if me.username else my_mention
-    await userbot.get_chat()
-    if userbot.is_private:
-        user = userbot.chat
-        rank = userbot.pattern_match.group(1)
-    else:
-        userbot.chat.title
-    try:
-        user, rank = await get_full_user(userbot)
-    except:
-        pass
-    if me == user:
-        await lion.edit("khud ko gpromote krega😑😑 chutiya spotted..")
-        return
-    try:
-        if not rank:
-            rank = "ㅤㅤ"
-    except:
-        return await lion.edit("**kuch to gadbad hai😑😑**")
-    if user:
-        telchanel = [
-            d.entity.id
-            for d in await userbot.client.get_dialogs()
-            if (d.is_group or d.is_channel)
-        ]
-        rgt = ChatAdminRights(
-            add_admins=False,
-            invite_users=True,
-            change_info=False,
-            ban_users=True,
-            delete_messages=True,
-            pin_messages=True,
-            manage_call=True,
-        )
-        for x in telchanel:
-            try:
-                await userbot.client(EditAdminRequest(x, user, rgt, rank))
-                i += 1
-                await lion.edit(f"**Promoted in Chats **: `{i}`")
-            except:
-                pass
-    else:
-        await lion.edit("**kisi ko reply kr lavde🙄!!**")
-    return await lion.edit(
-        f"**Globally promoted [{user.first_name}](tg://user?id={user.id})\n On Chats🙄 : {i} **"
-    )
-
-
-@lionub.lion_cmd(
-    pattern="lgpromote ?(.*)",
-    command=("lgpromote", plugin_category),
-    info={
-        "header": "To promote an user in every group without ban right where you are admin.",
-        "description": "Will promote the person in every group where you are admin only.",
-        "usage": "{tr}lgpromote <username/reply/userid> <reason (optional)>",
-    },
-)
-async def gben(userbot):
-    dc = lion = userbot
-    i = 0
-    await dc.get_sender()
-    me = await userbot.client.get_me()
-    await lion.edit("`promoting...`")
-    my_mention = f"[{me.first_name}](tg://user?id={me.id})"
-    f"@{me.username}" if me.username else my_mention
-    await userbot.get_chat()
-    if userbot.is_private:
-        user = userbot.chat
-        rank = userbot.pattern_match.group(1)
-    else:
-        userbot.chat.title
-    try:
-        user, rank = await get_full_user(userbot)
-    except:
-        pass
-    if me == user:
-        await lion.edit("khud ko gpromote krega😑😑 chutiya spotted..")
-        return
-    try:
-        if not rank:
-            rank = "ㅤㅤ"
-    except:
-        return await lion.edit("**kuch to gadbad hai😑😑**")
-    if user:
-        telchanel = [
-            d.entity.id
-            for d in await userbot.client.get_dialogs()
-            if (d.is_group or d.is_channel)
-        ]
-        rgt = ChatAdminRights(
-            add_admins=False,
-            invite_users=True,
-            change_info=False,
-            ban_users=False,
-            delete_messages=True,
-            pin_messages=True,
-            manage_call=True,
-        )
-        for x in telchanel:
-            try:
-                await userbot.client(EditAdminRequest(x, user, rgt, rank))
-                i += 1
-                await lion.edit(f"**Promoted in Chats **: `{i}`")
-            except:
-                pass
-    else:
-        await lion.edit("**kisi ko reply kr lavde🙄!!**")
-    return await lion.edit(
-        f"**Globally promoted [{user.first_name}](tg://user?id={user.id})\n On Chats🙄 : {i} **"
-    )
-
-
-@lionub.lion_cmd(
-    pattern="fgpromote ?(.*)",
-    command=("fgpromote", plugin_category),
-    info={
-        "header": "To promote an user in every group with full right where you are admin.",
-        "description": "Will promote the person in every group where you are admin only.",
-        "usage": "{tr}fgpromote <username/reply/userid> <reason (optional)>",
-    },
-)
-async def gben(userbot):
-    dc = lion = userbot
-    i = 0
-    await dc.get_sender()
-    me = await userbot.client.get_me()
-    await lion.edit("`promoting...`")
-    my_mention = f"[{me.first_name}](tg://user?id={me.id})"
-    f"@{me.username}" if me.username else my_mention
-    await userbot.get_chat()
-    if userbot.is_private:
-        user = userbot.chat
-        rank = userbot.pattern_match.group(1)
-    else:
-        userbot.chat.title
-    try:
-        user, rank = await get_full_user(userbot)
-    except:
-        pass
-    if me == user:
-        await lion.edit("khud ko gpromote krega😑😑 chutiya spotted..")
-        return
-    try:
-        if not rank:
-            rank = "ㅤㅤ"
-    except:
-        return await lion.edit("**kuch to gadbad hai😑😑**")
-    if user:
-        telchanel = [
-            d.entity.id
-            for d in await userbot.client.get_dialogs()
-            if (d.is_group or d.is_channel)
-        ]
-        rgt = ChatAdminRights(
-            add_admins=True,
-            invite_users=True,
-            change_info=True,
-            ban_users=True,
-            delete_messages=True,
-            pin_messages=True,
-            manage_call=True,
-        )
-        for x in telchanel:
-            try:
-                await userbot.client(EditAdminRequest(x, user, rgt, rank))
-                i += 1
-                await lion.edit(f"**Promoted in Chats **: `{i}`")
-            except:
-                pass
-    else:
-        await lion.edit("**kisi ko reply kr lavde🙄!!**")
-    return await lion.edit(
-        f"**Globally promoted [{user.first_name}](tg://user?id={user.id})\n On Chats🙄 : {i} **"
-    )
-
-
-@lionub.lion_cmd(
-    pattern="gdemote ?(.*)",
-    command=("gdemote", plugin_category),
-    info={
-        "header": "To demote user in every group where you are admin.",
-        "description": "Will demote the person in every group where you are admin only.",
-        "usage": "{tr}gdemote <username/reply/userid> <reason (optional)>",
-    },
-)
-async def gben(userbot):
-    dc = lion = userbot
-    i = 0
-    await dc.get_sender()
-    me = await userbot.client.get_me()
-    await lion.edit("`demoting...`")
-    my_mention = f"[{me.first_name}](tg://user?id={me.id})"
-    f"@{me.username}" if me.username else my_mention
-    await userbot.get_chat()
-    if userbot.is_private:
-        user = userbot.chat
-        rank = userbot.pattern_match.group(1)
-    else:
-        userbot.chat.title
-    try:
-        user, rank = await get_full_user(userbot)
-    except:
-        pass
-    if me == user:
-        await lion.edit("khud ko gdemote karega😑😑 chumtiya spotted..")
-        return
-    try:
-        if not rank:
-            rank = "ㅤㅤ"
-    except:
-        return await lion.edit("**Phir se kuch gadbad kiya😑**")
-    if user:
-        telchanel = [
-            d.entity.id
-            for d in await userbot.client.get_dialogs()
-            if (d.is_group or d.is_channel)
-        ]
-        rgt = ChatAdminRights(
-            add_admins=None,
-            invite_users=None,
-            change_info=None,
-            ban_users=None,
-            delete_messages=None,
-            pin_messages=None,
-            manage_call=None,
-        )
-        for x in telchanel:
-            try:
-                await userbot.client(EditAdminRequest(x, user, rgt, rank))
-                i += 1
-                await lion.edit(f"**Demoted in Chats **: `{i}`")
-            except:
-                pass
-    else:
-        await lion.edit("**Reply to a user you dumbo !!**")
-    return await lion.edit(
-        f"**Globally Demoted this lavda On [{user.first_name}](tg://user?id={user.id})\n Chats😏 : {i} **"
-    )
-
-
-@lionub.lion_cmd(
-    pattern="gcast ?(.*)",
-    command=("gcast", plugin_category),
-    info={
-        "header": "global groups cast.",
-        "description": "Use this command to global broadcast a message in all groups.",
-        "usage": "{tr}gcast",
-    },
-)
-async def gcast(event):
-    if not event.out and not is_fullsudo(event.sender_id):
-        return await edit_or_reply(event, "`This Command Is Sudo Restricted.`")
-    xx = event.pattern_match.group(1)
-    if not xx:
-        return edit_or_reply(event, "`Give some text to Globally Broadcast`")
-    tt = event.text
-    msg = tt[6:]
-    lion = await edit_or_reply(event, "`Globally Broadcasting Msg...`")
-    er = 0
-    done = 0
-    async for x in bot.iter_dialogs():
-        if x.is_group:
-            chat = x.id
-            try:
-                done += 1
-                await bot.send_message(chat, msg)
-            except BaseException:
-                er += 1
-    await lion.edit(f"Done in {done} chats, error in {er} chat(s)")
-
-
-@lionub.lion_cmd(
-    pattern="gucast ?(.*)",
-    command=("gucast", plugin_category),
-    info={
-        "header": "global users cast.",
-        "description": "Use this command to broadcast global message to all users only.",
-        "usage": "{tr}gucast",
-    },
-)
-async def gucast(event):
-    if not event.out and not is_fullsudo(event.sender_id):
-        return await edit_or_reply(event, "`This Command Is Sudo Restricted.`")
-    xx = event.pattern_match.group(1)
-    if not xx:
-        return edit_or_reply(event, "`Give some text to Globally Broadcast`")
-    tt = event.text
-    msg = tt[7:]
-    lion = await edit_or_reply(event, "`Globally Broadcasting Msg...`")
-    er = 0
-    done = 0
-    async for x in bot.iter_dialogs():
-        if x.is_user and not x.entity.bot:
-            chat = x.id
-            try:
-                done += 1
-                await bot.send_message(chat, msg)
-            except BaseException:
-                er += 1
-    await lion.edit(f"Done in {done} chats, error in {er} chat(s)")

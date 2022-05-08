@@ -1,5 +1,5 @@
-#    Copyright (C) 2020  Copyless786(π.$)
-# baning spmmers plugin for LionX by @TeamLionX
+#    Copyright (C) 2020  SaViorXBoy
+# baning spmmers plugin for SaViorX by @SaViorXBoy
 # included both cas(combot antispam service) and spamwatch (need to add more feaututres)
 
 from requests import get
@@ -9,23 +9,23 @@ from telethon.tl.types import ChannelParticipantsAdmins
 from telethon.utils import get_display_name
 
 from ..Config import Config
-from ..sql_helper.gban_sql_helper import get_gbanuser, is_gbanned
+from ..sql_helper.gban_sql_helper import gbanned, is_gbanned
 from ..utils import is_admin
-from . import BOTLOG, BOTLOG_CHATID, edit_or_reply, lionub, logging, spamwatch
+from . import BOTLOG, BOTLOG_CHATID, eor, savior, logging, spamwatch
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "admin"
+menu_category = "admin"
 if Config.ANTISPAMBOT_BAN:
 
-    @lionub.on(ChatAction())
+    @savior.on(ChatAction())
     async def anti_spambot(event):  # sourcery no-metrics
         if not event.user_joined and not event.user_added:
             return
         user = await event.get_user()
-        lionadmin = await is_admin(event.client, event.chat_id, event.client.uid)
-        if not lionadmin:
+        savioradmin = await is_admin(event.client, event.chat_id, event.client.uid)
+        if not savioradmin:
             return
-        lionbanned = None
+        saviorbanned = None
         adder = None
         ignore = None
         if event.user_added:
@@ -42,10 +42,10 @@ if Config.ANTISPAMBOT_BAN:
         if ignore:
             return
         if is_gbanned(user.id):
-            liongban = get_gbanuser(user.id)
-            if liongban.reason:
+            saviorgban = gbanned(user.id)
+            if saviorgban.reason:
                 hmm = await event.reply(
-                    f"[{user.first_name}](tg://user?id={user.id}) was gbanned by you for the reason `{liongban.reason}`"
+                    f"[{user.first_name}](tg://user?id={user.id}) was gbanned by you for the reason `{saviorgban.reason}`"
                 )
             else:
                 hmm = await event.reply(
@@ -55,10 +55,10 @@ if Config.ANTISPAMBOT_BAN:
                 await event.client.edit_permissions(
                     event.chat_id, user.id, view_messages=False
                 )
-                lionbanned = True
+                saviorbanned = True
             except Exception as e:
                 LOGS.info(e)
-        if spamwatch and not lionbanned:
+        if spamwatch and not saviorbanned:
             if ban := spamwatch.get_ban(user.id):
                 hmm = await event.reply(
                     f"[{user.first_name}](tg://user?id={user.id}) was banned by spamwatch for the reason `{ban.reason}`"
@@ -67,12 +67,12 @@ if Config.ANTISPAMBOT_BAN:
                     await event.client.edit_permissions(
                         event.chat_id, user.id, view_messages=False
                     )
-                    lionbanned = True
+                    saviorbanned = True
                 except Exception as e:
                     LOGS.info(e)
-        if not lionbanned:
+        if not saviorbanned:
             try:
-                casurl = f"https://api.cas.chat/check?user_id={user.id}"
+                casurl = "https://api.cas.chat/check?user_id={}".format(user.id)
                 data = get(casurl).json()
             except Exception as e:
                 LOGS.info(e)
@@ -88,10 +88,10 @@ if Config.ANTISPAMBOT_BAN:
                     await event.client.edit_permissions(
                         event.chat_id, user.id, view_messages=False
                     )
-                    lionbanned = True
+                    saviorbanned = True
                 except Exception as e:
                     LOGS.info(e)
-        if BOTLOG and lionbanned:
+        if BOTLOG and saviorbanned:
             await event.client.send_message(
                 BOTLOG_CHATID,
                 "#ANTISPAMBOT\n"
@@ -101,20 +101,20 @@ if Config.ANTISPAMBOT_BAN:
             )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="cascheck$",
-    command=("cascheck", plugin_category),
+    command=("cascheck", menu_category),
     info={
         "header": "To check the users who are banned in cas",
         "description": "When you use this cmd it will check every user in the group where you used whether \
-        he is banned in cas (combat antispam service) and will show there names if they are flagged in cas",
+        he is banned in cas (combat antispam service) and will show there names if they are typeged in cas",
         "usage": "{tr}cascheck",
     },
     groups_only=True,
 )
 async def caschecker(event):
     "Searches for cas(combot antispam service) banned users in group and shows you the list"
-    lionevent = await edit_or_reply(
+    saviorevent = await eor(
         event,
         "`checking any cas(combot antispam service) banned users here, this may take several minutes too......`",
     )
@@ -129,12 +129,10 @@ async def caschecker(event):
         async for user in event.client.iter_participants(info.id):
             if banchecker(user.id):
                 cas_count += 1
-                banned_users += (
-                    f"Deleted Account `{user.id}`\n"
-                    if user.deleted
-                    else f"{user.first_name}-`{user.id}`\n"
-                )
-
+                if not user.deleted:
+                    banned_users += f"{user.first_name}-`{user.id}`\n"
+                else:
+                    banned_users += f"Deleted Account `{user.id}`\n"
             members_count += 1
         text = "**Warning!** Found `{}` of `{}` users are CAS Banned:\n".format(
             cas_count, members_count
@@ -143,17 +141,17 @@ async def caschecker(event):
         if not cas_count:
             text = "No CAS Banned users found!"
     except ChatAdminRequiredError:
-        await lionevent.edit("`CAS check failed: Admin privileges are required`")
+        await saviorevent.edit("`CAS check failed: Admin privileges are required`")
         return
     except BaseException:
-        await lionevent.edit("`CAS check failed`")
+        await saviorevent.edit("`CAS check failed`")
         return
-    await lionevent.edit(text)
+    await saviorevent.edit(text)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="spamcheck$",
-    command=("spamcheck", plugin_category),
+    command=("spamcheck", menu_category),
     info={
         "header": "To check the users who are banned in spamwatch",
         "description": "When you use this command it will check every user in the group where you used whether \
@@ -165,7 +163,7 @@ async def caschecker(event):
 async def caschecker(event):
     "Searches for spamwatch federation banned users in group and shows you the list"
     text = ""
-    lionevent = await edit_or_reply(
+    saviorevent = await eor(
         event,
         "`checking any spamwatch banned users here, this may take several minutes too......`",
     )
@@ -180,12 +178,10 @@ async def caschecker(event):
         async for user in event.client.iter_participants(info.id):
             if spamchecker(user.id):
                 cas_count += 1
-                banned_users += (
-                    f"Deleted Account `{user.id}`\n"
-                    if user.deleted
-                    else f"{user.first_name}-`{user.id}`\n"
-                )
-
+                if not user.deleted:
+                    banned_users += f"{user.first_name}-`{user.id}`\n"
+                else:
+                    banned_users += f"Deleted Account `{user.id}`\n"
             members_count += 1
         text = "**Warning! **Found `{}` of `{}` users are spamwatch Banned:\n".format(
             cas_count, members_count
@@ -194,17 +190,19 @@ async def caschecker(event):
         if not cas_count:
             text = "No spamwatch Banned users found!"
     except ChatAdminRequiredError:
-        await lionevent.edit("`spamwatch check failed: Admin privileges are required`")
+        await saviorevent.edit(
+            "`spamwatch check failed: Admin privileges are required`"
+        )
         return
     except BaseException:
-        await lionevent.edit("`spamwatch check failed`")
+        await saviorevent.edit("`spamwatch check failed`")
         return
-    await lionevent.edit(text)
+    await saviorevent.edit(text)
 
 
 def banchecker(user_id):
     try:
-        casurl = f"https://api.cas.chat/check?user_id={user_id}"
+        casurl = "https://api.cas.chat/check?user_id={}".format(user_id)
         data = get(casurl).json()
     except Exception as e:
         LOGS.info(e)

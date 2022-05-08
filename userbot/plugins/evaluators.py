@@ -7,68 +7,77 @@ import traceback
 from ..helpers.utils import _format
 from . import *
 
-plugin_category = "tools"
+menu_category = "tools"
 
 
-@lionub.lion_cmd(
-    pattern=r"exec(?:\s|$)([\s\S]*)",
-    command=("exec", plugin_category),
+@savior.savior_cmd(
+    pattern="exec(?:\s|$)([\s\S]*)",
+    command=("exec", menu_category),
     info={
         "header": "To Execute terminal commands in a subprocess.",
         "usage": "{tr}exec <command>",
-        "examples": "{tr}exec lion stringsetup.py",
+        "examples": "{tr}exec savior stringsetup.py",
     },
 )
 async def _(event):
     "To Execute terminal commands in a subprocess."
     cmd = "".join(event.message.message.split(maxsplit=1)[1:])
     if not cmd:
-        return await edit_delete(event, "`What should i execute?..`")
-    lionevent = await edit_or_reply(event, "`Executing.....`")
+        return await eod(event, "`What should i execute?..`")
+    saviorevent = await eor(event, "`Executing.....`")
     process = await asyncio.create_subprocess_shell(
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
     stdout, stderr = await process.communicate()
     result = str(stdout.decode().strip()) + str(stderr.decode().strip())
-    Lionuser = await event.client.get_me()
-    curruser = Lionuser.username or "LionX"
+    SaViorUSer = await event.client.get_me()
+    curruser = SaViorUSer.username or "SaViorX"
     uid = os.geteuid()
     if uid == 0:
         cresult = f"```{curruser}:~#``` ```{cmd}```\n```{result}```"
     else:
         cresult = f"```{curruser}:~$``` ```{cmd}```\n```{result}```"
-    await edit_or_reply(
-        lionevent,
+    await eor(
+        saviorevent,
         text=cresult,
         aslink=True,
         linktext=f"**•  Exec : **\n```{cmd}``` \n\n**•  Result : **\n",
     )
     if BOTLOG:
         await event.client.send_message(
-            BOTLOG_CHATID, f"Terminal command {cmd} was executed sucessfully."
+            BOTLOG_CHATID,
+            f"Terminal command\n\n `{cmd}`\n\n was executed sucessfully.",
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"eval(?:\s|$)([\s\S]*)",
-    command=("eval", plugin_category),
+@savior.savior_cmd(
+    pattern="eval(?:\s|$)([\s\S]*)",
+    command=("eval", menu_category),
     info={
         "header": "To Execute python script/statements in a subprocess.",
         "usage": "{tr}eval <command>",
-        "examples": "{tr}eval print('LionX')",
+        "examples": "{tr}eval print('SaViorX')",
     },
 )
 async def _(event):
     "To Execute python script/statements in a subprocess."
     cmd = "".join(event.message.message.split(maxsplit=1)[1:])
     if not cmd:
-        return await edit_delete(event, "`What should i run ?..`")
+        return await eod(event, "`What should i run ?..`")
+    if "session" in cmd:
+        return await eor(
+            event, "`This Is A Sensitive Data.So Its Protected By SaVior.`"
+        )
+    if "SAVIOR_STRING" in cmd:
+        return await eor(
+            event, "`This Is A Sensitive Data.So Its Protected By SaVior.`"
+        )
     cmd = (
         cmd.replace("sendmessage", "send_message")
         .replace("sendfile", "send_file")
         .replace("editmessage", "edit_message")
     )
-    lionevent = await edit_or_reply(event, "`Running ...`")
+    saviorevent = await eor(event, "`Running ...`")
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -94,15 +103,16 @@ async def _(event):
     final_output = (
         f"**•  Eval : **\n```{cmd}``` \n\n**•  Result : **\n```{evaluation}``` \n"
     )
-    await edit_or_reply(
-        lionevent,
+    await eor(
+        saviorevent,
         text=final_output,
         aslink=True,
         linktext=f"**•  Eval : **\n```{cmd}``` \n\n**•  Result : **\n",
     )
     if BOTLOG:
         await event.client.send_message(
-            BOTLOG_CHATID, f"eval command {cmd} was executed sucessfully."
+            BOTLOG_CHATID,
+            f"eval command\n\n`{cmd}` \n\nwas executed sucessfully.",
         )
 
 

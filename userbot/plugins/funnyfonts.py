@@ -1,21 +1,21 @@
 import random
 import re
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from . import fonts
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
-    pattern=r"str(?:\s|$)([\s\S]*)",
-    command=("str", plugin_category),
+@savior.savior_cmd(
+    pattern="str(?:\s|$)([\s\S]*)",
+    command=("str", menu_category),
     info={
         "header": "stretches the given text",
         "usage": ["{tr}str <text>", "{tr}str reply this command to text message"],
-        "examples": "{tr}str LionX",
+        "examples": "{tr}str SaViorX",
     },
 )
 async def stretch(stret):
@@ -28,21 +28,21 @@ async def stretch(stret):
     elif textx:
         message = textx.text
     else:
-        await edit_or_reply(stret, "`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
+        await eor(stret, "`GiiiiiiiB sooooooomeeeeeee teeeeeeext!`")
         return
 
     count = random.randint(3, 10)
     reply_text = re.sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count), message)
-    await edit_or_reply(stret, reply_text)
+    await eor(stret, reply_text)
 
 
-@lionub.lion_cmd(
-    pattern=r"zal(?:\s|$)([\s\S]*)",
-    command=("zal", plugin_category),
+@savior.savior_cmd(
+    pattern="zal(?:\s|$)([\s\S]*)",
+    command=("zal", menu_category),
     info={
         "header": "chages given text into some funny way",
         "usage": ["{tr}zal <text>", "{tr}zal reply this command to text message"],
-        "examples": "{tr}zal LionX",
+        "examples": "{tr}zal SaViorX",
     },
 )
 async def zal(zgfy):
@@ -55,7 +55,7 @@ async def zal(zgfy):
     elif textx:
         message = textx.text
     else:
-        await edit_or_reply(
+        await eor(
             zgfy, "`gͫ ̆ i̛ ̺ v͇̆ ȅͅ   a̢ͦ   s̴̪ c̸̢ ä̸ rͩͣ y͖͞   t̨͚ é̠ x̢͖  t͔͛`"
         )
         return
@@ -77,16 +77,16 @@ async def zal(zgfy):
 
         reply_text.append(charac)
 
-    await edit_or_reply(zgfy, "".join(reply_text))
+    await eor(zgfy, "".join(reply_text))
 
 
-@lionub.lion_cmd(
-    pattern=r"cp(?:\s|$)([\s\S]*)",
-    command=("cp", plugin_category),
+@savior.savior_cmd(
+    pattern="cp(?:\s|$)([\s\S]*)",
+    command=("cp", menu_category),
     info={
         "header": "chages given text into some funny way",
         "usage": ["{tr}cp <text>", "{tr}cp reply this command to text message"],
-        "examples": "{tr}cp LionX",
+        "examples": "{tr}cp SaViorX",
     },
 )
 async def copypasta(cp_e):
@@ -99,7 +99,7 @@ async def copypasta(cp_e):
     elif textx:
         message = textx.text
     else:
-        await edit_or_reply(cp_e, "`😂🅱️IvE👐sOME👅text👅for✌️Me👌tO👐MAkE👀iT💞funNy!💦`")
+        await eor(cp_e, "`😂🅱️IvE👐sOME👅text👅for✌️Me👌tO👐MAkE👀iT💞funNy!💦`")
         return
 
     reply_text = random.choice(fonts.EMOJIS)
@@ -116,16 +116,16 @@ async def copypasta(cp_e):
         else:
             reply_text += owo.upper() if bool(random.getrandbits(1)) else owo.lower()
     reply_text += random.choice(fonts.EMOJIS)
-    await edit_or_reply(cp_e, reply_text)
+    await eor(cp_e, reply_text)
 
 
-@lionub.lion_cmd(
-    pattern=r"weeb(?:\s|$)([\s\S]*)",
-    command=("weeb", plugin_category),
+@savior.savior_cmd(
+    pattern="weeb(?:\s|$)([\s\S]*)",
+    command=("weeb", menu_category),
     info={
         "header": "chages given text into some funny way",
         "usage": ["{tr}weeb <text>", "{tr}weeb reply this command to text message"],
-        "examples": "{tr}weeb LionX",
+        "examples": "{tr}weeb SaViorX",
     },
 )
 async def weebify(event):
@@ -135,26 +135,26 @@ async def weebify(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "`What I am Supposed to Weebify `")
+        await eor(event, "`What I am Supposed to Weebify `")
         return
     string = "  ".join(args).lower()
     for normiecharacter in string:
         if normiecharacter in fonts.normiefont:
             weebycharacter = fonts.weebyfont[fonts.normiefont.index(normiecharacter)]
             string = string.replace(normiecharacter, weebycharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"downside(?:\s|$)([\s\S]*)",
-    command=("downside", plugin_category),
+@savior.savior_cmd(
+    pattern="downside(?:\s|$)([\s\S]*)",
+    command=("downside", menu_category),
     info={
         "header": "chages given text into upside down",
         "usage": [
             "{tr}downside <text>",
             "{tr}downside reply this command to text message",
         ],
-        "examples": "{tr}downside LionX",
+        "examples": "{tr}downside SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -164,7 +164,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for upsidecharacter in string:
@@ -173,19 +173,19 @@ async def stylish_generator(event):
                 fonts.upsidefont.index(upsidecharacter)
             ]
             string = string.replace(upsidecharacter, downsidecharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"subscript(?:\s|$)([\s\S]*)",
-    command=("subscript", plugin_category),
+@savior.savior_cmd(
+    pattern="subscript(?:\s|$)([\s\S]*)",
+    command=("subscript", menu_category),
     info={
         "header": "chages given text into subscript",
         "usage": [
             "{tr}subscript <text>",
             "{tr}subscript reply this command to text message",
         ],
-        "examples": "{tr}subscript LionX",
+        "examples": "{tr}subscript SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -195,7 +195,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -204,19 +204,19 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, subscriptcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"superscript(?:\s|$)([\s\S]*)",
-    command=("superscript", plugin_category),
+@savior.savior_cmd(
+    pattern="superscript(?:\s|$)([\s\S]*)",
+    command=("superscript", menu_category),
     info={
         "header": "chages given text into superscript",
         "usage": [
             "{tr}superscript <text>",
             "{tr}superscript reply this command to text message",
         ],
-        "examples": "{tr}superscript LionX",
+        "examples": "{tr}superscript SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -226,7 +226,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -235,4 +235,4 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, superscriptcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)

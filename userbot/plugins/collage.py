@@ -1,4 +1,4 @@
-# collage plugin for LionX by @TeamLionX
+# collage plugin for SaViorX by @SaViorXBoy
 
 # Copyright (C) 2020 Alfiananda P.A
 #
@@ -7,81 +7,80 @@
 
 import os
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
-from ..helpers import _lionutils, reply_id
+from ..funcs.managers import eod, eor
+from ..helpers import reply_id
+from ..helpers.utils import _saviorutils
 from . import make_gif
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"collage(?:\s|$)([\s\S]*)",
-    command=("collage", plugin_category),
+@savior.savior_cmd(
+    pattern="collage(?:\s|$)([\s\S]*)",
+    command=("collage", menu_category),
     info={
         "header": "To create collage from still images extracted from video/gif.",
         "description": "Shows you the grid image of images extracted from video/gif. you can customize the Grid size by giving integer between 1 to 9 to cmd by default it is 3",
-        "usage": "{tr}collage <1-9>",
+        "usage": "{tr}collage <1-9> <reply to  ani sticker/mp4.",
     },
 )
 async def collage(event):
     "To create collage from still images extracted from video/gif."
-    lioninput = event.pattern_match.group(1)
+    saviorinput = event.pattern_match.group(1)
     reply = await event.get_reply_message()
-    lionid = await reply_id(event)
-    event = await edit_or_reply(
-        event, "```collaging this may take several minutes too..... 😁```"
-    )
+    saviorid = await reply_id(event)
+    event = await eor(event, "```Wait A Minute Its Collaging😁```")
     if not (reply and (reply.media)):
         await event.edit("`Media not found...`")
         return
     if not os.path.isdir("./temp/"):
         os.mkdir("./temp/")
-    lionsticker = await reply.download_media(file="./temp/")
-    if not lionsticker.endswith((".mp4", ".mkv", ".tgs")):
-        os.remove(lionsticker)
+    saviorsticker = await reply.download_media(file="./temp/")
+    if not saviorsticker.endswith((".mp4", ".mkv", ".tgs")):
+        os.remove(saviorsticker)
         await event.edit("`Media format is not supported...`")
         return
-    if lioninput:
-        if not lioninput.isdigit():
-            os.remove(lionsticker)
+    if saviorinput:
+        if not saviorinput.isdigit():
+            os.remove(saviorsticker)
             await event.edit("`You input is invalid, check help`")
             return
-        lioninput = int(lioninput)
-        if not 0 < lioninput < 10:
-            os.remove(lionsticker)
+        saviorinput = int(saviorinput)
+        if not 0 < saviorinput < 10:
+            os.remove(saviorsticker)
             await event.edit(
                 "`Why too big grid you cant see images, use size of grid between 1 to 9`"
             )
             return
     else:
-        lioninput = 3
-    if lionsticker.endswith(".tgs"):
-        hmm = await make_gif(event, lionsticker)
+        saviorinput = 3
+    if saviorsticker.endswith(".tgs"):
+        hmm = await make_gif(event, saviorsticker)
         if hmm.endswith(("@tgstogifbot")):
-            os.remove(lionsticker)
+            os.remove(saviorsticker)
             return await event.edit(hmm)
         collagefile = hmm
     else:
-        collagefile = lionsticker
+        collagefile = saviorsticker
     endfile = "./temp/collage.png"
-    lioncmd = f"vcsi -g {lioninput}x{lioninput} '{collagefile}' -o {endfile}"
-    stdout, stderr = (await _lionutils.runcmd(lioncmd))[:2]
+    saviorcmd = f"vcsi -g {saviorinput}x{saviorinput} '{collagefile}' -o {endfile}"
+    stdout, stderr = (await _saviorutils.runcmd(saviorcmd))[:2]
     if not os.path.exists(endfile):
-        for files in (lionsticker, collagefile):
+        for files in (saviorsticker, collagefile):
             if files and os.path.exists(files):
                 os.remove(files)
-        return await edit_delete(
+        return await eod(
             event, "`media is not supported or try with smaller grid size`", 5
         )
 
     await event.client.send_file(
         event.chat_id,
         endfile,
-        reply_to=lionid,
+        reply_to=saviorid,
     )
     await event.delete()
-    for files in (lionsticker, collagefile, endfile):
+    for files in (saviorsticker, collagefile, endfile):
         if files and os.path.exists(files):
             os.remove(files)

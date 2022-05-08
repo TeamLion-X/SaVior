@@ -6,12 +6,12 @@ from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.types import DocumentAttributeFilename
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers import reply_id
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
 async def deepfry(img: Image) -> Image:
@@ -73,9 +73,9 @@ async def check_media(reply_message):
     return data
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="frybot",
-    command=("frybot", plugin_category),
+    command=("frybot", menu_category),
     info={
         "header": "Fries the given sticker or image.",
         "usage": "{tr}frybot",
@@ -85,25 +85,23 @@ async def _(event):
     "Fries the given sticker or image"
     reply_to = await reply_id(event)
     if not event.reply_to_msg_id:
-        event = await edit_or_reply(event, "Reply to any user message.")
+        event = await eor(event, "Reply to any user message.")
         return
     reply_message = await event.get_reply_message()
     if event.is_reply:
         reply_message = await event.get_reply_message()
         data = await check_media(reply_message)
         if isinstance(data, bool):
-            event = await edit_or_reply(event, "`I can't deep fry that!`")
+            event = await eor(event, "`I can't deep fry that!`")
             return
     if not event.is_reply:
-        event = await edit_or_reply(
-            event, "`Reply to an image or sticker to deep fry it!`"
-        )
+        event = await eor(event, "`Reply to an image or sticker to deep fry it!`")
         return
     chat = "@image_deepfrybot"
     if reply_message.sender.bot:
-        event = await edit_or_reply(event, "Reply to actual users message.")
+        event = await eor(event, "Reply to actual users message.")
         return
-    event = await edit_or_reply(event, "```Processing```")
+    event = await eor(event, "```Processing```")
     async with event.client.conversation(chat) as conv:
         try:
             response = conv.wait_event(
@@ -126,9 +124,9 @@ async def _(event):
         await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="deepfry(?: |$)([1-9])?",
-    command=("deepfry", plugin_category),
+    command=("deepfry", menu_category),
     info={
         "header": "image fryer",
         "description": "Fries the given sticker or image based on level if you dont give anything then it is default to 1",
@@ -147,17 +145,15 @@ async def deepfryer(event):
         reply_message = await event.get_reply_message()
         data = await check_media(reply_message)
         if isinstance(data, bool):
-            return await edit_or_reply(event, "`I can't deep fry that!`")
+            return await eor(event, "`I can't deep fry that!`")
     if not event.is_reply:
-        return await edit_or_reply(
-            event, "`Reply to an image or sticker to deep fry it!`"
-        )
+        return await eor(event, "`Reply to an image or sticker to deep fry it!`")
     # download last photo (highres) as byte array
     image = io.BytesIO()
     await event.client.download_media(data, image)
     image = Image.open(image)
     # fry the image
-    hmm = await edit_or_reply(event, "`Deep frying media…`")
+    hmm = await eor(event, "`Deep frying media…`")
     for _ in range(frycount):
         image = await deepfry(image)
     fried_io = io.BytesIO()

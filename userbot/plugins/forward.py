@@ -2,13 +2,13 @@ import string
 
 from telethon.tl.types import Channel, MessageMediaWebPage
 
-from userbot import lionub
+from userbot import savior
 from userbot.funcs.logger import logging
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "tools"
+menu_category = "extra"
 
 LOGS = logging.getLogger(__name__)
 
@@ -22,18 +22,18 @@ class FPOST:
 FPOST_ = FPOST()
 
 
-async def all_groups_id(lion):
-    liongroups = []
-    async for dialog in lion.client.iter_dialogs():
+async def all_groups_id(savior):
+    saviorgroups = []
+    async for dialog in savior.client.iter_dialogs():
         entity = dialog.entity
         if isinstance(entity, Channel) and entity.megagroup:
-            liongroups.append(entity.id)
-    return liongroups
+            saviorgroups.append(entity.id)
+    return saviorgroups
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="frwd$",
-    command=("frwd", plugin_category),
+    command=("frwd", menu_category),
     info={
         "header": "To get view counter for the message. that is will delete old message and send new message where you can see how any people saw your message",
         "usage": "{tr}frwd",
@@ -42,14 +42,14 @@ async def all_groups_id(lion):
 async def _(event):
     "To get view counter for the message"
     if Config.PRIVATE_CHANNEL_BOT_API_ID == 0:
-        return await edit_or_reply(
+        return await eor(
             event,
             "Please set the required environment variable `PRIVATE_CHANNEL_BOT_API_ID` for this plugin to work",
         )
     try:
         e = await event.client.get_entity(Config.PRIVATE_CHANNEL_BOT_API_ID)
     except Exception as e:
-        await edit_or_reply(event, str(e))
+        await eor(event, str(e))
     else:
         re_message = await event.get_reply_message()
         # https://t.me/telethonofftopic/78166
@@ -61,9 +61,9 @@ async def _(event):
             LOGS.info(str(e))
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="resend$",
-    command=("resend", plugin_category),
+    command=("resend", menu_category),
     info={
         "header": "To resend the message again. Useful to remove forword tag",
         "usage": "{tr}resend",
@@ -83,13 +83,13 @@ async def _(event):
     await event.client.send_message(event.chat_id, m.text)
 
 
-@lionub.lion_cmd(
-    pattern=r"fpost ([\s\S]*)",
-    command=("fpost", plugin_category),
+@savior.savior_cmd(
+    pattern="fpost ([\s\S]*)",
+    command=("fpost", menu_category),
     info={
         "header": "Split the word and forwards each letter from previous messages in that group",
         "usage": "{tr}fpost <text>",
-        "examples": "{tr}fpost LionX",
+        "examples": "{tr}fpost SaViorX",
     },
 )
 async def _(event):

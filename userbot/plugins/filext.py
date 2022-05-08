@@ -1,16 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"filext(?:\s|$)([\s\S]*)",
-    command=("filext", plugin_category),
+@savior.savior_cmd(
+    pattern="filext(?:\s|$)([\s\S]*)",
+    command=("filext", menu_category),
     info={
         "header": "Shows you the detailed information of given extension type.",
         "usage": "{tr}filext <extension>",
@@ -27,12 +27,12 @@ async def _(event):
         raw_html = response_api.content
         soup = BeautifulSoup(raw_html, "html.parser")
         ext_details = soup.find_all("td", {"colspan": "3"})[-1].text
-        await edit_or_reply(
+        await eor(
             event,
             f"**File Extension**: `{input_str}`\n**Description**: `{ext_details}`",
         )
     else:
-        await edit_or_reply(
+        await eor(
             event,
             f"https://www.fileext.com/ responded with {status_code} for query: {input_str}",
         )

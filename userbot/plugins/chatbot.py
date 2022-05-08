@@ -2,9 +2,9 @@ import random
 
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import get_user_from_event, rs_client
 from ..sql_helper.chatbot_sql import (
     addai,
@@ -17,7 +17,7 @@ from ..sql_helper.chatbot_sql import (
 )
 from ..sql_helper.globals import gvarstatus
 
-plugin_category = "fun"
+menu_category = "fun"
 
 tired_response = [
     "I am little tired, Please give me some rest",
@@ -30,22 +30,20 @@ tired_response = [
 ]
 
 
-@lionub.lion_cmd(
-    pattern="addai$",
-    command=("addai", plugin_category),
+@savior.savior_cmd(
+    pattern="addchatbot$",
+    command=("addchatbot", menu_category),
     info={
         "header": "To add ai chatbot to replied account.",
-        "usage": "{tr}addai <reply>",
+        "usage": "{tr}addchatbot <reply>",
     },
 )
 async def add_chatbot(event):
     "To enable ai for the replied person"
     if event.reply_to_msg_id is None:
-        return await edit_or_reply(
-            event, "`Reply to a User's message to activate ai on `"
-        )
-    lionevent = await edit_or_reply(event, "`Adding ai to user...`")
-    user, rank = await get_user_from_event(event, lionevent, nogroup=True)
+        return await eor(event, "`Reply to a User's message to activate ai on `")
+    saviorevent = await eor(event, "`Adding ai to user...`")
+    user, rank = await get_user_from_event(event, saviorevent, nogroup=True)
     if not user:
         return
     reply_msg = await event.get_reply_message()
@@ -60,29 +58,27 @@ async def add_chatbot(event):
     user_name = user.first_name
     user_username = user.username
     if is_added(chat_id, user_id):
-        return await edit_or_reply(event, "`The user is already enabled with ai.`")
+        return await eor(event, "`The user is already enabled with ai.`")
     try:
         addai(chat_id, user_id, chat_name, user_name, user_username, chat_type)
     except Exception as e:
-        await edit_delete(lionevent, f"**Error:**\n`{e}`")
+        await eod(saviorevent, f"**Error:**\n`{e}`")
     else:
-        await edit_or_reply(lionevent, "Hi")
+        await eor(saviorevent, "Hi")
 
 
-@lionub.lion_cmd(
-    pattern="rmai$",
-    command=("rmai", plugin_category),
+@savior.savior_cmd(
+    pattern="rmchatbot$",
+    command=("rmchatbot", menu_category),
     info={
         "header": "To stop ai for that user messages.",
-        "usage": "{tr}rmai <reply>",
+        "usage": "{tr}rmchatbot <reply>",
     },
 )
 async def remove_chatbot(event):
     "To stop ai for that user"
     if event.reply_to_msg_id is None:
-        return await edit_or_reply(
-            event, "Reply to a User's message to stop ai on him."
-        )
+        return await eor(event, "Reply to a User's message to stop ai on him.")
     reply_msg = await event.get_reply_message()
     user_id = reply_msg.sender_id
     chat_id = event.chat_id
@@ -90,23 +86,23 @@ async def remove_chatbot(event):
         try:
             remove_ai(chat_id, user_id)
         except Exception as e:
-            await edit_delete(lionevent, f"**Error:**\n`{e}`")
+            await eod(saviorevent, f"**Error:**\n`{e}`")
         else:
-            await edit_or_reply(event, "Ai has been stopped for the user")
+            await eor(event, "Ai has been stopped for the user")
     else:
-        await edit_or_reply(event, "The user is not activated with ai")
+        await eor(event, "The user is not activated with ai")
 
 
-@lionub.lion_cmd(
-    pattern="delai( -a)?",
-    command=("delai", plugin_category),
+@savior.savior_cmd(
+    pattern="delchatbot( -a)?",
+    command=("delchatbot", menu_category),
     info={
         "header": "To delete ai in this chat.",
         "description": "To stop ai for all enabled users in this chat only..",
         "flags": {"a": "To stop in all chats"},
         "usage": [
-            "{tr}delai",
-            "{tr}delai -a",
+            "{tr}delchatbot",
+            "{tr}delchatbot -a",
         ],
     },
 )
@@ -116,40 +112,40 @@ async def delete_chatbot(event):
     if input_str:
         lecho = get_all_users()
         if len(lecho) == 0:
-            return await edit_delete(
+            return await eod(
                 event, "You havent enabled ai atleast for one user in any chat."
             )
         try:
             remove_all_users()
         except Exception as e:
-            await edit_delete(event, f"**Error:**\n`{str(e)}`", 10)
+            await eod(event, f"**Error:**\n`{str(e)}`", 10)
         else:
-            await edit_or_reply(event, "Deleted ai for all enabled users in all chats.")
+            await eor(event, "Deleted ai for all enabled users in all chats.")
     else:
         lecho = get_users(event.chat_id)
         if len(lecho) == 0:
-            return await edit_delete(
+            return await eod(
                 event, "You havent enabled ai atleast for one user in this chat."
             )
         try:
             remove_users(event.chat_id)
         except Exception as e:
-            await edit_delete(event, f"**Error:**\n`{e}`", 10)
+            await eod(event, f"**Error:**\n`{e}`", 10)
         else:
-            await edit_or_reply(event, "Deleted ai for all enabled users in this chat")
+            await eor(event, "Deleted ai for all enabled users in this chat")
 
 
-@lionub.lion_cmd(
-    pattern="listai( -a)?$",
-    command=("listai", plugin_category),
+@savior.savior_cmd(
+    pattern="listchatbot( -a)?$",
+    command=("listchatbot", menu_category),
     info={
         "header": "shows the list of users for whom you enabled ai",
         "flags": {
             "a": "To list ai enabled users in all chats",
         },
         "usage": [
-            "{tr}listai",
-            "{tr}listai -a",
+            "{tr}listchatbot",
+            "{tr}listchatbot -a",
         ],
     },
 )
@@ -162,7 +158,7 @@ async def list_chatbot(event):  # sourcery no-metrics
         lsts = get_all_users()
         group_chats = ""
         if len(lsts) <= 0:
-            return await edit_or_reply(event, "There are no ai enabled users")
+            return await eor(event, "There are no ai enabled users")
         for echos in lsts:
             if echos.chat_type == "Personal":
                 if echos.user_username:
@@ -185,9 +181,7 @@ async def list_chatbot(event):  # sourcery no-metrics
     else:
         lsts = get_users(event.chat_id)
         if len(lsts) <= 0:
-            return await edit_or_reply(
-                event, "There are no ai enabled users in this chat"
-            )
+            return await eor(event, "There are no ai enabled users in this chat")
         for echos in lsts:
             if echos.user_username:
                 private_chats += (
@@ -198,10 +192,10 @@ async def list_chatbot(event):  # sourcery no-metrics
                     f"☞ [{echos.user_name}](tg://user?id={echos.user_id})\n"
                 )
         output_str = "**Ai enabled users in this chat are:**\n" + private_chats
-    await edit_or_reply(event, output_str)
+    await eor(event, output_str)
 
 
-@lionub.lion_cmd(incoming=True, edited=False)
+@savior.savior_cmd(incoming=True, edited=False)
 async def ai_reply(event):
     if is_added(event.chat_id, event.sender_id) and (event.message.text):
         AI_LANG = gvarstatus("AI_LANG") or "en"
@@ -210,7 +204,7 @@ async def ai_reply(event):
             response = await rs_client.get_ai_response(
                 message=event.message.text,
                 server="primary",
-                master="LionX",
+                master="SaViorX",
                 bot=master_name,
                 uid=event.client.uid,
                 language=AI_LANG,

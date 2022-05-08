@@ -9,22 +9,22 @@ from PIL import Image, ImageDraw, ImageFont
 from requests import get
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers.utils import get_user_from_event, reply_id
-from . import ALIVE_NAME
+from . import ALIVE_NAME, mention
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
 async def amongus_gen(text: str, clr: int) -> str:
-    url = "https://github.com/TeamLionX/LionX-Resources/raw/master/Resources/Amongus/"
+    url = "https://github.com/TheSaVior/RESOURCES/raw/master/Resources/Amongus/"
     font = ImageFont.truetype(
         BytesIO(
             get(
-                "https://github.com/TeamLionX/LionX-Resources/raw/master/Resources/fonts/bold.ttf"
+                "https://github.com/TheSaVior/RESOURCES/raw/master/Resources/fonts/bold.ttf"
             ).content
         ),
         60,
@@ -53,10 +53,10 @@ async def amongus_gen(text: str, clr: int) -> str:
 
 async def get_imposter_img(text: str) -> str:
     background = get(
-        f"https://github.com/TeamLionX/LionX-Resources/raw/master/Resources/imposter/impostor{randint(1,22)}.png"
+        f"https://github.com/TheSaVior/RESOURCES/raw/master/Resources/imposter/impostor{randint(1,22)}.png"
     ).content
     font = get(
-        "https://github.com/TeamLionX/LionX-Resources/raw/master/Resources/fonts/roboto_regular.ttf"
+        "https://github.com/TheSaVior/RESOURCES/raw/master/Resources/fonts/roboto_regular.ttf"
     ).content
     font = BytesIO(font)
     font = ImageFont.truetype(font, 30)
@@ -76,9 +76,9 @@ async def get_imposter_img(text: str) -> str:
     return webp_file
 
 
-@lionub.lion_cmd(
-    pattern=r"amongus(?:\s|$)([\s\S]*)",
-    command=("amongus", plugin_category),
+@savior.savior_cmd(
+    pattern="amongus(?:\s|$)([\s\S]*)",
+    command=("amongus", menu_category),
     info={
         "header": "Create a Sticker based on the popular game Among Us",
         "flags": {
@@ -106,6 +106,7 @@ async def get_imposter_img(text: str) -> str:
     },
 )
 async def sayliecmd(event):
+    "Try With Ur Self"
     text = event.pattern_match.group(1)
     reply_to = await reply_id(event)
     reply = await event.get_reply_message()
@@ -123,9 +124,9 @@ async def sayliecmd(event):
         clr = randint(1, 12)
     if not text:
         if not reply:
-            return await edit_or_reply(event, f"{mention} Was a traitor!")
+            return await eor(event, f"{mention} Was a traitor!")
         if not reply.text:
-            return await edit_or_reply(
+            return await eor(
                 event,
                 f"{_format.mentionuser(get_display_name(reply.sender) ,reply.sender.id)} Was a traitor!",
             )
@@ -134,9 +135,9 @@ async def sayliecmd(event):
     await event.client.send_file(event.chat_id, imposter_file, reply_to=reply_to)
 
 
-@lionub.lion_cmd(
-    pattern=r"imposter(?:\s|$)([\s\S]*)",
-    command=("imposter", plugin_category),
+@savior.savior_cmd(
+    pattern="imposter(?:\s|$)([\s\S]*)",
+    command=("imposter", menu_category),
     info={
         "header": "Fun images for imposter ",
         "usage": "{tr}imposter <username/userid/reply>",
@@ -169,9 +170,9 @@ async def procces_img(event):
     await event.client.send_file(event.chat_id, imposter_file, reply_to=reply_to)
 
 
-@lionub.lion_cmd(
-    pattern=r"imp(|n) ([\s\S]*)",
-    command=("imp", plugin_category),
+@savior.savior_cmd(
+    pattern="imp(|n) ([\s\S]*)",
+    command=("imp", menu_category),
     info={
         "header": "Find imposter with stickers animation.",
         "description": "Imp for imposter impn for not imposter",
@@ -184,7 +185,7 @@ async def _(event):
     USERNAME = f"tg://user?id={event.client.uid}"
     name = event.pattern_match.group(2)
     cmd = event.pattern_match.group(1).lower()
-    text1 = await edit_or_reply(event, "Uhmm... Something is wrong here!!")
+    text1 = await eor(event, "Uhmm... Something is wrong here!!")
     await asyncio.sleep(2)
     await text1.delete()
     stcr1 = await event.client.send_file(
@@ -223,48 +224,48 @@ async def _(event):
     stcr4 = await event.client.send_file(
         event.chat_id, "CAADAQADLwADnjOcH-wxu-ehy6NRAg"
     )
-    lionevent = await event.reply(f"{name} is ejected.......")
+    saviorevent = await event.reply(f"{name} is ejected.......")
     await asyncio.sleep(2)
-    await lionevent.edit("ඞㅤㅤㅤㅤ ㅤㅤㅤㅤ")
+    await saviorevent.edit("ඞㅤㅤㅤㅤ ㅤㅤㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤඞㅤㅤㅤㅤ ㅤㅤㅤ")
+    await saviorevent.edit("ㅤඞㅤㅤㅤㅤ ㅤㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤ ඞㅤㅤㅤㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤ ඞㅤㅤㅤㅤㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤ ඞㅤㅤㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤ ඞㅤㅤㅤㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤㅤ ඞㅤㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤ ඞㅤㅤㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤㅤㅤ ඞㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤ ඞㅤㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤ ඞㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤ ඞㅤㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤㅤ ඞㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤㅤ ඞㅤ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ඞ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ඞ")
     await asyncio.sleep(0.5)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ㅤ")
     await asyncio.sleep(0.2)
     await stcr4.delete()
     if cmd == "":
-        await lionevent.edit(
+        await saviorevent.edit(
             f". 　　　。　　　　•　 　ﾟ　　。 　　.\n .　　　 　　.　　　　　。　　 。　. 　\n\n  . 　　 。   　     ඞ         。 . 　　 • 　　　　•\n\n  ﾟ{name} was an Imposter.      。　. 　 　       。　.                                        。　. \n                                   　.          。　  　. \n　'         0 Impostor remains    　 。　.  　　.                。　.        。 　     .          。 　            .               .         .    ,      。\n　　ﾟ　　　.　　.    ,　 　。　 　. 　 .     。"
         )
         await asyncio.sleep(4)
-        await lionevent.delete()
+        await saviorevent.delete()
         await event.client.send_file(event.chat_id, "CAADAQADLQADnjOcH39IqwyR6Q_0Ag")
     elif cmd == "n":
-        await lionevent.edit(
+        await saviorevent.edit(
             f". 　　　。　　　　•　 　ﾟ　　。 　　.\n .　　　 　　.　　　　　。　　 。　. 　\n\n  . 　　 。   　     ඞ         。 . 　　 • 　　　　•\n\n  ﾟ{name} was not an Imposter.      。　. 　 　       。　.                                        。　. \n                                   　.          。　  　. \n　'         1 Impostor remains    　 。　.  　　.                。　.        。 　     .          。 　            .               .         .    ,      。\n　　ﾟ　　　.　　.    ,　 　。　 　. 　 .     。"
         )
         await asyncio.sleep(4)
-        await lionevent.delete()
+        await saviorevent.delete()
         await event.client.send_file(event.chat_id, "CAADAQADQAADnjOcH-WOkB8DEctJAg")
 
 
-@lionub.lion_cmd(
-    pattern=r"timp(|n) ([\s\S]*)",
-    command=("timp", plugin_category),
+@savior.savior_cmd(
+    pattern="timp(|n) ([\s\S]*)",
+    command=("timp", menu_category),
     info={
         "header": "Find imposter with text animation.",
         "description": "timp for imposter timpn for not imposter",
@@ -276,33 +277,33 @@ async def _(event):
     "Find imposter with text animation."
     name = event.pattern_match.group(2)
     cmd = event.pattern_match.group(1).lower()
-    lionevent = await edit_or_reply(event, f"{name} is ejected.......")
+    saviorevent = await eor(event, f"{name} is ejected.......")
     await asyncio.sleep(2)
-    await lionevent.edit("ඞㅤㅤㅤㅤ ㅤㅤㅤㅤ")
+    await saviorevent.edit("ඞㅤㅤㅤㅤ ㅤㅤㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤඞㅤㅤㅤㅤ ㅤㅤㅤ")
+    await saviorevent.edit("ㅤඞㅤㅤㅤㅤ ㅤㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤ ඞㅤㅤㅤㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤ ඞㅤㅤㅤㅤㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤ ඞㅤㅤㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤ ඞㅤㅤㅤㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤㅤ ඞㅤㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤ ඞㅤㅤㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤㅤㅤ ඞㅤㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤ ඞㅤㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤ ඞㅤㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤ ඞㅤㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤㅤ ඞㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤㅤ ඞㅤ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ඞ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ඞ")
     await asyncio.sleep(0.8)
-    await lionevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ㅤ")
+    await saviorevent.edit("ㅤㅤㅤㅤㅤㅤㅤㅤ ㅤ")
     await asyncio.sleep(0.2)
     if cmd == "":
-        await lionevent.edit(
+        await saviorevent.edit(
             f". 　　　。　　　　•　 　ﾟ　　。 　　.\n .　　　 　　.　　　　　。　　 。　. 　\n\n  . 　　 。   　     ඞ         。 . 　　 • 　　　　•\n\n  ﾟ {name} was an Imposter.      。　. 　 　       。　.                                        。　. \n                                   　.          。　  　. \n　'         0 Impostor remains    　 。　.  　　.                。　.        。 　     .          。 　            .               .         .    ,      。\n　　ﾟ　　　.　　.    ,　 　。　 　. 　 .     。"
         )
     elif cmd == "n":
-        await lionevent.edit(
+        await saviorevent.edit(
             f". 　　　。　　　　•　 　ﾟ　　。 　　.\n .　　　 　　.　　　　　。　　 。　. 　\n\n  . 　　 。   　     ඞ         。 . 　　 • 　　　　•\n\n  ﾟ {name} was not an Imposter.      。　. 　 　       。　.                                        。　. \n                                   　.          。　  　. \n　'         1 Impostor remains    　 。　.  　　.                。　.        。 　     .          。 　            .               .         .    ,      。\n　　ﾟ　　　.　　.    ,　 　。　 　. 　 .     。"
         )

@@ -1,18 +1,18 @@
 """
-Created by @SimpleBoy786
-plugin for LionXUserbot
+Created by @SaViorXBoy
+plugin for @SaViorSupport
 """
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-from . import edit_or_reply, lionub, reply_id
+from . import eor, savior, reply_id
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="score$",
-    command=("score", plugin_category),
+    command=("score", menu_category),
     info={
         "header": "To see the score of an ongoing match.",
         "usage": "{tr}score",
@@ -22,7 +22,7 @@ async def _(event):
     "To see the score of an ongoing match."
     chat = "@cricbuzz_bot"
     reply_to_id = await reply_id(event)
-    lionevent = await edit_or_reply(event, "```Gathering info...```")
+    saviorevent = await eor(event, "```Gathering info...```")
     async with event.client.conversation(chat) as conv:
         try:
             msg_start = await conv.send_message("/start")
@@ -31,12 +31,12 @@ async def _(event):
             respond = await conv.get_response()
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await lionevent.edit("Unblock @cricbuzz_bot & try again")
+            await saviorevent.edit("Unblock @cricbuzz_bot & try again")
             return
         if respond.text.startswith("I can't find that"):
-            await lionevent.edit("sorry i can't find it")
+            await saviorevent.edit("sorry i can't find it")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.send_message(
                 event.chat_id, respond.message, reply_to=reply_to_id
             )
@@ -45,9 +45,9 @@ async def _(event):
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"cric ([\s\S]*)",
-    command=("cric", plugin_category),
+@savior.savior_cmd(
+    pattern="cric ([\s\S]*)",
+    command=("cric", menu_category),
     info={
         "header": "To see the scoreboard or commentary of a match",
         "description": "To check commands showed in {tr}score cmd that is for getting scoreboard or commentary.",
@@ -60,7 +60,7 @@ async def _(event):
     details = event.pattern_match.group(1)
     chat = "@cricbuzz_bot"
     reply_to_id = await reply_id(event)
-    lionevent = await edit_or_reply(event, "```Gathering info...```")
+    saviorevent = await eor(event, "```Gathering info...```")
     async with event.client.conversation(chat) as conv:
         try:
             msg_start = await conv.send_message("/start")
@@ -69,12 +69,12 @@ async def _(event):
             respond = await conv.get_response()
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await lionevent.edit("Unblock @cricbuzz_bot & try again")
+            await saviorevent.edit("Unblock @cricbuzz_bot & try again")
             return
         if respond.text.startswith("I can't find that"):
-            await lionevent.edit("sorry i can't find it")
+            await saviorevent.edit("sorry i can't find it")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.send_message(
                 event.chat_id, respond.message, reply_to=reply_to_id
             )

@@ -1,5 +1,3 @@
-# batmanpfp and thorpfp by @Nihinivi
-
 import asyncio
 import base64
 import os
@@ -26,21 +24,13 @@ from ..sql_helper.global_list import (
     rm_from_list,
 )
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
-from . import (
-    AUTONAME,
-    BOTLOG,
-    BOTLOG_CHATID,
-    DEFAULT_BIO,
-    _lionutils,
-    edit_delete,
-    lionub,
-    logging,
-)
+from . import BOTLOG, BOTLOG_CHATID, logging
 
 plugin_category = "tools"
-DEFAULTUSERBIO = DEFAULT_BIO or " ᗯᗩᏆᎢᏆᑎᏀ ᏞᏆᏦᗴ ᎢᏆᗰᗴ  "
-DEFAULTUSER = AUTONAME or Config.ALIVE_NAME
+DEFAULTUSERBIO = gvarstatus("DEFAULT_BIO") or " ᗯᗩᏆᎢᏆᑎᏀ ᏞᏆᏦᗴ ᎢᏆᗰᗴ  "
+DEFAULTUSER = gvarstatus("DEFAULT_NAME") or Config.ALIVE_NAME
 LOGS = logging.getLogger(__name__)
+CHANGE_TIME = int(gvarstatus("CHANGE_TIME")) if gvarstatus("CHANGE_TIME") else 60
 
 FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
@@ -48,7 +38,9 @@ autopic_path = os.path.join(os.getcwd(), "userbot", "original_pic.png")
 digitalpic_path = os.path.join(os.getcwd(), "userbot", "digital_pic.png")
 autophoto_path = os.path.join(os.getcwd(), "userbot", "photo_pfp.png")
 
-digitalpfp = Config.DIGITAL_PIC or "https://telegra.ph/file/aeaebe33b1f3988a0b690.jpg"
+digitalpfp = (
+    gvarstatus("DIGITAL_PIC") or "https://telegra.ph/file/aeaebe33b1f3988a0b690.jpg"
+)
 
 COLLECTION_STRINGS = {
     "batmanpfp_strings": [
@@ -71,9 +63,9 @@ async def autopicloop():
     AUTOPICSTART = gvarstatus("autopic") == "true"
     if AUTOPICSTART and Config.DEFAULT_PIC is None:
         if BOTLOG:
-            return await lionub.send_message(
+            return await savior.send_message(
                 BOTLOG_CHATID,
-                "**Error**\n`For functing of autopic you need to set DEFAULT_PIC var in Heroku vars`",
+                "**Error**\n`For functing of autopic you need to set DEFAULT_PIC var in Heroku  Var `",
             )
         return
     if gvarstatus("autopic") is not None:
@@ -96,12 +88,12 @@ async def autopicloop():
         fnt = ImageFont.truetype(FONT_FILE_TO_USE, 30)
         drawn_text.text((150, 250), current_time, font=fnt, fill=(124, 252, 0))
         img.save(autophoto_path)
-        file = await lionub.upload_file(autophoto_path)
+        file = await savior.upload_file(autophoto_path)
         try:
-            await lionub(functions.photos.UploadProfilePhotoRequest(file))
+            await savior(functions.photos.UploadProfilePhotoRequest(file))
             os.remove(autophoto_path)
             counter += counter
-            await asyncio.sleep(Config.CHANGE_TIME)
+            await asyncio.sleep(CHANGE_TIME)
         except BaseException:
             return
         AUTOPICSTART = gvarstatus("autopic") == "true"
@@ -116,18 +108,18 @@ async def custompfploop():
             return
         pic = random.choice(list(get_collection_list("CUSTOM_PFP_LINKS")))
         urllib.request.urlretrieve(pic, "donottouch.jpg")
-        file = await lionub.upload_file("donottouch.jpg")
+        file = await savior.upload_file("donottouch.jpg")
         try:
             if i > 0:
-                await lionub(
+                await savior(
                     functions.photos.DeletePhotosRequest(
-                        await lionub.get_profile_photos("me", limit=1)
+                        await savior.get_profile_photos("me", limit=1)
                     )
                 )
             i += 1
-            await lionub(functions.photos.UploadProfilePhotoRequest(file))
+            await savior(functions.photos.UploadProfilePhotoRequest(file))
             os.remove("donottouch.jpg")
-            await asyncio.sleep(Config.CHANGE_TIME)
+            await asyncio.sleep(CHANGE_TIME)
         except BaseException:
             return
         CUSTOMPICSTART = gvarstatus("CUSTOM_PFP") == "true"
@@ -147,22 +139,22 @@ async def digitalpicloop():
         current_time = datetime.now().strftime("%H:%M")
         img = Image.open(autophoto_path)
         drawn_text = ImageDraw.Draw(img)
-        lion = str(
-            base64.b64decode("dXNlcmJvdC9oZWxwZXJzL3N0eWxlcy9kaWdpdGFsLnR0Zg==")
-        )[2:36]
-        fnt = ImageFont.truetype(lion, 200)
+        leg = str(base64.b64decode("dXNlcmJvdC9oZWxwZXJzL3N0eWxlcy9kaWdpdGFsLnR0Zg=="))[
+            2:36
+        ]
+        fnt = ImageFont.truetype(leg, 200)
         drawn_text.text((350, 100), current_time, font=fnt, fill=(124, 252, 0))
         img.save(autophoto_path)
-        file = await lionub.upload_file(autophoto_path)
+        file = await savior.upload_file(autophoto_path)
         try:
             if i > 0:
-                await lionub(
+                await savior(
                     functions.photos.DeletePhotosRequest(
-                        await lionub.get_profile_photos("me", limit=1)
+                        await savior.get_profile_photos("me", limit=1)
                     )
                 )
             i += 1
-            await lionub(functions.photos.UploadProfilePhotoRequest(file))
+            await savior(functions.photos.UploadProfilePhotoRequest(file))
             os.remove(autophoto_path)
             await asyncio.sleep(60)
         except BaseException:
@@ -174,7 +166,7 @@ async def bloom_pfploop():
     BLOOMSTART = gvarstatus("bloom") == "true"
     if BLOOMSTART and Config.DEFAULT_PIC is None:
         if BOTLOG:
-            return await lionub.send_message(
+            return await savior.send_message(
                 BOTLOG_CHATID,
                 "**Error**\n`For functing of bloom you need to set DEFAULT_PIC var in Heroku vars`",
             )
@@ -204,42 +196,46 @@ async def bloom_pfploop():
         drawn_text.text((95, 250), current_time, font=fnt, fill=(FR, FG, FB))
         drawn_text.text((95, 250), "      😈", font=ofnt, fill=(FR, FG, FB))
         img.save(autophoto_path)
-        file = await lionub.upload_file(autophoto_path)
+        file = await savior.upload_file(autophoto_path)
         try:
-            await lionub(functions.photos.UploadProfilePhotoRequest(file))
+            await savior(functions.photos.UploadProfilePhotoRequest(file))
             os.remove(autophoto_path)
-            await asyncio.sleep(Config.CHANGE_TIME)
+            await asyncio.sleep(CHANGE_TIME)
         except BaseException:
             return
         BLOOMSTART = gvarstatus("bloom") == "true"
 
 
 async def autoname_loop():
-    while AUTONAMESTART := gvarstatus("autoname") == "true":
+    AUTONAMESTART = gvarstatus("autoname") == "true"
+    while AUTONAMESTART:
         DM = time.strftime("%d-%m-%y")
         HM = time.strftime("%H:%M")
         name = f"⌚️ {HM}||›  {DEFAULTUSER} ‹||📅 {DM}"
         LOGS.info(name)
         try:
-            await lionub(functions.account.UpdateProfileRequest(first_name=name))
+            await savior(functions.account.UpdateProfileRequest(first_name=name))
         except FloodWaitError as ex:
             LOGS.warning(str(ex))
             await asyncio.sleep(ex.seconds)
-        await asyncio.sleep(Config.CHANGE_TIME)
+        await asyncio.sleep(CHANGE_TIME)
+        AUTONAMESTART = gvarstatus("autoname") == "true"
 
 
 async def autobio_loop():
-    while AUTOBIOSTART := gvarstatus("autobio") == "true":
+    AUTOBIOSTART = gvarstatus("autobio") == "true"
+    while AUTOBIOSTART:
         DMY = time.strftime("%d.%m.%Y")
         HM = time.strftime("%H:%M")
         bio = f"📅 {DMY} | {DEFAULTUSERBIO} | ⌚️ {HM}"
         LOGS.info(bio)
         try:
-            await lionub(functions.account.UpdateProfileRequest(about=bio))
+            await savior(functions.account.UpdateProfileRequest(about=bio))
         except FloodWaitError as ex:
             LOGS.warning(str(ex))
             await asyncio.sleep(ex.seconds)
-        await asyncio.sleep(Config.CHANGE_TIME)
+        await asyncio.sleep(CHANGE_TIME)
+        AUTOBIOSTART = gvarstatus("autobio") == "true"
 
 
 async def animeprofilepic(collection_images):
@@ -269,27 +265,27 @@ async def autopfp_start():
     i = 0
     while AUTOPFP_START:
         await animeprofilepic(string_list)
-        file = await lionub.upload_file("donottouch.jpg")
+        file = await savior.upload_file("donottouch.jpg")
         if i > 0:
-            await lionub(
+            await savior(
                 functions.photos.DeletePhotosRequest(
-                    await lionub.get_profile_photos("me", limit=1)
+                    await savior.get_profile_photos("me", limit=1)
                 )
             )
         i += 1
-        await lionub(functions.photos.UploadProfilePhotoRequest(file))
-        await _lionutils.runcmd("rm -rf donottouch.jpg")
-        await asyncio.sleep(Config.CHANGE_TIME)
+        await savior(functions.photos.UploadProfilePhotoRequest(file))
+        await _saviorutils.runcmd("rm -rf donottouch.jpg")
+        await asyncio.sleep(CHANGE_TIME)
         AUTOPFP_START = gvarstatus("autopfp_strings") is not None
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="batmanpfp$",
-    command=("batmanpfp", plugin_category),
+    command=("batmanpfp", menu_category),
     info={
         "header": "Changes profile pic with random batman pics every 1 minute",
         "description": "Changes your profile pic every 1 minute with random batman pics.\
-        If you like to change the time then set CHANGE_TIME var in Heroku with time (in seconds) between each change of profilepic.",
+        If you like to change the time then set CHANGE_TIME var in Database Var with time (in seconds) between each change of profilepic.",
         "note": "To stop this do '.end batmanpfp'",
         "usage": "{tr}batmanpfp",
     },
@@ -298,19 +294,19 @@ async def _(event):
     "To set random batman profile pics"
     if gvarstatus("autopfp_strings") is not None:
         pfp_string = gvarstatus("autopfp_strings")[:-8]
-        return await edit_delete(event, f"`{pfp_string} is already running.`")
+        return await eod(event, f"`{pfp_string} is already running.`")
     addgvar("autopfp_strings", "batmanpfp_strings")
     await event.edit("`Starting batman Profile Pic.`")
     await autopfp_start()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="thorpfp$",
-    command=("thorpfp", plugin_category),
+    command=("thorpfp", menu_category),
     info={
         "header": "Changes profile pic with random thor pics every 1 minute",
         "description": "Changes your profile pic every 1 minute with random thor pics.\
-        If you like to change the time then set CHANGE_TIME var in Heroku with time(in seconds) between each change of profilepic.",
+        If you like to change the time then set CHANGE_TIME var in Database with time(in seconds) between each change of profilepic.",
         "note": "To stop this do '.end thorpfp'",
         "usage": "{tr}thorpfp",
     },
@@ -319,22 +315,22 @@ async def _(event):
     "To set random thor profile pics"
     if gvarstatus("autopfp_strings") is not None:
         pfp_string = gvarstatus("autopfp_strings")[:-8]
-        return await edit_delete(event, f"`{pfp_string} is already running.`")
+        return await eod(event, f"`{pfp_string} is already running.`")
     addgvar("autopfp_strings", "thorpfp_strings")
     await event.edit("`Starting thor Profile Pic.`")
     await autopfp_start()
 
 
-@lionub.lion_cmd(
-    pattern=r"autopic ?([\s\S]*)",
-    command=("autopic", plugin_category),
+@savior.savior_cmd(
+    pattern="autopic ?([\s\S]*)",
+    command=("autopic", menu_category),
     info={
         "header": "Changes profile pic every 1 minute with the custom pic with time",
         "description": "If you like to change the time interval for every new pic change \
-            then set CHANGE_TIME var in Heroku with time(in seconds) between each change of profilepic.",
+            then set CHANGE_TIME var in Database with time(in seconds) between each change of profilepic.",
         "options": "you can give integer input with cmd like 40,55,75 ..etc.\
              So that your profile pic will rotate with that specific angle",
-        "note": "For functioning of this cmd you need to set DEFAULT_PIC var in heroku. \
+        "note": "For functioning of this cmd you need to set DEFAULT_PIC var in Heroku Var. \
             To stop this do '.end autopic'",
         "usage": [
             "{tr}autopic",
@@ -345,7 +341,7 @@ async def _(event):
 async def _(event):
     "To set time on your profile pic"
     if Config.DEFAULT_PIC is None:
-        return await edit_delete(
+        return await eod(
             event,
             "**Error**\nFor functing of autopic you need to set DEFAULT_PIC var in Heroku vars",
             parse_mode=_format.parse_pre,
@@ -363,21 +359,21 @@ async def _(event):
     elif gvarstatus("autopic_counter") is None:
         addgvar("autopic_counter", 30)
     if gvarstatus("autopic") is not None and gvarstatus("autopic") == "true":
-        return await edit_delete(event, "`Autopic is already enabled`")
+        return await eod(event, "`Autopic is already enabled`")
     addgvar("autopic", True)
     if input_str:
         addgvar("autopic_counter", input_str)
-    await edit_delete(event, "`Autopic has been started by my Master`")
+    await eod(event, "`Autopic has been started by my Master`")
     await autopicloop()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="digitalpfp$",
-    command=("digitalpfp", plugin_category),
+    command=("digitalpfp", menu_category),
     info={
         "header": "Updates your profile pic every 1 minute with time on it",
         "description": "Deletes old profile pic and Update profile pic with new image with time on it.\
-             You can change this image by setting DIGITAL_PIC var in heroku with telegraph image link",
+             You can change this image by setting DIGITAL_PIC var in Database  with telegraph image link",
         "note": "To stop this do '.end digitalpfp'",
         "usage": "{tr}digitalpfp",
     },
@@ -389,20 +385,20 @@ async def _(event):
     while not downloader.isFinished():
         pass
     if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
-        return await edit_delete(event, "`Digitalpic is already enabled`")
+        return await eod(event, "`Digitalpic is already enabled`")
     addgvar("digitalpic", True)
-    await edit_delete(event, "`digitalpfp has been started by my Master`")
+    await eod(event, "`digitalpfp has been started by my Master`")
     await digitalpicloop()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bloom$",
-    command=("bloom", plugin_category),
+    command=("bloom", menu_category),
     info={
         "header": "Changes profile pic every 1 minute with the random colour pic with time on it",
         "description": "If you like to change the time interval for every new pic chnage \
-            then set CHANGE_TIME var in Heroku with time(in seconds) between each change of profilepic.",
-        "note": "For functioning of this cmd you need to set DEFAULT_PIC var in heroku. \
+            then set CHANGE_TIME var in Database with time(in seconds) between each change of profilepic.",
+        "note": "For functioning of this cmd you need to set DEFAULT_PIC Heroku var in. \
             To stop this do '.end bloom'",
         "usage": "{tr}bloom",
     },
@@ -410,7 +406,7 @@ async def _(event):
 async def _(event):
     "To set random colour pic with time to profile pic"
     if Config.DEFAULT_PIC is None:
-        return await edit_delete(
+        return await eod(
             event,
             "**Error**\nFor functing of bloom you need to set DEFAULT_PIC var in Heroku vars",
             parse_mode=_format.parse_pre,
@@ -420,18 +416,18 @@ async def _(event):
     while not downloader.isFinished():
         pass
     if gvarstatus("bloom") is not None and gvarstatus("bloom") == "true":
-        return await edit_delete(event, "`Bloom is already enabled`")
+        return await eod(event, "`Bloom is already enabled`")
     addgvar("bloom", True)
-    await edit_delete(event, "`Bloom has been started by my Master`")
+    await eod(event, "`Bloom has been started by my Master`")
     await bloom_pfploop()
 
 
-@lionub.lion_cmd(
-    pattern=r"c(ustom)?pfp(?: |$)([\s\S]*)",
-    command=("custompfp", plugin_category),
+@savior.savior_cmd(
+    pattern="c(ustom)?pfp(?: |$)([\s\S]*)",
+    command=("custompfp", menu_category),
     info={
         "header": "Set Your Custom pfps",
-        "description": "Set links of pic to use them as auto profile. You can use cpfp or custompp as command",
+        "description": "Set links of pic to use them as auto profile. You can use cpfp or custompfp as command",
         "flags": {
             "a": "To add links for custom pfp",
             "r": "To remove links for custom pfp",
@@ -440,7 +436,7 @@ async def _(event):
         },
         "usage": [
             "{tr}cpfp or {tr}custompfp <to start>",
-            "{tr}cpfp <flags> <links(optional)>",
+            "{tr}cpfp <types> <links(optional)>",
         ],
         "examples": [
             "{tr}cpfp",
@@ -456,31 +452,29 @@ async def useless(event):  # sourcery no-metrics
     input_str = event.pattern_match.group(2)
     ext = re.findall(r"-\w+", input_str)
     try:
-        flag = ext[0].replace("-", "")
+        type = ext[0].replace("-", "")
         input_str = input_str.replace(ext[0], "").strip()
     except IndexError:
-        flag = None
+        type = None
     list_link = get_collection_list("CUSTOM_PFP_LINKS")
-    if flag is None:
+    if type is None:
         if gvarstatus("CUSTOM_PFP") is not None and gvarstatus("CUSTOM_PFP") == "true":
-            return await edit_delete(event, "`Custom pfp is already enabled`")
+            return await eod(event, "`Custom pfp is already enabled`")
         if not list_link:
-            return await edit_delete(event, "**ಠ∀ಠ  There no links for custom pfp...**")
+            return await eod(event, "**ಠ∀ಠ  There no links for custom pfp...**")
         addgvar("CUSTOM_PFP", True)
-        await edit_delete(event, "`Starting custom pfp....`")
+        await eod(event, "`Starting custom pfp....`")
         await custompfploop()
         return
-    if flag == "l":
+    if type == "l":
         if not list_link:
-            return await edit_delete(
-                event, "**ಠ∀ಠ  There no links set for custom pfp...**"
-            )
+            return await eod(event, "**ಠ∀ಠ  There no links set for custom pfp...**")
         links = "**Available links for custom pfp are here:-**\n\n"
         for i, each in enumerate(list_link, start=1):
             links += f"**{i}.**  {each}\n"
-        await edit_delete(event, links, 60)
+        await eod(event, links, 60)
         return
-    if flag == "s":
+    if type == "s":
         if gvarstatus("CUSTOM_PFP") is not None and gvarstatus("CUSTOM_PFP") == "true":
             delgvar("CUSTOM_PFP")
             await event.client(
@@ -488,43 +482,41 @@ async def useless(event):  # sourcery no-metrics
                     await event.client.get_profile_photos("me", limit=1)
                 )
             )
-            return await edit_delete(event, "`Custompfp has been stopped now`")
-        return await edit_delete(event, "`Custompfp haven't enabled`")
+            return await eod(event, "`Custompfp has been stopped now`")
+        return await eod(event, "`Custompfp haven't enabled`")
     reply = await event.get_reply_message()
     if not input_str and reply:
         input_str = reply.text
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event, "**ಠ∀ಠ  Reply to valid link or give valid link url as input...**"
         )
     extractor = URLExtract()
     plink = extractor.find_urls(input_str)
     if len(plink) == 0:
-        return await edit_delete(
+        return await eod(
             event, "**ಠ∀ಠ  Reply to valid link or give valid link url as input...**"
         )
-    if flag == "a":
+    if type == "a":
         for i in plink:
             if not is_in_list("CUSTOM_PFP_LINKS", i):
                 add_to_list("CUSTOM_PFP_LINKS", i)
-        await edit_delete(
-            event, f"**{len(plink)} pictures sucessfully added to custom pfps**"
-        )
-    elif flag == "r":
+        await eod(event, f"**{len(plink)} pictures sucessfully added to custom pfps**")
+    elif type == "r":
         for i in plink:
             if is_in_list("CUSTOM_PFP_LINKS", i):
                 rm_from_list("CUSTOM_PFP_LINKS", i)
-        await edit_delete(
+        await eod(
             event, f"**{len(plink)} pictures sucessfully removed from custom pfps**"
         )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="autoname$",
-    command=("autoname", plugin_category),
+    command=("autoname", menu_category),
     info={
         "header": "Changes your name with time",
-        "description": "Updates your profile name along with time. Set AUTONAME var in heroku with your profile name,",
+        "description": "Updates your profile name along with time. Set DEFAULT_USER var in Database with your profile name,",
         "note": "To stop this do '.end autoname'",
         "usage": "{tr}autoname",
     },
@@ -532,15 +524,15 @@ async def useless(event):  # sourcery no-metrics
 async def _(event):
     "To set your display name along with time"
     if gvarstatus("autoname") is not None and gvarstatus("autoname") == "true":
-        return await edit_delete(event, "`Autoname is already enabled`")
+        return await eod(event, "`Autoname is already enabled`")
     addgvar("autoname", True)
-    await edit_delete(event, "`AutoName has been started by my Master `")
+    await eod(event, "`AutoName has been started by my Master `")
     await autoname_loop()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="autobio$",
-    command=("autobio", plugin_category),
+    command=("autobio", menu_category),
     info={
         "header": "Changes your bio with time",
         "description": "Updates your profile bio along with time. Set DEFAULT_BIO var in heroku with your fav bio,",
@@ -551,15 +543,15 @@ async def _(event):
 async def _(event):
     "To update your bio along with time"
     if gvarstatus("autobio") is not None and gvarstatus("autobio") == "true":
-        return await edit_delete(event, "`Autobio is already enabled`")
+        return await eod(event, "`Autobio is already enabled`")
     addgvar("autobio", True)
-    await edit_delete(event, "`Autobio has been started by my Master `")
+    await eod(event, "`Autobio has been started by my Master `")
     await autobio_loop()
 
 
-@lionub.lion_cmd(
-    pattern=r"end ([\s\S]*)",
-    command=("end", plugin_category),
+@savior.savior_cmd(
+    pattern="end ([\s\S]*)",
+    command=("end", menu_category),
     info={
         "header": "To stop the functions of autoprofile",
         "description": "If you want to stop autoprofile functions then use this cmd.",
@@ -583,25 +575,25 @@ async def _(event):  # sourcery no-metrics
     if input_str == "thorpfp" and gvarstatus("autopfp_strings") is not None:
         pfp_string = gvarstatus("autopfp_strings")[:-8]
         if pfp_string != "thorpfp":
-            return await edit_delete(event, "`thorpfp is not started`")
+            return await eod(event, "`thorpfp is not started`")
         await event.client(
             functions.photos.DeletePhotosRequest(
                 await event.client.get_profile_photos("me", limit=1)
             )
         )
         delgvar("autopfp_strings")
-        return await edit_delete(event, "`thorpfp has been stopped now`")
+        return await eod(event, "`thorpfp has been stopped now`")
     if input_str == "batmanpfp" and gvarstatus("autopfp_strings") is not None:
         pfp_string = gvarstatus("autopfp_strings")[:-8]
         if pfp_string != "batmanpfp":
-            return await edit_delete(event, "`batmanpfp is not started`")
+            return await eod(event, "`batmanpfp is not started`")
         await event.client(
             functions.photos.DeletePhotosRequest(
                 await event.client.get_profile_photos("me", limit=1)
             )
         )
         delgvar("autopfp_strings")
-        return await edit_delete(event, "`batmanpfp has been stopped now`")
+        return await eod(event, "`batmanpfp has been stopped now`")
     if input_str == "autopic":
         if gvarstatus("autopic") is not None and gvarstatus("autopic") == "true":
             delgvar("autopic")
@@ -612,8 +604,8 @@ async def _(event):  # sourcery no-metrics
                     os.remove(autopic_path)
                 except BaseException:
                     return
-            return await edit_delete(event, "`Autopic has been stopped now`")
-        return await edit_delete(event, "`Autopic haven't enabled`")
+            return await eod(event, "`Autopic has been stopped now`")
+        return await eod(event, "`Autopic haven't enabled`")
     if input_str == "digitalpfp":
         if gvarstatus("digitalpic") is not None and gvarstatus("digitalpic") == "true":
             delgvar("digitalpic")
@@ -622,8 +614,8 @@ async def _(event):  # sourcery no-metrics
                     await event.client.get_profile_photos("me", limit=1)
                 )
             )
-            return await edit_delete(event, "`Digitalpfp has been stopped now`")
-        return await edit_delete(event, "`Digitalpfp haven't enabled`")
+            return await eod(event, "`Digitalpfp has been stopped now`")
+        return await eod(event, "`Digitalpfp haven't enabled`")
     if input_str == "bloom":
         if gvarstatus("bloom") is not None and gvarstatus("bloom") == "true":
             delgvar("bloom")
@@ -634,29 +626,29 @@ async def _(event):  # sourcery no-metrics
                     os.remove(autopic_path)
                 except BaseException:
                     return
-            return await edit_delete(event, "`Bloom has been stopped now`")
-        return await edit_delete(event, "`Bloom haven't enabled`")
+            return await eod(event, "`Bloom has been stopped now`")
+        return await eod(event, "`Bloom haven't enabled`")
     if input_str == "autoname":
         if gvarstatus("autoname") is not None and gvarstatus("autoname") == "true":
             delgvar("autoname")
             await event.client(
                 functions.account.UpdateProfileRequest(first_name=DEFAULTUSER)
             )
-            return await edit_delete(event, "`Autoname has been stopped now`")
-        return await edit_delete(event, "`Autoname haven't enabled`")
+            return await eod(event, "`Autoname has been stopped now`")
+        return await eod(event, "`Autoname haven't enabled`")
     if input_str == "autobio":
         if gvarstatus("autobio") is not None and gvarstatus("autobio") == "true":
             delgvar("autobio")
             await event.client(
                 functions.account.UpdateProfileRequest(about=DEFAULTUSERBIO)
             )
-            return await edit_delete(event, "`Autobio has been stopped now`")
-        return await edit_delete(event, "`Autobio haven't enabled`")
+            return await eod(event, "`Autobio has been stopped now`")
+        return await eod(event, "`Autobio haven't enabled`")
     if input_str == "spam":
         if gvarstatus("spamwork") is not None and gvarstatus("spamwork") == "true":
             delgvar("spamwork")
-            return await edit_delete(event, "`Spam cmd has been stopped now`")
-        return await edit_delete(event, "`You haven't started spam`")
+            return await eod(event, "`Spam cmd has been stopped now`")
+        return await eod(event, "`You haven't started spam`")
     END_CMDS = [
         "autopic",
         "digitalpfp",
@@ -668,17 +660,17 @@ async def _(event):  # sourcery no-metrics
         "spam",
     ]
     if input_str not in END_CMDS:
-        await edit_delete(
+        await eod(
             event,
             f"{input_str} is invalid end command.Mention clearly what should i end.",
             parse_mode=_format.parse_pre,
         )
 
 
-lionub.loop.create_task(autopfp_start())
-lionub.loop.create_task(autopicloop())
-lionub.loop.create_task(digitalpicloop())
-lionub.loop.create_task(bloom_pfploop())
-lionub.loop.create_task(autoname_loop())
-lionub.loop.create_task(autobio_loop())
-lionub.loop.create_task(custompfploop())
+savior.loop.create_task(autopfp_start())
+savior.loop.create_task(autopicloop())
+savior.loop.create_task(digitalpicloop())
+savior.loop.create_task(bloom_pfploop())
+savior.loop.create_task(autoname_loop())
+savior.loop.create_task(autobio_loop())
+savior.loop.create_task(custompfploop())

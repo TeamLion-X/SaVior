@@ -1,23 +1,22 @@
 """
-Created by @SimpleBoy786
-modified by  @TeamLionX
-Userbot plugin for LionX
+Created by @SaViorXBoy
+Userbot plugin for SaViorX
 """
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers import fonts as emojify
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
-    pattern=r"emoji(?:\s|$)([\s\S]*)",
-    command=("emoji", plugin_category),
+@savior.savior_cmd(
+    pattern="emoji(?:\s|$)([\s\S]*)",
+    command=("emoji", menu_category),
     info={
         "header": "Converts your text to big emoji text, with some default emojis.\n use @ symbol for line space",
         "usage": "{tr}emoji <text>",
-        "examples": ["{tr}emoji LionX"],
+        "examples": ["{tr}emoji SaViorX"],
     },
 )
 async def itachi(event):
@@ -27,9 +26,7 @@ async def itachi(event):
     if not args and get:
         args = get.text
     if not args:
-        await edit_or_reply(
-            event, "`What am I Supposed to do with this idiot, Give me a text. `"
-        )
+        await eor(event, "`What am I Supposed to do with this idiot, Give me a text. `")
         return
     result = ""
     for a in args:
@@ -39,16 +36,16 @@ async def itachi(event):
             result += char
         else:
             result += a
-    await edit_or_reply(event, result)
+    await eor(event, result)
 
 
-@lionub.lion_cmd(
-    pattern=r"cmoji(?:\s|$)([\s\S]*)",
-    command=("cmoji", plugin_category),
+@savior.savior_cmd(
+    pattern="lmoji(?:\s|$)([\s\S]*)",
+    command=("lmoji", menu_category),
     info={
         "header": "Converts your text to big emoji text, with your custom emoji.\n use @ symbol for line space.",
-        "usage": "{tr}cmoji <emoji> <text>",
-        "examples": ["{tr}cmoji 😺 LionX"],
+        "usage": "{tr}lmoji <emoji> <text>",
+        "examples": ["{tr}lmoji ⚜ SaViorX"],
     },
 )
 async def itachi(event):
@@ -58,7 +55,7 @@ async def itachi(event):
     if not args and get:
         args = get.text
     if not args:
-        return await edit_or_reply(
+        return await eor(
             event, "`What am I Supposed to do with this idiot, Give me a text. `"
         )
     emoji, arg = args.split(" ", 1)
@@ -70,4 +67,4 @@ async def itachi(event):
             result += char
         else:
             result += a
-    await edit_or_reply(event, result)
+    await eor(event, result)

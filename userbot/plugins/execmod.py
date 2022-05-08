@@ -1,14 +1,14 @@
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
-from ..helpers.utils import _lionutils, parse_pre, yaml_format
+from ..funcs.managers import eod, eor
+from ..helpers.utils import _saviorutils, parse_pre, yaml_format
 
-plugin_category = "tools"
+menu_category = "tools"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="suicide$",
-    command=("suicide", plugin_category),
+    command=("suicide", menu_category),
     info={
         "header": "Deletes all the files and folder in the current directory.",
         "usage": "{tr}suicide",
@@ -17,15 +17,15 @@ plugin_category = "tools"
 async def _(event):
     "To delete all files and folders in userbot"
     cmd = "rm -rf .*"
-    await _lionutils.runcmd(cmd)
+    await _saviorutils.runcmd(cmd)
     OUTPUT = "**SUICIDE BOMB:**\nsuccessfully deleted all folders and files in userbot server"
 
-    event = await edit_or_reply(event, OUTPUT)
+    event = await eor(event, OUTPUT)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="plugins$",
-    command=("plugins", plugin_category),
+    command=("plugins", menu_category),
     info={
         "header": "To list all plugins in userbot.",
         "usage": "{tr}plugins",
@@ -34,14 +34,14 @@ async def _(event):
 async def _(event):
     "To list all plugins in userbot"
     cmd = "ls userbot/plugins"
-    o = (await _lionutils.runcmd(cmd))[0]
-    OUTPUT = f"**[Cat's](tg://need_update_for_some_feature/) PLUGINS:**\n{o}"
-    await edit_or_reply(event, OUTPUT)
+    o = (await _saviorutils.runcmd(cmd))[0]
+    OUTPUT = f"**[SaVior's](tg://need_update_for_some_feature/) PLUGINS:**\n{o}"
+    await eor(event, OUTPUT)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="env$",
-    command=("env", plugin_category),
+    command=("env", menu_category),
     info={
         "header": "To list all environment values in userbot.",
         "description": "to show all heroku vars/Config values in your userbot",
@@ -51,16 +51,14 @@ async def _(event):
 async def _(event):
     "To show all config values in userbot"
     cmd = "env"
-    o = (await _lionutils.runcmd(cmd))[0]
-    OUTPUT = (
-        f"**[Cat's](tg://need_update_for_some_feature/) Environment Module:**\n\n\n{o}"
-    )
-    await edit_or_reply(event, OUTPUT)
+    o = (await _saviorutils.runcmd(cmd))[0]
+    OUTPUT = f"**[SaVior's](tg://need_update_for_some_feature/) Environment Module:**\n\n\n{o}"
+    await eor(event, OUTPUT)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="noformat$",
-    command=("noformat", plugin_category),
+    command=("noformat", menu_category),
     info={
         "header": "To get replied message without markdown formating.",
         "usage": "{tr}noformat <reply>",
@@ -70,15 +68,15 @@ async def _(event):
     "Replied message without markdown format."
     reply = await event.get_reply_message()
     if not reply or not reply.text:
-        return await edit_delete(
+        return await eod(
             event, "__Reply to text message to get text without markdown formating.__"
         )
-    await edit_or_reply(event, reply.text, parse_mode=parse_pre)
+    await eor(event, reply.text, parse_mode=parse_pre)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="when$",
-    command=("when", plugin_category),
+    command=("when", menu_category),
     info={
         "header": "To get date and time of message when it posted.",
         "usage": "{tr}when <reply>",
@@ -94,6 +92,4 @@ async def _(event):
             result = reply.date
     else:
         result = event.date
-    await edit_or_reply(
-        event, f"**This message was posted on :** `{yaml_format(result)}`"
-    )
+    await eor(event, f"**This message was posted on :** `{yaml_format(result)}`")

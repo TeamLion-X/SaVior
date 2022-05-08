@@ -1,20 +1,19 @@
-# Urban Dictionary for LionX by @TeamLionX
-from PyDictionary import PyDictionary
+# Urban Dictionary for SaViorX by @SaViorXBoy
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import AioHttp
 from ..helpers.utils import _format
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"ud ([\s\S]*)",
-    command=("ud", plugin_category),
+@savior.savior_cmd(
+    pattern="ud ([\s\S]*)",
+    command=("ud", menu_category),
     info={
         "header": "To fetch meaning of the given word from urban dictionary.",
         "usage": "{tr}ud <word>",
@@ -35,18 +34,19 @@ async def _(event):
             _format.replacetext(definition),
             _format.replacetext(example),
         )
-        await edit_or_reply(event, result)
+        await eor(event, result)
     except Exception as e:
-        await edit_delete(
+        await eod(
             event,
             text="`The Urban Dictionary API could not be reached`",
         )
         LOGS.info(e)
 
 
-@lionub.lion_cmd(
-    pattern=r"meaning ([\s\S]*)",
-    command=("meaning", plugin_category),
+"""
+@savior.savior_cmd(
+    pattern="meaning ([\s\S]*)",
+    command=("meaning", menu_category),
     info={
         "header": "To fetch meaning of the given word from dictionary.",
         "usage": "{tr}meaning <word>",
@@ -54,15 +54,38 @@ async def _(event):
 )
 async def _(event):
     "To fetch meaning of the given word from dictionary."
-    word = event.pattern_match.group(1)
-    dictionary = PyDictionary()
-    lion = dictionary.meaning(word)
-    output = f"**Word :** __{word}__\n\n"
+    input_str = event.pattern_match.group(1)
+    input_url = "https://bots.shrimadhavuk.me/dictionary/?s={}".format(input_str)
+    headers = {"USER-AGENT": "UniBorg"}
+    caption_str = f"Meaning of __{input_str}__\n"
     try:
-        for a, b in lion.items():
-            output += f"**{a}**\n"
-            for i in b:
-                output += f"☞__{i}__\n"
-        await edit_or_reply(event, output)
-    except Exception:
-        await edit_or_reply(event, f"Couldn't fetch meaning of {word}")
+        response = requests.get(input_url, headers=headers).json()
+        pronounciation = response.get("p")
+        meaning_dict = response.get("lwo")
+        for current_meaning in meaning_dict:
+            current_meaning_type = current_meaning.get("type")
+            current_meaning_definition = current_meaning.get("definition")
+            caption_str += (
+                f"**{current_meaning_type}**: {current_meaning_definition}\n\n"
+            )
+    except Exception as e:
+        caption_str = str(e)
+    reply_msg_id = event.message.id
+    if event.reply_to_msg_id:
+        reply_msg_id = event.reply_to_msg_id
+    try:
+        await event.client.send_file(
+            event.chat_id,
+            pronounciation,
+            caption=f"Pronounciation of __{input_str}__",
+            force_document=False,
+            reply_to=reply_msg_id,
+            allow_cache=True,
+            voice_note=True,
+            silent=True,
+            supports_streaming=True,
+        )
+    except:
+        pass
+    await event.edit(caption_str)
+"""

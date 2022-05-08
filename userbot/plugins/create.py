@@ -1,16 +1,16 @@
 from telethon.tl import functions
 
-from .. import lionub
+from .. import savior
 from ..Config import Config
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..utils.tools import create_supergroup
 
-plugin_category = "tools"
+menu_category = "tools"
 
 
-@lionub.lion_cmd(
-    pattern=r"create (b|g|c) ([\s\S]*)",
-    command=("create", plugin_category),
+@savior.savior_cmd(
+    pattern="create (b|g|c) ([\s\S]*)",
+    command=("create", menu_category),
     info={
         "header": "To create a private group/channel with userbot.",
         "description": "Use this cmd to create super group , normal group or channel.",
@@ -20,7 +20,7 @@ plugin_category = "tools"
             "c": "to create a private channel",
         },
         "usage": "{tr}create (b|g|c) <name of group/channel>",
-        "examples": "{tr}create b LionX",
+        "examples": "{tr}create b SaViorX",
     },
 )
 async def _(event):
@@ -28,14 +28,14 @@ async def _(event):
     type_of_group = event.pattern_match.group(1)
     group_name = event.pattern_match.group(2)
     if type_of_group == "c":
-        descript = "This is a Test Channel created using LionX"
+        descript = "This is a Test Channel created using SaViorX"
     else:
-        descript = "This is a Test Group created using LionX"
+        descript = "This is a Test Group created using SaViorX"
     if type_of_group == "g":
         try:
             result = await event.client(
                 functions.messages.CreateChatRequest(
-                    users=[Config.TG_BOT_USERNAME],
+                    users=[Config.BOT_USERNAME],
                     # Not enough users (to create a chat, for example)
                     # Telegram, no longer allows creating a chat with ourselves
                     title=group_name,
@@ -47,11 +47,11 @@ async def _(event):
                     peer=created_chat_id,
                 )
             )
-            await edit_or_reply(
+            await eor(
                 event, f"Group `{group_name}` created successfully. Join {result.link}"
             )
         except Exception as e:
-            await edit_delete(event, f"**Error:**\n{str(e)}")
+            await eod(event, f"**Error:**\n{str(e)}")
     elif type_of_group == "c":
         try:
             r = await event.client(
@@ -67,22 +67,22 @@ async def _(event):
                     peer=created_chat_id,
                 )
             )
-            await edit_or_reply(
+            await eor(
                 event,
                 f"Channel `{group_name}` created successfully. Join {result.link}",
             )
         except Exception as e:
-            await edit_delete(event, f"**Error:**\n{e}")
+            await eod(event, f"**Error:**\n{e}")
     elif type_of_group == "b":
         answer = await create_supergroup(
-            group_name, event.client, Config.TG_BOT_USERNAME, descript
+            group_name, event.client, Config.BOT_USERNAME, descript
         )
         if answer[0] != "error":
-            await edit_or_reply(
+            await eor(
                 event,
                 f"Mega group `{group_name}` created successfully. Join {answer[0].link}",
             )
         else:
-            await edit_delete(event, f"**Error:**\n{answer[1]}")
+            await eod(event, f"**Error:**\n{answer[1]}")
     else:
-        await edit_delete(event, "Read `.help create` to know how to use me")
+        await eod(event, "Read `.help create` to know how to use me")

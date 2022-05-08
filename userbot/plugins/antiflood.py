@@ -5,9 +5,9 @@ from telethon.tl.types import ChatBannedRights
 
 from ..sql_helper import antiflood_sql as sql
 from ..utils import is_admin
-from . import edit_or_reply, lionub
+from . import eor, savior
 
-plugin_category = "admin"
+menu_category = "admin"
 CHAT_FLOOD = sql.__load_flood_settings()
 
 ANTI_FLOOD_WARN_MODE = ChatBannedRights(
@@ -15,12 +15,12 @@ ANTI_FLOOD_WARN_MODE = ChatBannedRights(
 )
 
 
-@lionub.lion_cmd(incoming=True, groups_only=True)
+@savior.savior_cmd(incoming=True, groups_only=True)
 async def _(event):
     if not CHAT_FLOOD:
         return
-    lionadmin = await is_admin(event.client, event.chat_id, event.client.uid)
-    if not lionadmin:
+    savioradmin = await is_admin(event.client, event.chat_id, event.client.uid)
+    if not savioradmin:
         return
     if str(event.chat_id) not in CHAT_FLOOD:
         return
@@ -54,9 +54,9 @@ because he reached the defined flood limit.""",
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"setflood(?:\s|$)([\s\S]*)",
-    command=("setflood", plugin_category),
+@savior.savior_cmd(
+    pattern="setflood(?:\s|$)([\s\S]*)",
+    command=("setflood", menu_category),
     info={
         "header": "To setup antiflood in a group",
         "description": "It warns the user if he spams the chat and if you are an admin with proper rights then it mutes him in that group.",
@@ -72,7 +72,7 @@ because he reached the defined flood limit.""",
 async def _(event):
     "To setup antiflood in a group to prevent spam"
     input_str = event.pattern_match.group(1)
-    event = await edit_or_reply(event, "`updating flood settings!`")
+    event = await eor(event, "`updating flood settings!`")
     await asyncio.sleep(2)
     try:
         sql.set_flood(event.chat_id, input_str)

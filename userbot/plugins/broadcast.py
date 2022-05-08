@@ -3,21 +3,149 @@ from asyncio import sleep
 
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 
-from .. import lionub
+from .. import savior
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.utils import _format, get_user_from_event
 from ..sql_helper import broadcast_sql as sql
 from . import BOTLOG, BOTLOG_CHATID
 
-plugin_category = "tools"
+menu_category = "tools"
 
 LOGS = logging.getLogger(__name__)
 
 
-@lionub.lion_cmd(
-    pattern=r"msgto(?:\s|$)([\s\S]*)",
-    command=("msgto", plugin_category),
+@savior.savior_cmd(
+    pattern="dgcast(?:\s|$)([\s\S]*)",
+    command=("dgcast", menu_category),
+    info={
+        "header": "To Send A Message/Media In All Group Time Time.",
+        "description": "It Can Help U To Send Message/Media To All Group At Time To Time",
+        "usage": [
+            "{tr}dgcast <type> <message>",
+        ],
+        "examples": [
+            "{tr}dgcast 5 100 SaVior",
+        ],
+    },
+)
+async def _(event):
+    "Help U To Send Message In All Group Time To Time"
+    reply_msg = await event.get_reply_message()
+    input_str = "".join(event.text.split(maxsplit=1)[1:])
+    spamDelay = float(input_str.split(" ", 2)[0])
+    counter = int(input_str.split(" ", 2)[1])
+    if reply_msg:
+        tol = reply_msg.text
+        file = reply_msg.media
+    else:
+        tol = str(input_str.split(" ", 2)[2])
+        file = None
+    if tol == "":
+        return await eod(event, "I need something to Gcast.")
+    hol = await eor(event, "`Gcasting message Time To Time Start...`")
+    for _ in range(counter):
+        async for redeye in event.client.iter_dialogs():
+            if redeye.is_group:
+                chat = redeye.id
+                try:
+                    if chat != -1001289164396:
+                        await event.client.send_message(chat, tol, file=file)
+                    elif chat == -1001289164396:
+                        pass
+                except BaseException:
+                    pass
+                await sleep(spamDelay)
+    await hol.edit(
+        "**Gcast Executed Successfully !!** \n\n** Sent in :** `{lol} {omk}`\n**✓ Failed in :** `{sed} {omk}`\n**✓ Total :** `{UwU} {omk}`"
+    )
+
+
+@savior.savior_cmd(
+    pattern="gcast(?:\s|$)([\s\S]*)",
+    command=("gcast", menu_category),
+    info={
+        "header": "To Send A Message/Media In All.",
+        "description": "It Can Help U To Send Message/Media To All Group/usee According to type",
+        "flags": {
+            "-a": "To Send Message In All User & Group",
+            "-g": "To Send Message In All Group",
+            "-p": "To Send Message In All User",
+        },
+        "usage": [
+            "{tr}gcast <type> <message>",
+        ],
+        "examples": [
+            "{tr}gcast -a SaVior",
+        ],
+    },
+)
+async def _(event):
+    "Help U To Send Message In All Group & User"
+    reply_msg = await event.get_reply_message()
+    type = event.text[7:9] or "-a"
+    if reply_msg:
+        tol = reply_msg.text
+        file = reply_msg.media
+    else:
+        tol = event.text[9:]
+        file = None
+    if tol == "":
+        return await eod(event, "I need something to Gcast.")
+    hol = await eor(event, "`Gcasting message...`")
+    sed = 0
+    lol = 0
+    if type == "-a":
+        async for aman in event.client.iter_dialogs():
+            chat = aman.id
+            try:
+                if chat != -1001289164396:
+                    await event.client.send_message(chat, tol, file=file)
+                    lol += 1
+                elif chat == -1001289164396:
+                    pass
+            except BaseException:
+                sed += 1
+    elif type == "-p":
+        async for SaVior in event.client.iter_dialogs():
+            if SaVior.is_user and not SaVior.entity.bot:
+                chat = SaVior.id
+                try:
+                    await event.client.send_message(chat, tol, file=file)
+                    lol += 1
+                except BaseException:
+                    sed += 1
+    elif type == "-g":
+        async for redeye in event.client.iter_dialogs():
+            if redeye.is_group:
+                chat = redeye.id
+                try:
+                    if chat != -1001289164396:
+                        await event.client.send_message(chat, tol, file=file)
+                        lol += 1
+                    elif chat == -1001289164396:
+                        pass
+                except BaseException:
+                    sed += 1
+    else:
+        return await hol.edit(
+            "Please give a flag to Gcast message. \n\n**Available flags are :** \n• -a : To Gcast in all chats. \n• -p : To Gcast in private chats. \n• -g : To Gcast in groups."
+        )
+    UwU = sed + lol
+    if type == "-a":
+        omk = "Chats"
+    elif type == "-p":
+        omk = "PM"
+    elif type == "-g":
+        omk = "Groups"
+    await hol.edit(
+        f"**Gcast Executed Successfully !!** \n\n** Sent in :** `{lol} {omk}`\n**✓ Failed in :** `{sed} {omk}`\n**✓ Total :** `{UwU} {omk}`"
+    )
+
+
+@savior.savior_cmd(
+    pattern="msgto(?:\s|$)([\s\S]*)",
+    command=("msgto", menu_category),
     info={
         "header": "To message to person or to a chat.",
         "description": "Suppose you want to message directly to a person/chat from a paticular chat. Then simply reply to a person with this cmd and text or to a text with cmd and username/userid/chatid,",
@@ -25,17 +153,17 @@ LOGS = logging.getLogger(__name__)
             "{tr}msgto <username/userid/chatid/chatusername> reply to message",
             "{tr}msgto <username/userid/chatid/chatusername> <text>",
         ],
-        "examples": "{tr}msgto @LionXot just a testmessage",
+        "examples": "{tr}msgto @SaViorUpdates just a testmessage",
     },
 )
-async def lionbroadcast_add(event):
+async def saviorbroadcast_add(event):
     "To message to person or to a chat."
     user, reason = await get_user_from_event(event)
     reply = await event.get_reply_message()
     if not user:
         return
     if not reason and not reply:
-        return await edit_delete(
+        return await eod(
             event, "__What should i send to the person. reply to msg or give text__"
         )
     if reply and reason and user.id != reply.sender_id:
@@ -47,7 +175,7 @@ async def lionbroadcast_add(event):
                 reply_to=msg.id,
             )
         msglink = await event.clienr.get_msg_link(msg)
-        return await edit_or_reply(
+        return await eor(
             event,
             f"__Sorry! Confusion between users to whom should i send the person mentioned in message or to the person replied. text message was logged in [log group]({msglink}). you can resend message from there__",
         )
@@ -55,37 +183,37 @@ async def lionbroadcast_add(event):
         msg = await event.client.send_message(user.id, reason)
     else:
         msg = await event.client.send_message(user.id, reply)
-    await edit_delete(event, "__Successfully sent the message.__")
+    await eod(event, "__Successfully sent the message.__")
 
 
-@lionub.lion_cmd(
-    pattern=r"addto(?:\s|$)([\s\S]*)",
-    command=("addto", plugin_category),
+@savior.savior_cmd(
+    pattern="addto(?:\s|$)([\s\S]*)",
+    command=("addto", menu_category),
     info={
         "header": "Will add the specific chat to the mentioned category",
         "usage": "{tr}addto <category name>",
         "examples": "{tr}addto test",
     },
 )
-async def lionbroadcast_add(event):
+async def saviorbroadcast_add(event):
     "To add the chat to the mentioned category"
-    lioninput_str = event.pattern_match.group(1)
-    if not lioninput_str:
-        return await edit_delete(
+    saviorinput_str = event.pattern_match.group(1)
+    if not saviorinput_str:
+        return await eod(
             event,
-            "In which category should i add this chat",
+            "In Which category should i add this chat",
             parse_mode=_format.parse_pre,
         )
-    keyword = lioninput_str.lower()
+    keyword = saviorinput_str.lower()
     check = sql.is_in_broadcastlist(keyword, event.chat_id)
     if check:
-        return await edit_delete(
+        return await eod(
             event,
             f"This chat is already in this category {keyword}",
             parse_mode=_format.parse_pre,
         )
     sql.add_to_broadcastlist(keyword, event.chat_id)
-    await edit_delete(
+    await eod(
         event,
         f"This chat is Now added to category {keyword}",
         parse_mode=_format.parse_pre,
@@ -106,34 +234,34 @@ async def lionbroadcast_add(event):
             )
 
 
-@lionub.lion_cmd(
-    pattern=r"list(?:\s|$)([\s\S]*)",
-    command=("list", plugin_category),
+@savior.savior_cmd(
+    pattern="list(?:\s|$)([\s\S]*)",
+    command=("list", menu_category),
     info={
         "header": "will show the list of all chats in the given category",
         "usage": "{tr}list <category name>",
         "examples": "{tr}list test",
     },
 )
-async def lionbroadcast_list(event):
+async def saviorbroadcast_list(event):
     "To list the all chats in the mentioned category."
-    lioninput_str = event.pattern_match.group(1)
-    if not lioninput_str:
-        return await edit_delete(
+    saviorinput_str = event.pattern_match.group(1)
+    if not saviorinput_str:
+        return await eod(
             event,
             "Which category Chats should i list ?\nCheck .listall",
             parse_mode=_format.parse_pre,
         )
-    keyword = lioninput_str.lower()
+    keyword = saviorinput_str.lower()
     no_of_chats = sql.num_broadcastlist_chat(keyword)
     if no_of_chats == 0:
-        return await edit_delete(
+        return await eod(
             event,
             f"There is no category with name {keyword}. Check '.listall'",
             parse_mode=_format.parse_pre,
         )
     chats = sql.get_chat_broadcastlist(keyword)
-    lionevent = await edit_or_reply(
+    saviorevent = await eor(
         event, f"Fetching info of the category {keyword}", parse_mode=_format.parse_pre
     )
     resultlist = f"**The category '{keyword}' have '{no_of_chats}' chats and these are listed below :**\n\n"
@@ -152,21 +280,21 @@ async def lionbroadcast_list(event):
             errorlist += f" 👉 __This id {int(chat)} in database probably you may left the chat/channel or may be invalid id.\
                             \nRemove this id from the database by using this command__ `.frmfrom {keyword} {int(chat)}` \n\n"
     finaloutput = resultlist + errorlist
-    await edit_or_reply(lionevent, finaloutput)
+    await eor(saviorevent, finaloutput)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="listall$",
-    command=("listall", plugin_category),
+    command=("listall", menu_category),
     info={
         "header": "Will show the list of all category names.",
         "usage": "{tr}listall",
     },
 )
-async def lionbroadcast_list(event):
+async def saviorbroadcast_list(event):
     "To list all the category names."
     if sql.num_broadcastlist_chats() == 0:
-        return await edit_delete(
+        return await eod(
             event,
             "you haven't created at least one category  check info for more help",
             parse_mode=_format.parse_pre,
@@ -175,46 +303,46 @@ async def lionbroadcast_list(event):
     resultext = "**Here are the list of your category's :**\n\n"
     for i in chats:
         resultext += f" 👉 `{i}` __contains {sql.num_broadcastlist_chat(i)} chats__\n"
-    await edit_or_reply(event, resultext)
+    await eor(event, resultext)
 
 
-@lionub.lion_cmd(
-    pattern=r"sendto(?:\s|$)([\s\S]*)",
-    command=("sendto", plugin_category),
+@savior.savior_cmd(
+    pattern="sendto(?:\s|$)([\s\S]*)",
+    command=("sendto", menu_category),
     info={
         "header": "will send the replied message to all chats in the given category",
         "usage": "{tr}sendto <category name>",
         "examples": "{tr}sendto test",
     },
 )
-async def lionbroadcast_send(event):
+async def saviorbroadcast_send(event):
     "To send the message to all chats in the mentioned category."
-    lioninput_str = event.pattern_match.group(1)
-    if not lioninput_str:
-        return await edit_delete(
+    saviorinput_str = event.pattern_match.group(1)
+    if not saviorinput_str:
+        return await eod(
             event,
             "To which category should i send this message",
             parse_mode=_format.parse_pre,
         )
     reply = await event.get_reply_message()
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+    savior = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
     if not reply:
-        return await edit_delete(
+        return await eod(
             event,
             "what should i send to to this category ?",
             parse_mode=_format.parse_pre,
         )
-    keyword = lioninput_str.lower()
+    keyword = saviorinput_str.lower()
     no_of_chats = sql.num_broadcastlist_chat(keyword)
-    group_ = Get(lion)
+    group_ = Get(savior)
     if no_of_chats == 0:
-        return await edit_delete(
+        return await eod(
             event,
             f"There is no category with name {keyword}. Check '.listall'",
             parse_mode=_format.parse_pre,
         )
     chats = sql.get_chat_broadcastlist(keyword)
-    lionevent = await edit_or_reply(
+    saviorevent = await eor(
         event,
         "sending this message to all groups in the category",
         parse_mode=_format.parse_pre,
@@ -234,7 +362,7 @@ async def lionbroadcast_send(event):
             LOGS.info(str(e))
         await sleep(0.5)
     resultext = f"`The message was sent to {i} chats out of {no_of_chats} chats in category {keyword}.`"
-    await edit_delete(lionevent, resultext)
+    await eod(saviorevent, resultext)
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -243,43 +371,43 @@ async def lionbroadcast_send(event):
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"fwdto(?:\s|$)([\s\S]*)",
-    command=("fwdto", plugin_category),
+@savior.savior_cmd(
+    pattern="fwdto(?:\s|$)([\s\S]*)",
+    command=("fwdto", menu_category),
     info={
         "header": "Will forward the replied message to all chats in the given category",
         "usage": "{tr}fwdto <category name>",
         "examples": "{tr}fwdto test",
     },
 )
-async def lionbroadcast_send(event):
+async def saviorbroadcast_send(event):
     "To forward the message to all chats in the mentioned category."
-    lioninput_str = event.pattern_match.group(1)
-    if not lioninput_str:
-        return await edit_delete(
+    saviorinput_str = event.pattern_match.group(1)
+    if not saviorinput_str:
+        return await eod(
             event,
             "To which category should i send this message",
             parse_mode=_format.parse_pre,
         )
     reply = await event.get_reply_message()
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+    savior = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
     if not reply:
-        return await edit_delete(
+        return await eod(
             event,
             "what should i send to to this category ?",
             parse_mode=_format.parse_pre,
         )
-    keyword = lioninput_str.lower()
+    keyword = saviorinput_str.lower()
     no_of_chats = sql.num_broadcastlist_chat(keyword)
-    group_ = Get(lion)
+    group_ = Get(savior)
     if no_of_chats == 0:
-        return await edit_delete(
+        return await eod(
             event,
             f"There is no category with name {keyword}. Check '.listall'",
             parse_mode=_format.parse_pre,
         )
     chats = sql.get_chat_broadcastlist(keyword)
-    lionevent = await edit_or_reply(
+    saviorevent = await eor(
         event,
         "sending this message to all groups in the category",
         parse_mode=_format.parse_pre,
@@ -299,7 +427,7 @@ async def lionbroadcast_send(event):
             LOGS.info(str(e))
         await sleep(0.5)
     resultext = f"`The message was sent to {i} chats out of {no_of_chats} chats in category {keyword}.`"
-    await edit_delete(lionevent, resultext)
+    await eod(saviorevent, resultext)
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -308,34 +436,34 @@ async def lionbroadcast_send(event):
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"rmfrom(?:\s|$)([\s\S]*)",
-    command=("rmfrom", plugin_category),
+@savior.savior_cmd(
+    pattern="rmfrom(?:\s|$)([\s\S]*)",
+    command=("rmfrom", menu_category),
     info={
         "header": "Will remove the specific chat to the mentioned category",
         "usage": "{tr}rmfrom <category name>",
         "examples": "{tr}rmfrom test",
     },
 )
-async def lionbroadcast_remove(event):
+async def saviorbroadcast_remove(event):
     "To remove the chat from the mentioned category"
-    lioninput_str = event.pattern_match.group(1)
-    if not lioninput_str:
-        return await edit_delete(
+    saviorinput_str = event.pattern_match.group(1)
+    if not saviorinput_str:
+        return await eod(
             event,
             "From which category should i remove this chat",
             parse_mode=_format.parse_pre,
         )
-    keyword = lioninput_str.lower()
+    keyword = saviorinput_str.lower()
     check = sql.is_in_broadcastlist(keyword, event.chat_id)
     if not check:
-        return await edit_delete(
+        return await eod(
             event,
             f"This chat is not in the category {keyword}",
             parse_mode=_format.parse_pre,
         )
     sql.rm_from_broadcastlist(keyword, event.chat_id)
-    await edit_delete(
+    await eod(
         event,
         f"This chat is Now removed from the category {keyword}",
         parse_mode=_format.parse_pre,
@@ -356,9 +484,9 @@ async def lionbroadcast_remove(event):
             )
 
 
-@lionub.lion_cmd(
-    pattern=r"frmfrom(?:\s|$)([\s\S]*)",
-    command=("frmfrom", plugin_category),
+@savior.savior_cmd(
+    pattern="frmfrom(?:\s|$)([\s\S]*)",
+    command=("frmfrom", menu_category),
     info={
         "header": " To force remove the given chat from a category.",
         "description": "Suppose if you are muted or group/channel is deleted you cant send message there so you can use this cmd to the chat from that category",
@@ -366,18 +494,18 @@ async def lionbroadcast_remove(event):
         "examples": "{tr}frmfrom test -100123456",
     },
 )
-async def lionbroadcast_remove(event):
+async def saviorbroadcast_remove(event):
     "To force remove the given chat from a category."
-    lioninput_str = event.pattern_match.group(1)
-    if not lioninput_str:
-        return await edit_delete(
+    saviorinput_str = event.pattern_match.group(1)
+    if not saviorinput_str:
+        return await eod(
             event,
             "From which category should i remove this chat",
             parse_mode=_format.parse_pre,
         )
-    args = lioninput_str.split(" ")
+    args = saviorinput_str.split(" ")
     if len(args) != 2:
-        return await edit_delete(
+        return await eod(
             event,
             "Use proper syntax as shown .frmfrom category_name groupid",
             parse_mode=_format.parse_pre,
@@ -390,21 +518,21 @@ async def lionbroadcast_remove(event):
             groupid = int(args[1])
             keyword = args[0].lower()
         except ValueError:
-            return await edit_delete(
+            return await eod(
                 event,
                 "Use proper syntax as shown .frmfrom category_name groupid",
                 parse_mode=_format.parse_pre,
             )
     keyword = keyword.lower()
-    check = sql.is_in_broadcastlist(keyword, groupid)
+    check = sql.is_in_broadcastlist(keyword, int(groupid))
     if not check:
-        return await edit_delete(
+        return await eod(
             event,
             f"This chat {groupid} is not in the category {keyword}",
             parse_mode=_format.parse_pre,
         )
     sql.rm_from_broadcastlist(keyword, groupid)
-    await edit_delete(
+    await eod(
         event,
         f"This chat {groupid} is Now removed from the category {keyword}",
         parse_mode=_format.parse_pre,
@@ -425,34 +553,34 @@ async def lionbroadcast_remove(event):
             )
 
 
-@lionub.lion_cmd(
-    pattern=r"delc(?:\s|$)([\s\S]*)",
-    command=("delc", plugin_category),
+@savior.savior_cmd(
+    pattern="delc(?:\s|$)([\s\S]*)",
+    command=("delc", menu_category),
     info={
         "header": "To Deletes the category completely from database",
         "usage": "{tr}delc <category name>",
         "examples": "{tr}delc test",
     },
 )
-async def lionbroadcast_delete(event):
+async def saviorbroadcast_delete(event):
     "To delete a category completely."
-    lioninput_str = event.pattern_match.group(1)
-    check1 = sql.num_broadcastlist_chat(lioninput_str)
+    saviorinput_str = event.pattern_match.group(1)
+    check1 = sql.num_broadcastlist_chat(saviorinput_str)
     if check1 < 1:
-        return await edit_delete(
+        return await eod(
             event,
-            f"Are you sure that there is category {lioninput_str}",
+            f"Are you sure that there is category {saviorinput_str}",
             parse_mode=_format.parse_pre,
         )
     try:
-        sql.del_keyword_broadcastlist(lioninput_str)
-        await edit_or_reply(
+        sql.del_keyword_broadcastlist(saviorinput_str)
+        await eor(
             event,
-            f"Successfully deleted the category {lioninput_str}",
+            f"Successfully deleted the category {saviorinput_str}",
             parse_mode=_format.parse_pre,
         )
     except Exception as e:
-        await edit_delete(
+        await eod(
             event,
             str(e),
             parse_mode=_format.parse_pre,

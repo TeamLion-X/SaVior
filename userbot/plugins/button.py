@@ -1,33 +1,34 @@
-#    Copyright (C) 2020  Copyless786(π.$)
-# button post makker for LionX thanks to uniborg for the base
+#    Copyright (C) 2020  SaViorXBoy
+# button post makker for SaViorX thanks to uniborg for the base
 
-# by @TeamLionX (@TeamLionX)
+# by @SaViorXBoy (@SaViorXBoy)
 import os
 import re
 
 from telethon import Button
 
 from ..Config import Config
-from . import edit_delete, lionub, reply_id
+from ..helpers.functions.functions import make_inline
+from . import eod, savior, reply_id
 
-plugin_category = "tools"
+menu_category = "tools"
 # regex obtained from:
 # https://github.com/PaulSonOfLars/tgbot/blob/master/tg_bot/modules/helper_funcs/string_handling.py#L23
 BTN_URL_REGEX = re.compile(r"(\[([^\[]+?)\]\<buttonurl:(?:/{0,2})(.+?)(:same)?\>)")
 
 
-@lionub.lion_cmd(
-    pattern=r"cbutton(?:\s|$)([\s\S]*)",
-    command=("cbutton", plugin_category),
+@savior.savior_cmd(
+    pattern="cbutton(?:\s|$)([\s\S]*)",
+    command=("cbutton", menu_category),
     info={
         "header": "To create button posts",
-        "note": f"For working of this you need your bot ({Config.TG_BOT_USERNAME}) in the group/channel \
+        "note": f"For working of this you need your bot ({Config.BOT_USERNAME}) in the group/channel \
         where you are using and Markdown is Default to html",
         "options": "If you button to be in same row as other button then follow this <buttonurl:link:same> in 2nd button.",
         "usage": [
             "{tr}cbutton <text> [Name on button]<buttonurl:link you want to open>",
         ],
-        "examples": "{tr}cbutton test [google]<buttonurl:https://www.google.com> [LionX]<buttonurl:https://t.me/LionXUpdates:same> [support]<buttonurl:https://t.me/LionXSupport>",
+        "examples": "{tr}cbutton test [google]<buttonurl:https://www.google.com> [SaViorX]<buttonurl:https://t.me/SaViorSupport17:same> [support]<buttonurl:https://t.me/SaViorUpdates>",
     },
 )
 async def _(event):
@@ -38,7 +39,7 @@ async def _(event):
     else:
         markdown_note = "".join(event.text.split(maxsplit=1)[1:])
     if not markdown_note:
-        return await edit_delete(event, "`what text should i use in button post`")
+        return await eod(event, "`what text should i use in button post`")
     prev = 0
     note_data = ""
     buttons = []
@@ -83,17 +84,18 @@ async def _(event):
         os.remove(tgbot_reply_message)
 
 
-@lionub.lion_cmd(
-    pattern=r"ibutton(?:\s|$)([\s\S]*)",
-    command=("ibutton", plugin_category),
+@savior.savior_cmd(
+    pattern="ibutton(?:\s|$)([\s\S]*)",
+    command=("ibutton", menu_category),
     info={
         "header": "To create button posts via inline",
         "note": "Markdown is Default to html",
         "options": "If you button to be in same row as other button then follow this <buttonurl:link:same> in 2nd button.",
         "usage": [
             "{tr}ibutton <text> [Name on button]<buttonurl:link you want to open>",
+            "{tr}ibutton <text> <media:media_path> [Name on button]<buttonurl:link you want to open>",
         ],
-        "examples": "{tr}ibutton test [google]<buttonurl:https://www.google.com> [LionX]<buttonurl:https://t.me/LionXUpdates:same> [support]<buttonurl:https://t.me/LionXSupport>",
+        "examples": "{tr}ibutton test <media:downloads/thumb_image.jpg> [google]<buttonurl:https://www.google.com> [SaVior]<buttonurl:https://t.me/SaViorUpdates:same> [support]<buttonurl:https://t.me/SaViorSupport>",
     },
 )
 async def _(event):
@@ -106,10 +108,8 @@ async def _(event):
     else:
         markdown_note = "".join(event.text.split(maxsplit=1)[1:])
     if not markdown_note:
-        return await edit_delete(event, "`what text should i use in button post`")
-    lioninput = f"Inline buttons {markdown_note}"
-    results = await event.client.inline_query(Config.TG_BOT_USERNAME, lioninput)
-    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+        return await edit_delete(event, "`What text should i use in button post`")
+    await make_inline(markdown_note, event.client, event.chat_id, reply_to_id)
     await event.delete()
 
 

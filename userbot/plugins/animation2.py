@@ -1,14 +1,84 @@
 import asyncio
 from collections import deque
 
-from . import edit_or_reply, lionub
+from . import eor, savior
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
+    pattern="degi$",
+    command=("degi", menu_category),
+    info={
+        "header": "Fun animation try yourself to know more",
+        "usage": "{tr}degi",
+    },
+)
+async def _(event):
+    event = await eor(event, "degi")
+    await event.edit("WO")
+    await asyncio.sleep(1.5)
+    await event.edit("DegI")
+    await asyncio.sleep(1.5)
+    await event.edit("TuM")
+    await asyncio.sleep(1.5)
+    await event.edit("EkbaR")
+    await asyncio.sleep(1.5)
+    await event.edit("ManG")
+    await asyncio.sleep(1.5)
+    await event.edit("KaR")
+    await asyncio.sleep(1.5)
+    await event.edit("ToH")
+    await asyncio.sleep(1.5)
+    await event.edit("DekhO")
+    await asyncio.sleep(1.5)
+    await event.edit("Wo DeGi TuM eKbAr MaNg KaR tOh DeKhO😄")
+
+
+@savior.savior_cmd(
+    pattern="nehi$",
+    command=("nehi", menu_category),
+    info={
+        "header": "Fun animation try yourself to know more",
+        "usage": "{tr}nehi",
+    },
+)
+async def _(event):
+    event = await eor(event, "nehi")
+    await event.edit(
+        "`Wo PaKkA DeGi Tu ManG KaR ToH DekH\n AuR NaA De To UskI BheN Ko PakaD😚😚`"
+    )
+
+
+@savior.savior_cmd(
+    pattern="hnd$",
+    command=("hnd", menu_category),
+    info={
+        "header": "Fun animation try yourself to know more",
+        "usage": "{tr}hnd <name>",
+    },
+)
+async def _(event):
+    name = event.text[4:]
+    animation_interval = 0.5
+    animation_ttl = range(6)
+    event = await eor(event, "✌️")
+    animation_chars = [
+        "👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿                                          👈🏿\n👉🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👈🏿",
+        "👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾\n👉🏾                                  👈🏾\n👉🏾                                  👈🏾\n👉🏾                                  👈🏾\n👉🏾                                  👈🏾\n👉🏾                                  👈🏾\n👉🏾                                  👈🏾\n👉🏾                                  👈🏾\n👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾",
+        "👇🏽👇🏽👇🏽👇🏽👇🏽👇🏽👇🏽\n👉🏽                        👈🏽\n👉🏽                        👈🏽\n👉🏽                        👈🏽\n👉🏽                        👈🏽\n👉🏽                        👈🏽\n👆🏽👆🏽👆🏽👆🏽👆🏽👆🏽👆🏽",
+        "👇🏼👇🏼👇🏼👇🏼👇🏼\n👉🏼              👈🏼\n👉🏼              👈🏼\n👉🏼              👈🏼\n👆🏼👆🏼👆🏼👆🏼👆🏼",
+        f"👇🏻👇🏻👇🏻\n{name}\n👆🏻👆🏻👆🏻",
+        f"👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿👇🏿\n👉🏿👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👇🏾👈🏿\n👉🏿👉🏾👇🏽👇🏽👇🏽👇🏽👇🏽👇🏽👇🏽👈🏾👈🏿\n👉🏿👉🏾👉🏽👇🏼👇🏼👇🏼👇🏼👇🏼👈🏽👈🏾👈🏿\n👉🏿👉🏾👉🏽👉🏼👇🏻👇🏻👇🏻👈🏼👈🏽👈🏾👈🏿\n👉🏿  {name}  👈🏿\n👉🏿👉🏾👉🏽👉🏼👆🏻👆🏻👆🏻👈🏼👈🏽👈🏾👈🏿\n👉🏿👉🏾👉🏽👆🏼👆🏼👆🏼👆🏼👆🏼👈🏽👈🏾👈🏿\n👉🏿👉🏾👆🏽👆🏽👆🏽👆🏽👆🏽👆🏽👆🏽👈🏾👈🏿\n👉🏿👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👆🏾👈🏿\n👉🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👆🏿👈🏿",
+    ]
+    for i in animation_ttl:
+        await asyncio.sleep(animation_interval)
+        await event.edit(animation_chars[i % 6])
+
+
+@savior.savior_cmd(
     pattern="think$",
-    command=("think", plugin_category),
+    command=("think", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}think",
@@ -16,7 +86,7 @@ plugin_category = "fun"
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "think")
+    event = await eor(event, "think")
     deq = deque(list("🤔🧐🤔🧐🤔🧐"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -24,9 +94,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lmao$",
-    command=("lmao", plugin_category),
+    command=("lmao", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}lmao",
@@ -34,7 +104,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "lmao")
+    event = await eor(event, "lmao")
     deq = deque(list("😂🤣😂🤣😂🤣"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -42,9 +112,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="nothappy$",
-    command=("nothappy", plugin_category),
+    command=("nothappy", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}nothappy",
@@ -52,7 +122,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "nathappy")
+    event = await eor(event, "nathappy")
     deq = deque(list("😁☹️😁☹️😁☹️😁"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -60,9 +130,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="clock$",
-    command=("clock", plugin_category),
+    command=("clock", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}clock",
@@ -70,7 +140,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "clock")
+    event = await eor(event, "clock")
     deq = deque(list("🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -78,9 +148,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="muah$",
-    command=("muah", plugin_category),
+    command=("muah", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}muah",
@@ -88,7 +158,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "muah")
+    event = await eor(event, "muah")
     deq = deque(list("😗😙😚😚😘"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -96,9 +166,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="heart$",
-    command=("heart", plugin_category),
+    command=("heart", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}heart",
@@ -106,7 +176,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "heart")
+    event = await eor(event, "heart")
     deq = deque(list("❤️🧡💛💚💙💜🖤"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -114,9 +184,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="gym$",
-    command=("gym", plugin_category),
+    command=("gym", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}gym",
@@ -124,7 +194,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "gym")
+    event = await eor(event, "gym")
     deq = deque(list("🏃‍🏋‍🤸‍🏃‍🏋‍🤸‍🏃‍🏋‍🤸‍"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -132,9 +202,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="earth$",
-    command=("earth", plugin_category),
+    command=("earth", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}earth",
@@ -142,7 +212,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "earth")
+    event = await eor(event, "earth")
     deq = deque(list("🌏🌍🌎🌎🌍🌏🌍🌎"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -150,9 +220,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="moon$",
-    command=("moon", plugin_category),
+    command=("moon", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}moon",
@@ -160,7 +230,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "moon")
+    event = await eor(event, "moon")
     deq = deque(list("🌗🌘🌑🌒🌓🌔🌕🌖"))
     for _ in range(48):
         await asyncio.sleep(0.2)
@@ -168,9 +238,9 @@ async def _(event):
         deq.rotate(1)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="smoon$",
-    command=("smoon", plugin_category),
+    command=("smoon", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}smoon",
@@ -178,7 +248,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "smoon")
+    event = await eor(event, "smoon")
     animation_interval = 0.2
     animation_ttl = range(101)
     await event.edit("smoon..")
@@ -197,9 +267,9 @@ async def _(event):
         await event.edit(animation_chars[i % 8])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="tmoon$",
-    command=("tmoon", plugin_category),
+    command=("tmoon", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}tmoon",
@@ -207,7 +277,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(event, "tmoon")
+    event = await eor(event, "tmoon")
     animation_interval = 0.2
     animation_ttl = range(96)
     await event.edit("tmoon..")

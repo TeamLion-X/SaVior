@@ -7,14 +7,14 @@ Fetch App Details from Playstore.
 import bs4
 import requests
 
-from . import ALIVE_NAME, edit_or_reply, lionub
+from . import ALIVE_NAME, eor, savior
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"app ([\s\S]*)",
-    command=("app", plugin_category),
+@savior.savior_cmd(
+    pattern="app ([\s\S]*)",
+    command=("app", menu_category),
     info={
         "header": "To search any app in playstore",
         "description": "Searches the app in the playstore and provides the link to the app in playstore and fetchs app details",
@@ -24,14 +24,13 @@ plugin_category = "utils"
 async def app_search(event):
     "To search any app in playstore."
     app_name = event.pattern_match.group(1)
-    event = await edit_or_reply(event, "`Searching!..`")
+    event = await eor(event, "`Searching!..`")
     try:
         remove_space = app_name.split(" ")
         final_name = "+".join(remove_space)
         page = requests.get(
             f"https://play.google.com/store/search?q={final_name}&c=apps"
         )
-
         str(page.status_code)
         soup = bs4.BeautifulSoup(page.content, "lxml", from_encoding="utf-8")
         results = soup.findAll("div", "ZmHEEd")
@@ -63,7 +62,7 @@ async def app_search(event):
             .img["data-src"]
         )
         app_details = "<a href='" + app_icon + "'>📲&#8203;</a>"
-        app_details += f" <b>{app_name}</b>"
+        app_details += f"<b> {app_name} </b>"
         app_details += (
             "\n\n<code>Developer :</code> <a href='"
             + app_dev_link

@@ -1,13 +1,13 @@
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="join$",
-    command=("join", plugin_category),
+    command=("join", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}join",
@@ -15,15 +15,15 @@ plugin_category = "fun"
 )
 async def _(event):
     "fun art"
-    await edit_or_reply(
+    await eor(
         event,
         "`━━━━━┓ \n┓┓┓┓┓┃\n┓┓┓┓┓┃　ヽ○ノ ⇦ Me When You Joined \n┓┓┓┓┓┃.     /　 \n┓┓┓┓┓┃ ノ) \n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃`",
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="climb$",
-    command=("climb", plugin_category),
+    command=("climb", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}climb",
@@ -31,14 +31,12 @@ async def _(event):
 )
 async def _(event):
     "fun art"
-    await edit_or_reply(
-        event, r"`😏/\n/▌ \n/ \\n████\n╬╬\n╬╬\n╬╬\n╬╬\n╬╬\n╬╬\n╬╬\😦\n╬╬/▌\n╬╬/\`"
-    )
+    await eor(event, "`😏/\n/▌ \n/ \\n████\n╬╬\n╬╬\n╬╬\n╬╬\n╬╬\n╬╬\n╬╬\😦\n╬╬/▌\n╬╬/\`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="aag$",
-    command=("aag", plugin_category),
+    command=("aag", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}aag",
@@ -46,12 +44,12 @@ async def _(event):
 )
 async def _(event):
     "fun art"
-    await edit_or_reply(event, r"`😲💨  🔥\n/|\     🔥🔥\n/ \   🔥🔥🔥`")
+    await eor(event, "`😲💨  🔥\n/|\     🔥🔥\n/ \   🔥🔥🔥`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="push$",
-    command=("push", plugin_category),
+    command=("push", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}push",
@@ -59,15 +57,15 @@ async def _(event):
 )
 async def _(event):
     "fun art"
-    await edit_or_reply(
+    await eor(
         event,
-        r"`.      😎\n          |\👐\n         / \\\n━━━━━┓ ＼＼ \n┓┓┓┓┓┃\n┓┓┓┓┓┃ ヽ😩ノ\n┓┓┓┓┓┃ 　 /　\n┓┓┓┓┓┃  ノ)　 \n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃`",
+        "`.      😎\n          |\👐\n         / \\\n━━━━━┓ ＼＼ \n┓┓┓┓┓┃\n┓┓┓┓┓┃ ヽ😩ノ\n┓┓┓┓┓┃ 　 /　\n┓┓┓┓┓┃  ノ)　 \n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃\n┓┓┓┓┓┃`",
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="work$",
-    command=("work", plugin_category),
+    command=("work", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}work",
@@ -75,14 +73,12 @@ async def _(event):
 )
 async def _(event):
     "fun art"
-    await edit_or_reply(
-        event, "`📔📚             📚\n📓📚📖  😫  📚📚📓\n📕📚📚  📝  📗💻📘\n📖⁣📖📖📖📖📖📖📖📖`"
-    )
+    await eor(event, "`📔📚             📚\n📓📚📖  😫  📚📚📓\n📕📚📚  📝  📗💻📘\n📖⁣📖📖📖📖📖📖📖📖`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lmoon$",
-    command=("lmoon", plugin_category),
+    command=("lmoon", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}lmoon",
@@ -90,15 +86,15 @@ async def _(event):
 )
 async def test(event):
     "fun art"
-    await edit_or_reply(
+    await eor(
         event,
         "🌕🌕🌕🌕🌕🌕🌕🌕\n🌕🌕🌖🌔🌖🌔🌕🌕\n🌕🌕🌗🌔🌖🌓🌕🌕\n🌕🌕🌗🌔🌖🌓🌕🌕\n🌕🌕🌖🌓🌗🌔🌕🌕\n🌕🌕🌗🌑🌑🌓🌕🌕\n🌕🌕🌗👀🌑🌓🌕🌕\n🌕🌕🌘👄🌑🌓🌕🌕\n🌕🌕🌗🌑🌑🌒🌕🌕\n🌕🌖🌑🌑🌑🌑🌔🌕\n🌕🌘🌑🌑🌑🌑🌒🌕\n🌖🌑🌑🌑🌑🌑🌑🌔\n🌕🤜🏻🌑🌑🌑🌑🤛🏻🌕\n🌕🌖🌑🌑🌑🌑🌔🌕\n🌘🌑🌑🌑🌑🌑🌑🌒\n🌕🌕🌕🌕🌕🌕🌕🌕",
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="city$",
-    command=("city", plugin_category),
+    command=("city", menu_category),
     info={
         "header": "Fun art.",
         "usage": "{tr}city",
@@ -106,9 +102,9 @@ async def test(event):
 )
 async def test(event):
     "fun art"
-    await edit_or_reply(
+    await eor(
         event,
-        r"""☁️☁️☁️🌞      ☁️     ☁️  ☁️ ☁️
+        """☁️☁️☁️🌞      ☁️     ☁️  ☁️ ☁️
   ☁️ ☁️  ✈️    ☁️    🚁    ☁️    ☁️            
 ☁️  ☁️    ☁️       ☁️     ☁️   ☁️ ☁️
        🏬🏨🏫🏢🏤🏥🏦🏪🏫

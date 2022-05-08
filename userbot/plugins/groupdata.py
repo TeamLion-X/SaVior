@@ -18,20 +18,20 @@ from telethon.tl.types import (
 )
 from telethon.utils import get_input_location
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import reply_id
 from . import BOTLOG, BOTLOG_CHATID
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"admins(?:\s|$)([\s\S]*)",
-    command=("admins", plugin_category),
+@savior.savior_cmd(
+    pattern="admins(?:\s|$)([\s\S]*)",
+    command=("admins", menu_category),
     info={
         "header": "To get list of admins.",
         "description": "Will show you the list of admins and if you use this in group then will tag them.",
@@ -39,7 +39,7 @@ plugin_category = "utils"
             "{tr}admins <username/userid>",
             "{tr}admins <in group where you need>",
         ],
-        "examples": "{tr}admins @LionXSupport",
+        "examples": "{tr}admins @SaViorSupport",
     },
 )
 async def _(event):
@@ -54,11 +54,11 @@ async def _(event):
         try:
             chat = await event.client.get_entity(input_str)
         except Exception as e:
-            return await edit_delete(event, str(e))
+            return await eod(event, str(e))
     else:
         chat = to_write_chat
         if not event.is_group:
-            return await edit_or_reply(event, "`Are you sure this is a group?`")
+            return await eor(event, "`Are you sure this is a group?`")
     try:
         async for x in event.client.iter_participants(
             chat, filter=ChannelParticipantsAdmins
@@ -78,14 +78,14 @@ async def _(event):
                     x.first_name, x.id, x.id
                 )
     except Exception as e:
-        mentions += f" {str(e)}" + "\n"
+        mentions += " " + str(e) + "\n"
     await event.client.send_message(event.chat_id, mentions, reply_to=reply_message)
     await event.delete()
 
 
-@lionub.lion_cmd(
-    pattern=r"bots(?:\s|$)([\s\S]*)",
-    command=("bots", plugin_category),
+@savior.savior_cmd(
+    pattern="bots(?:\s|$)([\s\S]*)",
+    command=("bots", menu_category),
     info={
         "header": "To get list of bots.",
         "description": "Will show you the list of bots.",
@@ -93,20 +93,21 @@ async def _(event):
             "{tr}bots <username/userid>",
             "{tr}bots <in group where you need>",
         ],
-        "examples": "{tr}bots @LionXSupport",
+        "examples": "{tr}bots @SaViorUpdates",
     },
 )
 async def _(event):
     "To get list of bots."
     mentions = "**Bots in this Group**: \n"
-    if input_str := event.pattern_match.group(1):
+    input_str = event.pattern_match.group(1)
+    if not input_str:
+        chat = await event.get_input_chat()
+    else:
         mentions = "Bots in {} Group: \n".format(input_str)
         try:
             chat = await event.client.get_entity(input_str)
         except Exception as e:
-            return await edit_or_reply(event, str(e))
-    else:
-        chat = await event.get_input_chat()
+            return await eor(event, str(e))
     try:
         async for x in event.client.iter_participants(
             chat, filter=ChannelParticipantsBots
@@ -120,13 +121,13 @@ async def _(event):
                     x.first_name, x.id, x.id
                 )
     except Exception as e:
-        mentions += f" {str(e)}" + "\n"
-    await edit_or_reply(event, mentions)
+        mentions += " " + str(e) + "\n"
+    await eor(event, mentions)
 
 
-@lionub.lion_cmd(
-    pattern=r"users(?:\s|$)([\s\S]*)",
-    command=("users", plugin_category),
+@savior.savior_cmd(
+    pattern="users(?:\s|$)([\s\S]*)",
+    command=("users", menu_category),
     info={
         "header": "To get list of users.",
         "description": "Will show you the list of users.",
@@ -141,15 +142,16 @@ async def get_users(show):
     "To get list of Users."
     mentions = "**Users in this Group**: \n"
     await reply_id(show)
-    if input_str := show.pattern_match.group(1):
+    input_str = show.pattern_match.group(1)
+    if input_str:
         mentions = "Users in {} Group: \n".format(input_str)
         try:
             chat = await show.client.get_entity(input_str)
         except Exception as e:
-            return await edit_delete(show, f"`{e}`", 10)
+            return await eod(show, f"`{e}`", 10)
     elif not show.is_group:
-        return await edit_or_reply(show, "`Are you sure this is a group?`")
-    lionevent = await edit_or_reply(show, "`getting users list wait...`  ")
+        return await eor(show, "`Are you sure this is a group?`")
+    saviorevent = await eor(show, "`getting users list wait...`  ")
     try:
         if show.pattern_match.group(1):
             async for user in show.client.iter_participants(chat.id):
@@ -167,14 +169,29 @@ async def get_users(show):
                     mentions += (
                         f"\n[{user.first_name}](tg://user?id={user.id}) `{user.id}`"
                     )
-    except Exception as e:
-        mentions += " " + str(e) + "\n"
-    await edit_or_reply(lionevent, mentions)
+    except ChatAdminRequiredError as err:
+        mentions += " " + str(err) + "\n"
+        try:
+            await eor(saviorevent, mentions)
+        except MessageTooLongError:
+            await eor(
+                show, "Damn, this is a huge group. Uploading users lists as file."
+            )
+            file = open("userslist.txt", "w+")
+            file.write(mentions)
+            file.close()
+            await show.client.send_file(
+                show.chat_id,
+                "userslist.txt",
+                caption="Users in {}".format(title),
+                reply_to=show.id,
+            )
+            os.remove("userslist.txt")
 
 
-@lionub.lion_cmd(
-    pattern=r"chatinfo(?:\s|$)([\s\S]*)",
-    command=("chatinfo", plugin_category),
+@savior.savior_cmd(
+    pattern="chatinfo(?:\s|$)([\s\S]*)",
+    command=("chatinfo", menu_category),
     info={
         "header": "To get Group details.",
         "description": "Shows you the total information of the required chat.",
@@ -182,28 +199,28 @@ async def get_users(show):
             "{tr}chatinfo <username/userid>",
             "{tr}chatinfo <in group where you need>",
         ],
-        "examples": "{tr}chatinfo @LionXSupport",
+        "examples": "{tr}chatinfo @SaViorUpdates",
     },
 )
 async def info(event):
     "To get group information"
-    lionevent = await edit_or_reply(event, "`Analysing the chat...`")
-    chat = await get_chatinfo(event, lionevent)
+    saviorevent = await eor(event, "`Analysing the chat...`")
+    chat = await get_chatinfo(event, saviorevent)
     if chat is None:
         return
     caption = await fetch_info(chat, event)
     try:
-        await lionevent.edit(caption, parse_mode="html")
+        await saviorevent.edit(caption, parse_mode="html")
     except Exception as e:
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID, f"**Error in chatinfo : **\n`{e}`"
             )
 
-        await lionevent.edit("`An unexpected error has occurred.`")
+        await saviorevent.edit("`An unexpected error has occurred.`")
 
 
-async def get_chatinfo(event, lionevent):
+async def get_chatinfo(event, saviorevent):
     chat = event.pattern_match.group(1)
     chat_info = None
     if chat:
@@ -224,19 +241,19 @@ async def get_chatinfo(event, lionevent):
         try:
             chat_info = await event.client(GetFullChannelRequest(chat))
         except ChannelInvalidError:
-            await lionevent.edit("`Invalid channel/group`")
+            await saviorevent.edit("`Invalid channel/group`")
             return None
         except ChannelPrivateError:
-            await lionevent.edit(
+            await saviorevent.edit(
                 "`This is a private channel/group or I am banned from there`"
             )
             return None
         except ChannelPublicGroupNaError:
-            await lionevent.edit("`Channel or supergroup doesn't exist`")
+            await saviorevent.edit("`Channel or supergroup doesn't exist`")
             return None
         except (TypeError, ValueError) as err:
             LOGS.info(err)
-            await edit_delete(lionevent, "**Error:**\n__Can't fetch the chat__")
+            await eod(saviorevent, "**Error:**\n__Can't fetch the chat__")
             return None
     return chat_info
 

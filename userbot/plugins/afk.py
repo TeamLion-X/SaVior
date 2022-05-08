@@ -3,16 +3,16 @@ from datetime import datetime
 
 from telethon.tl import functions, types
 
-from userbot import lionub
+from userbot import savior
 
-from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.tools import media_type
 from ..helpers.utils import _format
+from ..sql_helper.globals import gvarstatus
 from . import BOTLOG, BOTLOG_CHATID
 
-plugin_category = "utils"
+menu_category = "utils"
 
 LOGS = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class AFK:
 AFK_ = AFK()
 
 
-@lionub.lion_cmd(outgoing=True, edited=False)
+@savior.savior_cmd(outgoing=True, edited=False)
 async def set_not_afk(event):
     if AFK_.afk_on is False:
         return
@@ -80,7 +80,7 @@ async def set_not_afk(event):
             )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     incoming=True, func=lambda e: bool(e.mentioned or e.is_private), edited=False
 )
 async def on_afk(event):  # sourcery no-metrics
@@ -140,8 +140,10 @@ async def on_afk(event):  # sourcery no-metrics
         if event.is_private:
             return
         hmm = await event.get_chat()
-        if Config.PM_LOGGER_GROUP_ID == -100:
-            return
+        if gvarstatus("AFKFWD") is None:
+            return False
+        if gvarstatus("AFKFWD") == "OFF":
+            return False
         full = None
         try:
             full = await event.client.get_entity(event.message.from_id)
@@ -158,16 +160,16 @@ async def on_afk(event):  # sourcery no-metrics
         resalt += f"\n<b>Message link: </b><a href = 'https://t.me/c/{hmm.id}/{event.message.id}'> link</a>"
         if not event.is_private:
             await event.client.send_message(
-                Config.PM_LOGGER_GROUP_ID,
+                BOTLOG_CHATID,
                 resalt,
                 parse_mode="html",
                 link_preview=False,
             )
 
 
-@lionub.lion_cmd(
-    pattern=r"afk(?:\s|$)([\s\S]*)",
-    command=("afk", plugin_category),
+@savior.savior_cmd(
+    pattern="afk(?:\s|$)([\s\S]*)",
+    command=("afk", menu_category),
     info={
         "header": "Enables afk for your account",
         "description": "When you are in afk if any one tags you then your bot will reply as he is offline.\
@@ -207,11 +209,9 @@ async def _(event):
             AFK_.afk_time = datetime.now()
         AFK_.USERAFK_ON = f"on: {AFK_.reason}"
         if AFK_.reason:
-            await edit_delete(
-                event, f"`I shall be Going afk! because ~` {AFK_.reason}", 5
-            )
+            await eod(event, f"`I shall be Going afk! because ~` {AFK_.reason}", 5)
         else:
-            await edit_delete(event, "`I shall be Going afk! `", 5)
+            await eod(event, "`I shall be Going afk! `", 5)
         if BOTLOG:
             if AFK_.reason:
                 await event.client.send_message(
@@ -225,9 +225,9 @@ async def _(event):
                 )
 
 
-@lionub.lion_cmd(
-    pattern=r"mafk(?:\s|$)([\s\S]*)",
-    command=("mafk", plugin_category),
+@savior.savior_cmd(
+    pattern="mafk(?:\s|$)([\s\S]*)",
+    command=("mafk", menu_category),
     info={
         "header": "Enables afk for your account",
         "description": "When you are in afk if any one tags you then your bot will reply as he is offline.\
@@ -245,11 +245,11 @@ async def _(event):
     reply = await event.get_reply_message()
     media_t = media_type(reply)
     if media_t == "Sticker" or not media_t:
-        return await edit_or_reply(
+        return await eor(
             event, "`You haven't replied to any media to activate media afk`"
         )
     if not BOTLOG:
-        return await edit_or_reply(
+        return await eor(
             event, "`To use media afk you need to set PRIVATE_GROUP_BOT_API_ID config`"
         )
     AFK_.USERAFK_ON = {}
@@ -271,11 +271,9 @@ async def _(event):
             AFK_.afk_time = datetime.now()
         AFK_.USERAFK_ON = f"on: {AFK_.reason}"
         if AFK_.reason:
-            await edit_delete(
-                event, f"`I shall be Going afk! because ~` {AFK_.reason}", 5
-            )
+            await eod(event, f"`I shall be Going afk! because ~` {AFK_.reason}", 5)
         else:
-            await edit_delete(event, "`I shall be Going afk! `", 5)
+            await eod(event, "`I shall be Going afk! `", 5)
         AFK_.media_afk = await reply.forward_to(BOTLOG_CHATID)
         if AFK_.reason:
             await event.client.send_message(

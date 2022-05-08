@@ -1,11 +1,13 @@
-from . import ALIVE_NAME, edit_or_reply, lionub
+import asyncio
 
-plugin_category = "fun"
+from . import ALIVE_NAME, eor, savior
+
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
-    pattern=r"ded ([\s\S]*)",
-    command=("ded", plugin_category),
+@savior.savior_cmd(
+    pattern="ded ([\s\S]*)",
+    command=("ded", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}ded <text>",
@@ -13,29 +15,32 @@ plugin_category = "fun"
 )
 async def _(event):
     "fun art command"
-    name = event.pattern_match.group(1)
-    await edit_or_reply(
-        event,
-        f"{ALIVE_NAME} --- {name}          \n　　　　　|"
-        "\n　　　　　| \n"
-        "　　　　　| \n"
-        "　　　　　| \n"
-        "　　　　　| \n"
-        "　　　　　| \n"
-        "　　　　　| \n"
-        "　　　　　| \n"
-        "　／￣￣＼| \n"
-        "＜ ´･ 　　 |＼ \n"
-        "　|　３　 | 丶＼ \n"
-        "＜ 、･　　|　　＼ \n"
-        "　＼＿＿／∪ _ ∪) \n"
-        "　　　　　 Ｕ Ｕ\n",
-    )
+    name = event.text[4:]
+    if name:
+        await eor(
+            event,
+            f"{ALIVE_NAME} --- {name}          \n　　　　　|"
+            "\n　　　　　| \n"
+            "　　　　　| \n"
+            "　　　　　| \n"
+            "　　　　　| \n"
+            "　　　　　| \n"
+            "　　　　　| \n"
+            "　　　　　| \n"
+            "　／￣￣＼| \n"
+            "＜ ´･ 　　 |＼ \n"
+            "　|　３　 | 丶＼ \n"
+            "＜ 、･　　|　　＼ \n"
+            "　＼＿＿／∪ _ ∪) \n"
+            "　　　　　 Ｕ Ｕ\n",
+        )
+    else:
+        await eor(event, "Give me some text")
 
 
-@lionub.lion_cmd(
-    pattern=r"killer ([\s\S]*)",
-    command=("killer", plugin_category),
+@savior.savior_cmd(
+    pattern="killer ([\s\S]*)",
+    command=("killer", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}killer <text>",
@@ -44,14 +49,17 @@ async def _(event):
 async def _(event):
     "fun art command"
     name = event.pattern_match.group(1)
-    await edit_or_reply(
-        event,
-        f"__**Commando **__{ALIVE_NAME}          \n\n"
-        r"_/﹋\_\n"
-        "(҂`_´)\n"
-        f"<,︻╦╤─ ҉ - - - {name}\n"
-        r"_/﹋\_\n",
-    )
+    if name:
+        await eor(
+            event,
+            f"__**Commando **__{ALIVE_NAME}          \n\n"
+            "_/﹋\_\n"
+            "(҂`_´)\n"
+            f"<,︻╦╤─ ҉ - - - {name}\n"
+            "_/﹋\_\n",
+        )
+    else:
+        await eor("Give me some Text")
 
 
 A = (
@@ -296,14 +304,6 @@ L = (
 )
 
 
-O = (
-    "────██──────▀▀▀██\n"
-    "──▄▀█▄▄▄─────▄▀█▄▄▄\n"
-    "▄▀──█▄▄──────█─█▄▄\n"
-    "─▄▄▄▀──▀▄───▄▄▄▀──▀▄\n"
-    "─▀───────▀▀─▀───────▀▀\n🚶🏻‍♂️🚶🏻‍♂️ɮʏɛ ʄʀɨɛռɖֆ.."
-)
-
 P = (
     "╭━━━┳╮╱╱╭╮╱╭━━━┳━━━╮\n"
     "┃╭━╮┃┃╱╭╯╰╮┃╭━╮┃╭━╮┃\n"
@@ -331,9 +331,58 @@ R = (
 )
 
 
-@lionub.lion_cmd(
+XZ = (
+    "┈┈┈┈╱▔▔▔▔▔╲┈╱▔╲\n"
+    "┈┈┈┈▏┈┈▏╭╮▕┈▏╳▕\n"
+    "┈┈┈┈▏┈┈▏┈┈▕┈╲▂╱\n"
+    "┈╱▔▔╲▂╱╲▂▂┈╲▂▏▏\n"
+    "╭▏┈┈┈┈┈┈┈▏╲▂▂╱┈\n"
+    "┃▏┈┈┈┈▏┈┈▏┈┈┈┈┈\n"
+    "╯▏┈╲╱▔╲▅▅▏┈┈┈┈\n"
+    "┈╲▅▅▏▕▔▔▔▔▏┈┈┈┈\n"
+)
+
+XYX = (
+    "┈┈┈╭━━━━━╮┈┈┈┈┈\n"
+    "┈┈┈┃┊┊┊┊┊┃┈┈┈┈┈\n"
+    "┈┈┈┃┊┊╭━╮┻╮┈┈┈┈\n"
+    "┈┈┈╱╲┊┃▋┃▋┃┈┈┈┈\n"
+    "┈┈╭┻┊┊╰━┻━╮┈┈┈┈\n"
+    "┈┈╰┳┊╭━━━┳╯┈┈┈┈\n"
+    "┈┈┈┃┊┃╰━━┫┈HOMER\n"
+    "┈┈┈┈┈┈┏━┓┈┈┈┈┈┈\n"
+)
+
+
+@savior.savior_cmd(
+    pattern="homer$",
+    command=("homer", menu_category),
+    info={
+        "header": "Just a art command try out yourself to see",
+        "usage": "{tr}homer",
+    },
+)
+async def bluedevilmonster(homer):
+    "fun art command"
+    await eor(homer, XYX)
+
+
+@savior.savior_cmd(
+    pattern="elephant$",
+    command=("elephant", menu_category),
+    info={
+        "header": "Just a art command try out yourself to see",
+        "usage": "{tr}elephant",
+    },
+)
+async def bluedevilmonster(elephant):
+    "fun art command"
+    await eor(elephant, XZ)
+
+
+@savior.savior_cmd(
     pattern="monster$",
-    command=("monster", plugin_category),
+    command=("monster", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}monster",
@@ -341,12 +390,12 @@ R = (
 )
 async def bluedevilmonster(monster):
     "fun art command"
-    await edit_or_reply(monster, A)
+    await eor(monster, A)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="pig$",
-    command=("pig", plugin_category),
+    command=("pig", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}pig",
@@ -354,12 +403,12 @@ async def bluedevilmonster(monster):
 )
 async def bluedevilpig(pig):
     "fun art command"
-    await edit_or_reply(pig, B)
+    await eor(pig, B)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="gun$",
-    command=("gun", plugin_category),
+    command=("gun", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}gun",
@@ -367,12 +416,12 @@ async def bluedevilpig(pig):
 )
 async def bluedevilgun(gun):
     "fun art command"
-    await edit_or_reply(gun, D)
+    await eor(gun, D)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="dog$",
-    command=("dog", plugin_category),
+    command=("dog", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}dog",
@@ -380,25 +429,49 @@ async def bluedevilgun(gun):
 )
 async def bluedevildog(dog):
     "fun art command"
-    await edit_or_reply(dog, E)
+    await eor(dog, E)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="hello$",
-    command=("hello", plugin_category),
+    command=("hello", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}hello",
     },
 )
-async def bluedevilhello(hello):
+async def bluedevilhello(event):
     "fun art command"
-    await edit_or_reply(hello, F)
+    await event.get_chat()
+    event = await eor(event, "**(❛ Hi ❜!**")
+    HELL_PIC = "https://te.legra.ph/file/b86eff074051b0b2d4513.jpg"
+    K_PIC = "https://te.legra.ph/file/a679e3d061ac6b349cd60.jpg"
+    L_PIC = "https://te.legra.ph/file/96c2b61d6361f112ceac5.jpg"
+    M_PIC = "https://te.legra.ph/file/4d0c641e085f7ed15dfec.jpg"
+    if HELL_PIC:
+        HELLO = f"╔┓┏╦━╦┓╔┓╔━━╗\n"
+        HELLO += f"║┗┛║┗╣┃║┃║X X ║\n"
+        HELLO += f"║┏┓║┏╣┗╣┗╣╰╯║\n"
+        HELLO += f"╚┛┗╩━╩━╩━╩━━╝\n"
+        on = await event.client.send_file(event.chat_id, file=HELL_PIC, caption=HELLO)
+        await asyncio.sleep(3)
+        ok = await event.client.edit_message(event.chat_id, on, file=K_PIC)
+        await asyncio.sleep(3)
+        ok1 = await event.client.edit_message(event.chat_id, on, file=L_PIC)
+        await asyncio.sleep(3)
+        ok2 = await event.client.edit_message(event.chat_id, ok1, file=M_PIC)
+        await asyncio.sleep(5)
+        ok3 = await event.client.edit_message(event.chat_id, ok2, file=L_PIC)
+        await asyncio.sleep(5)
+        ok4 = await event.client.edit_message(event.chat_id, ok3, file=K_PIC)
+        await asyncio.sleep(5)
+        ok5 = await event.client.edit_message(event.chat_id, ok4, file=HELL_PIC)
+        await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="hmf$",
-    command=("hmf", plugin_category),
+    command=("hmf", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}hmf",
@@ -406,12 +479,12 @@ async def bluedevilhello(hello):
 )
 async def bluedevilhmf(hmf):
     "fun art command"
-    await edit_or_reply(hmf, G)
+    await eor(hmf, G)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="couple$",
-    command=("couple", plugin_category),
+    command=("couple", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}couple",
@@ -419,12 +492,12 @@ async def bluedevilhmf(hmf):
 )
 async def bluedevilcouple(couple):
     "fun art command"
-    await edit_or_reply(couple, H)
+    await eor(couple, H)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sup$",
-    command=("sup", plugin_category),
+    command=("sup", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}sup",
@@ -432,12 +505,12 @@ async def bluedevilcouple(couple):
 )
 async def bluedevilsupreme(supreme):
     "fun art command"
-    await edit_or_reply(supreme, I)
+    await eor(supreme, I)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="india$",
-    command=("india", plugin_category),
+    command=("india", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}india",
@@ -445,12 +518,12 @@ async def bluedevilsupreme(supreme):
 )
 async def bluedevilindia(india):
     "fun art command"
-    await edit_or_reply(india, J)
+    await eor(india, J)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="wc$",
-    command=("wc", plugin_category),
+    command=("wc", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}wc",
@@ -458,12 +531,12 @@ async def bluedevilindia(india):
 )
 async def bluedevilwelcome(welcome):
     "fun art command"
-    await edit_or_reply(welcome, K)
+    await eor(welcome, K)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="snk$",
-    command=("snk", plugin_category),
+    command=("snk", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}snk",
@@ -471,25 +544,66 @@ async def bluedevilwelcome(welcome):
 )
 async def bluedevilsnake(snake):
     "fun art command"
-    await edit_or_reply(snake, L)
+    await eor(snake, L)
 
 
-@lionub.lion_cmd(
-    pattern="bye$",
-    command=("bye", plugin_category),
+@savior.savior_cmd(
+    pattern="carry$",
+    command=("carry", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
-        "usage": "{tr}bye",
+        "usage": "{tr}carry",
     },
 )
-async def bluedevilbye(bye):
-    "fun art command"
-    await edit_or_reply(bye, O)
+async def savior(carry):
+    name = carry.pattern_match.group(1)
+    if name:
+        await eor(
+            carry,
+            f"**Carry ~> {name} .**\n\n                     ⣤⣶⣶⣶⣦⣤⣄⡀\n⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀\n⠀⠀⠀⢀⣾⣿⣿⣿⠿⠿⠟⠻⠿⢿⣿⣿⣿⡆\n⠀⠀⠀⢰⣿⣿⡿⠂⠀⠀⠀⠀⠀⠀ ⠈⠉⢻⡇ \n⠀⠀⠀⠈⠿⣿⣇⣠⠤⠤⠤⢤⣀⣤⠤⠤⣺⡏ \n⠀⠀⠀⠀⠐⢉⣯⠹⣀⣀⣢⡸⠉⢏⡄⣀⣯⠁ \n⠀⠀⠀⠀⠡⠀⢹⣆⠀⠀⠀⣀⡀⡰⠀⢠⠖⠂ \n⠀⠀⠀⠀⠀⠈⠙⣿⣿⠀⠠⠚⢋⡁⠀⡜ \n⠀⠀⠀⠀⠀⠀⢸⠈⠙⠦⣤⣀⣤⣤⡼⠁  \n⠀⠀⠀ ⠀⢀⡌⠀⠀⠀⠀ ⠉⢏⡉  \n⠀⠀⠀⣀⣴⣿⣷⣶⣤⣤⣤⣴⣾⣷⣶⣦⡀ \n⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄ \n⠚⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛",
+        )
+    else:
+        await eor(carry, "Give Me Some Text")
 
 
-@lionub.lion_cmd(
+"""
+@savior.savior_cmd(
+    pattern="dead$",
+    command=("dead", menu_category),
+    info={
+        "header": "Just a art command try out yourself to see",
+        "usage": "{tr}dead",
+    },
+)
+async def lon(frog):
+    name = frog.pattern_match.group(1)
+    D = (
+        f"**{ALIVE_NAME} ~> {name} .\n\n**"
+        "⣿⣿⣿⡇⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⣿⣿⣿⡇⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⣿⣿⣿⡇⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⣿⣿⣿⡇⠄⣿⣿⣿⡿⠋⣉⣉⣉⡙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⣿⣿⣿⠃⠄⠹⠟⣡⣶⢟⣛⣛⡻⢿⣦⣩⣤⣬⡉⢻⣿⣿⣿⣿\n"
+        "⣿⣿⣿⠄⢀⢤⣾⣿⣿⣿⡿⠿⠿⠿⢮⡃⣛⡻⢿⠈⣿⣿⣿⣿\n"
+        "⣿⡟⢡⣴⣯⣿⣿⣿⠤⣤⣭⣶⣶⣶⣮⣔⡈⠛⢓⠦⠈⢻⣿⣿\n"
+        "⠏⣠⣿⣿⣿⣿⣿⣿⣯⡪⢛⠿⢿⣿⣿⣿⡿⣼⣿⣿⣮⣄⠙⣿\n"
+        "⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⡭⠴⣶⣶⣽⣽⣛⡿⠿⠿⠇⣿\n"
+        "⣿⣿⣿⣿⣿⣿⣿⠿⣿⣿⣿⣿⣿⣿⣿⣷⣝⣛⢛⢋⣥⣴⣿⣿\n"
+        "⣿⣿⣿⣿⣿⢿⠱⣿⣛⠾⣭⣛⡿⢿⣿⣿⣿⣿⣿⡀⣿⣿⣿⣿\n"
+        "⠑⠽⡻⢿⣮⣽⣷⣶⣯⣽⣳⠮⣽⣟⣲⠯⢭⣿⣛⡇⣿⣿⣿⣿\n"
+        "⠄⠄⠈⠑⠊⠉⠟⣻⠿⣿⣿⣿⣷⣾⣭⣿⠷⠶⠂⣴⣿⣿⣿⣿\n"
+        "⠄⠄⠄⠄⠄⠄⠄⠁⠙⠒⠙⠯⠍⠙⢉⣡⣶⣿⣿⣿⣿⣿⣿⣿\n"
+        "⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+    )
+    if name:
+        await eor(frog, D)
+    else:
+        await eor(frog, "Give me Some Text")
+
+
+@savior.savior_cmd(
     pattern="shitos$",
-    command=("shitos", plugin_category),
+    command=("shitos", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}shitos",
@@ -497,17 +611,104 @@ async def bluedevilbye(bye):
 )
 async def bluedevilshitos(shitos):
     "fun art command"
-    await edit_or_reply(shitos, P)
+    await eor(shitos, P)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="dislike$",
-    command=("dislike", plugin_category),
+    command=("dislike", menu_category),
     info={
         "header": "Just a art command try out yourself to see",
         "usage": "{tr}dislike",
     },
 )
-async def bluedevildislike(dislike):
+async def bluedislike(dislike):
     "fun art command"
-    await edit_or_reply(dislike, R)
+    await eor(dislike, R)
+
+
+@savior.savior_cmd(
+    pattern="sthink$",
+    command=("sthink", menu_category),
+    info={
+        "header": "Just a art command try out yourself to see",
+        "usage": "{tr}sthink <text>",
+    },
+)
+async def savior(think):
+    name = think.pattern_match.group(1)
+    B = (
+        f"**{ALIVE_NAME} ~> {name} .\n\n**"
+        "⠀⠀⠀⠀⢀⣀⣀⣀\n"
+        "⠀⠀⠀⠰⡿⠿⠛⠛⠻⠿⣷\n"
+        "⠀⠀⠀⠀⠀⠀⣀⣄⡀⠀⠀⠀⠀⢀⣀⣀⣤⣄⣀⡀\n"
+        "⠀⠀⠀⠀⠀⢸⣿⣿⣷⠀⠀⠀⠀⠛⠛⣿⣿⣿⡛⠿⠷\n"
+        "⠀⠀⠀⠀⠀⠘⠿⠿⠋⠀⠀⠀⠀⠀⠀⣿⣿⣿⠇\n"
+        "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠁\n"
+        "⠀\n"
+        "⠀⠀⠀⠀⣿⣷⣄⠀⢶⣶⣷⣶⣶⣤⣀\n"
+        "⠀⠀⠀⠀⣿⣿⣿⠀⠀⠀⠀⠀⠈⠙⠻⠗\n"
+        "⠀⠀⠀⣰⣿⣿⣿⠀⠀⠀⠀⢀⣀⣠⣤⣴⣶⡄\n"
+        "⠀⣠⣾⣿⣿⣿⣥⣶⣶⣿⣿⣿⣿⣿⠿⠿⠛⠃\n"
+        "⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄\n"
+        "⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡁\n"
+        "⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁\n"
+        "⠀⠀⠛⢿⣿⣿⣿⣿⣿⣿⡿⠟\n"
+    )
+    if name:
+        await eor(think, B)
+    else:
+        await eor(think, "Give Me Some Text")
+
+
+@savior.savior_cmd(
+    pattern="frog$",
+    command=("frog", menu_category),
+    info={
+        "header": "Just a art command try out yourself to see",
+        "usage": "{tr}frog <text>",
+    },
+)
+async def lisj(frogsay):
+    name = frogsay.pattern_match.group(1)
+    C = (
+        f"**{ALIVE_NAME} ~> {name} .\n\n**"
+        "⠄⠄⠄⠄⠄⣀⣀⣤⣶⣿⣿⣶⣶⣶⣤⣄⣠⣴⣶⣿⣶⣦⣄⠄\n"
+        "⠄⣠⣴⣾⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦\n"
+        "⢠⠾⣋⣭⣄⡀⠄⠙⠻⣿⣿⡿⠛⠋⠉⠉⠉⠙⠛⠿⣿⣿⣿⣿\n"
+        "⡎⡟⢻⣿⣷⠄⠄⠄⠄⡼⣡⣾⣿⣿⣦⠄⠄⠄⠄⠄⠈⠛⢿⣿\n"
+        "⡇⣷⣾⣿⠟⠄⠄⠄⢰⠁⣿⣇⣸⣿⣿⠄⠄⠄⠄⠄⠄⠄⣠⣼\n"
+        "⣦⣭⣭⣄⣤⣤⣴⣶⣿⣧⡘⠻⠛⠛⠁⠄⠄⠄⠄⣀⣴⣿⣿⣿\n"
+        "⢉⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣦⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿\n"
+        "⡿⠛⠛⠛⠛⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⡇⠄⠄⢀⣀⣀⠄⠄⠄⠄⠉⠉⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⠈⣆⠄⠄⢿⣿⣿⣷⣶⣶⣤⣤⣀⣀⡀⠄⠄⠉⢻⣿⣿⣿⣿⣿\n"
+        "⠄⣿⡀⠄⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠂⠄⢠⣿⣿⣿⣿⣿\n"
+        "⠄⣿⡇⠄⠄⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⠄⢀⣼⣿⣿⣿⣿⣿\n"
+        "⠄⣿⡇⠄⠠⣿⣿⣿⣿⣿⣿⣿⡿⠋⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿\n"
+        "⠄⣿⠁⠄⠐⠛⠛⠛⠉⠉⠉⠉⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿\n"
+        "⠄⠻⣦⣀⣀⣀⣀⣀⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋\n"
+    )
+    if name:
+        await eor(frogsay, C)
+    else:
+        await eor(frogsay, "Give Me Some Text")
+
+
+@savior.savior_cmd(
+    pattern="bye$",
+    command=("bye", menu_category),
+    info={
+        "header": "Just a art command try out yourself to see",
+        "usage": "{tr}bye",
+    },
+)
+async def bluedevilbye(event):
+    "fun art command"
+    BYE_PIC = "https://te.legra.ph/file/aa16cad62645045062c0f.jpg"
+    if BYE_PIC:
+        event = await event.send_message(bye, "**❛ Bye ❜!**")
+        lol = "Bye Friends"
+        await savior.send_file(event.chat_id, BYE_PIC, caption=lol)
+        await event.delete()
+"""

@@ -1,13 +1,13 @@
 import asyncio
 
-from . import edit_or_reply, lionub, mention
+from . import eor, savior, mention
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
-    pattern=r"kilr(?:\s|$)([\s\S]*)",
-    command=("kilr", plugin_category),
+@savior.savior_cmd(
+    pattern="kilr(?:\s|$)([\s\S]*)",
+    command=("kilr", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}kilr <text>",
@@ -20,25 +20,25 @@ async def _(event):
         name = "die"
     animation_interval = 0.7
     animation_ttl = range(8)
-    event = await edit_or_reply(event, f"**Ready Commando **__{mention}....")
+    event = await eor(event, f"**Ready Commando **__{mention}....")
     animation_chars = [
         "Ｆｉｉｉｉｉｒｅ",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - \n _/﹋\_\n",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n  <,︻╦╤─ ҉ - -\n _/﹋\_\n",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - - -\n _/﹋\_\n",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n<,︻╦╤─ ҉ - -\n _/﹋\_\n",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - \n _/﹋\_\n",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n  <,︻╦╤─ ҉ - -\n _/﹋\_\n",
-        rf"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - - - {name}\n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - \n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n  <,︻╦╤─ ҉ - -\n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - - -\n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n<,︻╦╤─ ҉ - -\n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - \n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n  <,︻╦╤─ ҉ - -\n _/﹋\_\n",
+        f"__**Commando **__{mention}          \n\n_/﹋\_\n (҂`_´)\n <,︻╦╤─ ҉ - - - {name}\n _/﹋\_\n",
     ]
     for i in animation_ttl:
         await asyncio.sleep(animation_interval)
         await event.edit(animation_chars[i % 8])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="acarry$",
-    command=("acarry", plugin_category),
+    command=("acarry", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}acarry",
@@ -48,7 +48,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.7
     animation_ttl = range(5)
-    lion = await edit_or_reply(event, "**Carry :- To kese hai aplog....**")
+    savior = await eor(event, "**Carry :- To kese hai aplog....**")
     animation_chars = [
         "**Carry :**          \n                     ⣤⣶⣶⣶⣦⣤⣄⡀\n⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀\n⠀⠀⠀⢀⣾⣿⣿⣿⠿⠿⠟⠻⠿⢿⣿⣿⣿⡆\n⠀⠀⠀⢰⣿⣿⡿⠂⠀⠀⠀⠀⠀⠀ ⠈⠉⢻⡇ \n⠀⠀⠀⠈⠿⣿⣇⣠⠤⠤⠤⢤⣀⣤⠤⠤⣺⡏ \n⠀⠀⠀⠀⠐⢉⣯⠹⣀⣀⣢⡸⠉⢏⡄⣀⣯⠁ \n⠀⠀⠀⠀⠡⠀⢹⣆⠀⠀⠀⣀⡀⡰⠀⢠⠖⠂BHAUT \n⠀⠀⠀⠀⠀⠈⠙⣿⣿⠀⠠⠚⢋⡁⠀⡜ \n⠀⠀⠀⠀⠀⠀⢸⠈⠙⠦⣤⣀⣤⣤⡼⠁  \n⠀⠀⠀ ⠀⢀⡌⠀⠀⠀⠀ ⠉⢏⡉  \n⠀⠀⠀⣀⣴⣿⣷⣶⣤⣤⣤⣴⣾⣷⣶⣦⡀ \n⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄ \n⠚⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛",
         "**Carry :**          \n                     ⣤⣶⣶⣶⣦⣤⣄⡀\n⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀\n⠀⠀⠀⢀⣾⣿⣿⣿⠿⠿⠟⠻⠿⢿⣿⣿⣿⡆\n⠀⠀⠀⢰⣿⣿⡿⠂⠀⠀⠀⠀⠀⠀ ⠈⠉⢻⡇ \n⠀⠀⠀⠈⠿⣿⣇⣠⠤⠤⠤⢤⣀⣤⠤⠤⣺⡏ \n⠀⠀⠀⠀⠐⢉⣯⠹⣀⣀⣢⡸⠉⢏⡄⣀⣯⠁ \n⠀⠀⠀⠀⠡⠀⢹⣆⠀⠀⠀⣀⡀⡰⠀⢠⠖⠂BHAUT \n⠀⠀⠀⠀⠀⠈⠙⣿⣿⠀⠠⠚⢋⡁⠀⡜ BURE\n⠀⠀⠀⠀⠀⠀⢸⠈⠙⠦⣤⣀⣤⣤⡼⠁  \n⠀⠀⠀ ⠀⢀⡌⠀⠀⠀⠀ ⠉⢏⡉  \n⠀⠀⠀⣀⣴⣿⣷⣶⣤⣤⣤⣴⣾⣷⣶⣦⡀ \n⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄ \n⠚⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛",
@@ -58,12 +58,12 @@ async def _(event):
     ]
     for i in animation_ttl:
         await asyncio.sleep(animation_interval)
-        await lion.edit(animation_chars[i % 5])
+        await savior.edit(animation_chars[i % 5])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="uff$",
-    command=("uff", plugin_category),
+    command=("uff", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}uff",
@@ -73,7 +73,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.7
     animation_ttl = range(13)
-    event = await edit_or_reply(event, "Areeeh...")
+    event = await eor(event, "Areeeh...")
     animation_chars = [
         "U",
         "Uf",
@@ -94,9 +94,9 @@ async def _(event):
         await event.edit(animation_chars[i % 13])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="hmm$",
-    command=("hmm", plugin_category),
+    command=("hmm", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}hmm",
@@ -106,7 +106,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.7
     animation_ttl = range(11)
-    event = await edit_or_reply(event, "Hm")
+    event = await eor(event, "Hm")
     animation_chars = [
         "Hmm",
         "Hmmm",
@@ -125,9 +125,9 @@ async def _(event):
         await event.edit(animation_chars[i % 11])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bigoof$",
-    command=("bigoof", plugin_category),
+    command=("bigoof", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}bigoof",
@@ -137,7 +137,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.2
     animation_ttl = range(7)
-    event = await edit_or_reply(
+    event = await eor(
         event,
         "┏━━━┓╋╋╋╋┏━━━┓ \n┃┏━┓┃╋╋╋╋┃┏━┓┃ \n┃┃╋┃┣┓┏┓┏┫┃╋┃┃ \n┃┃╋┃┃┗┛┗┛┃┃╋┃┃ \n┃┗━┛┣┓┏┓┏┫┗━┛┃ \n┗━━━┛┗┛┗┛┗━━━┛",
     )
@@ -155,9 +155,9 @@ async def _(event):
         await event.edit(animation_chars[i % 7])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="eye$",
-    command=("eye", plugin_category),
+    command=("eye", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}eye",
@@ -167,7 +167,7 @@ async def _(event):
     "animation command"
     animation_interval = 3
     animation_ttl = range(10)
-    event = await edit_or_reply(event, "👁👁")
+    event = await eor(event, "👁👁")
     animation_chars = [
         "👁👁\n  👄  =====> Hey, How are you?",
         "👁👁\n  👅  =====> Everything okay?",
@@ -187,9 +187,9 @@ async def _(event):
     await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="thinking$",
-    command=("thinking", plugin_category),
+    command=("thinking", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}thinking",
@@ -199,7 +199,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.05
     animation_ttl = range(288)
-    event = await edit_or_reply(event, "thinking..")
+    event = await eor(event, "thinking..")
     animation_chars = [
         "THINKING",
         "THI&K#N₹",
@@ -243,9 +243,9 @@ async def _(event):
         await event.edit(animation_chars[i % 36])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="snake$",
-    command=("snake", plugin_category),
+    command=("snake", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}snake",
@@ -255,7 +255,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.3
     animation_ttl = range(27)
-    event = await edit_or_reply(event, "snake..")
+    event = await eor(event, "snake..")
     animation_chars = [
         "◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️",
         "◻️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️",
@@ -290,9 +290,9 @@ async def _(event):
         await event.edit(animation_chars[i % 27])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="human$",
-    command=("human", plugin_category),
+    command=("human", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}human",
@@ -302,7 +302,7 @@ async def _(event):
     "animation command"
     animation_interval = 0.5
     animation_ttl = range(16)
-    event = await edit_or_reply(event, "human...")
+    event = await eor(event, "human...")
     animation_chars = [
         "⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬜⬜⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜⬜⬜\n🔲🔲🔲🔲🔲🔲🔲",
         "⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛🚗\n⬜⬜⬜⬜⬜⬜⬜\n⬜⬜⬜⬜⬜⬜⬜\n🔲🔲🔲🔲🔲🔲🔲",
@@ -326,9 +326,9 @@ async def _(event):
         await event.edit(animation_chars[i % 16])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="virus$",
-    command=("virus", plugin_category),
+    command=("virus", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}virus",
@@ -338,7 +338,7 @@ async def _(event):
     "animation command"
     animation_interval = 1
     animation_ttl = range(30)
-    event = await edit_or_reply(event, "Injecting virus....")
+    event = await eor(event, "Injecting virus....")
     animation_chars = [
         "🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎",
         "◼️🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎",
@@ -376,9 +376,9 @@ async def _(event):
         await event.edit(animation_chars[i % 30])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="music$",
-    command=("music", plugin_category),
+    command=("music", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}music",
@@ -388,7 +388,7 @@ async def _(event):
     "animation command"
     animation_interval = 1.5
     animation_ttl = range(11)
-    event = await edit_or_reply(event, "starting player...")
+    event = await eor(event, "starting player...")
     animation_chars = [
         "⬤⬤⬤ 81% ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`✖️`\n\n⠀⠀⠀⠀⠀[cee jay Music Player](tg://user?id=916234223)\n\n⠀⠀⠀⠀**Now Playing:shape of u**\n\n**00:00** ▱▱▱▱▱▱▱▱▱▱ **00:10**\n\n⠀⠀⠀⠀⠀`🔂` `⏮️` `⏪️` `▶️` `⏩️` `⏭️`\n\n**⠀Next Song:** __Alan Walker - Alone.__\n\n⠀⠀⠀⠀**⠀Device: Nokia 1100**",
         "⬤⬤⬤ 81% ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`✖️`\n\n⠀⠀⠀⠀⠀[cee jay Music Player](tg://user?id=916234223)\n\n⠀⠀⠀⠀**Now Playing:shape of u**\n\n**00:01** ▰▱▱▱▱▱▱▱▱▱ **00:10**\n\n⠀⠀⠀⠀⠀`🔂` `⏮️` `⏪️` `⏸️` `⏩️` `⏭️`\n\n**⠀Next Song:** __Alan Walker - Alone.__\n\n⠀⠀⠀⠀**⠀Device: Nokia 1100**",
@@ -407,9 +407,9 @@ async def _(event):
         await event.edit(animation_chars[i % 11])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="squ$",
-    command=("squ", plugin_category),
+    command=("squ", menu_category),
     info={
         "header": "Fun animation try yourself to know more",
         "usage": "{tr}squ",
@@ -417,9 +417,7 @@ async def _(event):
 )
 async def _(event):
     "animation command"
-    event = await edit_or_reply(
-        event, "╔═══════════════════╗ \n  \n╚═══════════════════╝"
-    )
+    event = await eor(event, "╔═══════════════════╗ \n  \n╚═══════════════════╝")
     await asyncio.sleep(1)
     await event.edit("╔═══════════════════╗ \n \t░ \n╚═══════════════════╝")
     await asyncio.sleep(1)

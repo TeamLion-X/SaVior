@@ -1,16 +1,18 @@
 """
-Created by  Md aiger.  tg @SimpleBoy786
-Plugin for LionX
+Created by  SaVior.  tg @SaViorXBoy
+Plugin for SaViorX
 """
+import asyncio
+from collections import deque
 
-from . import edit_or_reply, lionub, mention
+from . import eor, savior, mention
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
-    pattern=r"carry ([\s\S]*)",
-    command=("carry", plugin_category),
+@savior.savior_cmd(
+    pattern="carry ([\s\S]*)",
+    command=("carry", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}carry <text>",
@@ -19,15 +21,78 @@ plugin_category = "fun"
 async def _(event):
     "art command"
     name = event.pattern_match.group(1)
-    await edit_or_reply(
+    await eor(
         event,
         f"**Carry ➥ {name} .**\n\n                     ⣤⣶⣶⣶⣦⣤⣄⡀\n⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀\n⠀⠀⠀⢀⣾⣿⣿⣿⠿⠿⠟⠻⠿⢿⣿⣿⣿⡆\n⠀⠀⠀⢰⣿⣿⡿⠂⠀⠀⠀⠀⠀⠀ ⠈⠉⢻⡇ \n⠀⠀⠀⠈⠿⣿⣇⣠⠤⠤⠤⢤⣀⣤⠤⠤⣺⡏ \n⠀⠀⠀⠀⠐⢉⣯⠹⣀⣀⣢⡸⠉⢏⡄⣀⣯⠁ \n⠀⠀⠀⠀⠡⠀⢹⣆⠀⠀⠀⣀⡀⡰⠀⢠⠖⠂ \n⠀⠀⠀⠀⠀⠈⠙⣿⣿⠀⠠⠚⢋⡁⠀⡜ \n⠀⠀⠀⠀⠀⠀⢸⠈⠙⠦⣤⣀⣤⣤⡼⠁  \n⠀⠀⠀ ⠀⢀⡌⠀⠀⠀⠀ ⠉⢏⡉  \n⠀⠀⠀⣀⣴⣿⣷⣶⣤⣤⣤⣴⣾⣷⣶⣦⡀ \n⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄ \n⠚⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛",
     )
 
 
-@lionub.lion_cmd(
-    pattern=r"ded(?:\s|$)([\s\S]*)",
-    command=("ded", plugin_category),
+@savior.savior_cmd(
+    pattern="🤬$",
+    command=("🤬", menu_category),
+    info={
+        "header": "To Show Ur Angry In Angry Mode",
+        "usage": "{tr}🤬",
+    },
+)
+async def _(event):
+    event = await eor(event, "𝙸 𝚊𝚖 𝚊𝚗𝚐𝚛𝚢 ")
+    deq = deque(list("😡🔥🤬🔥😡🔥🤬🔥😡🔥"))
+    for _ in range(20):
+        await asyncio.sleep(0.5)
+        await event.edit("".join(deq))
+        deq.rotate(1)
+
+
+@savior.savior_cmd(
+    pattern="🤣$",
+    command=("🤣", menu_category),
+    info={
+        "header": "To Show Ur Laugh In Laugh Rotate Mode",
+        "usage": "{tr}🤣",
+    },
+)
+async def _(event):
+    event = await eor(event, "Lots Of Laugh")
+    deq = deque(list("😂🤣😂🤣😂🤣"))
+    for _ in range(20):
+        await asyncio.sleep(0.5)
+        await event.edit("".join(deq))
+        deq.rotate(1)
+
+
+@savior.savior_cmd(
+    pattern="✅$",
+    command=("✅", menu_category),
+    info={
+        "header": "To Confuse True Or False",
+        "usage": "{tr}✅",
+    },
+)
+async def _(event):
+    event = await eor(event, "Confusion")
+    deq = deque(list("✅❌✅❌✅❌✅❌"))
+    for _ in range(20):
+        await asyncio.sleep(0.5)
+        await event.edit("".join(deq))
+        deq.rotate(1)
+
+
+@savior.savior_cmd(
+    pattern="bakwas$",
+    command=("bakwas", menu_category),
+    info={
+        "header": "To Make Joke",
+        "usage": "{tr}bakwas ",
+    },
+)
+async def gn(event):
+    await event.edit("Your message has been read and Ignored successfully ┐(´∀｀)┌ 😂😂😂")
+
+
+@savior.savior_cmd(
+    pattern="ded(?:\s|$)([\s\S]*)",
+    command=("ded", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}ded <text>",
@@ -38,7 +103,7 @@ async def _(event):
     name = event.pattern_match.group(1)
     if not name:
         name = "dead"
-    await edit_or_reply(
+    await eor(
         event,
         f"{mention} --- {name}          \n　　　　　|"
         "\n　　　　　| \n"
@@ -57,9 +122,9 @@ async def _(event):
     )
 
 
-@lionub.lion_cmd(
-    pattern=r"killer(?:\s|$)([\s\S]*)",
-    command=("killer", plugin_category),
+@savior.savior_cmd(
+    pattern="killer(?:\s|$)([\s\S]*)",
+    command=("killer", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}killer <text>",
@@ -70,13 +135,13 @@ async def _(event):
     name = event.pattern_match.group(1)
     if not name:
         name = "die"
-    await edit_or_reply(
+    await eor(
         event,
         f"__**Commando **__{mention}          \n\n"
-        r"_/﹋\_\n"
+        "_/﹋\_\n"
         "(҂`_´)\n"
         f"<,︻╦╤─ ҉ - - - {name}\n"
-        r"_/﹋\_\n",
+        "_/﹋\_\n",
     )
 
 
@@ -96,9 +161,9 @@ G = (
 )
 
 
-@lionub.lion_cmd(
-    pattern=r"sthink ([\s\S]*)",
-    command=("sthink", plugin_category),
+@savior.savior_cmd(
+    pattern="sthink ([\s\S]*)",
+    command=("sthink", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}sthink <text>",
@@ -125,12 +190,12 @@ async def kakashi(think):
         "⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁\n"
         "⠀⠀⠛⢿⣿⣿⣿⣿⣿⣿⡿⠟\n"
     )
-    await edit_or_reply(think, A)
+    await eor(think, A)
 
 
-@lionub.lion_cmd(
-    pattern=r"sfrog ([\s\S]*)",
-    command=("sfrog", plugin_category),
+@savior.savior_cmd(
+    pattern="sfrog ([\s\S]*)",
+    command=("sfrog", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}sfrog <text>",
@@ -157,12 +222,12 @@ async def kakashi(frogsay):
         "⠄⣿⠁⠄⠐⠛⠛⠛⠉⠉⠉⠉⠄⠄⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿\n"
         "⠄⠻⣦⣀⣀⣀⣀⣀⣤⣤⣤⣤⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋\n"
     )
-    await edit_or_reply(frogsay, C)
+    await eor(frogsay, C)
 
 
-@lionub.lion_cmd(
-    pattern=r"sputin ([\s\S]*)",
-    command=("sputin", plugin_category),
+@savior.savior_cmd(
+    pattern="sputin ([\s\S]*)",
+    command=("sputin", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}sputin <text>",
@@ -190,12 +255,12 @@ async def kakashi(putinsay):
         "⠄⠄⠄⠄⠄⠄⠄⢿⣿⣾⣷⡄⠄⢾⣿⣿⣿⡄⠄⠄⠄⠄⠄⠄\n"
         "⠄⠄⠄⠄⠄⠄⠄⠸⣿⣿⣿⠃⠄⠈⢿⣿⣿⠄⠄⠄⠄⠄⠄⠄\n"
     )
-    await edit_or_reply(putinsay, D)
+    await eor(putinsay, D)
 
 
-@lionub.lion_cmd(
-    pattern=r"sdead ([\s\S]*)",
-    command=("sdead", plugin_category),
+@savior.savior_cmd(
+    pattern="sdead ([\s\S]*)",
+    command=("sdead", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}sdead <text>",
@@ -222,12 +287,12 @@ async def kakashi(deadfrog):
         "⠄⠄⠄⠄⠄⠄⠄⠁⠙⠒⠙⠯⠍⠙⢉⣡⣶⣿⣿⣿⣿⣿⣿⣿\n"
         "⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
     )
-    await edit_or_reply(deadfrog, E)
+    await eor(deadfrog, E)
 
 
-@lionub.lion_cmd(
-    pattern=r"strump ([\s\S]*)",
-    command=("strump", plugin_category),
+@savior.savior_cmd(
+    pattern="strump ([\s\S]*)",
+    command=("strump", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}strump <text>",
@@ -254,12 +319,12 @@ async def kakashi(trumpsay):
         "⠄⠄⠄⠄⠄⠄⠄⠄⠹⣿⣿⡇⠄⠄⠸⣿⡄⠄⠈⠁⠄⠄⠄⣿\n"
         "⠄⠄⠄⠄⠄⠄⠄⠄⠄⢻⣿⡇⠄⠄⠄⢹⣧⠄⠄⠄⠄⠄⠄⠘\n"
     )
-    await edit_or_reply(trumpsay, J)
+    await eor(trumpsay, J)
 
 
-@lionub.lion_cmd(
-    pattern=r"schina ([\s\S]*)",
-    command=("schina", plugin_category),
+@savior.savior_cmd(
+    pattern="schina ([\s\S]*)",
+    command=("schina", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}schina <text>",
@@ -287,12 +352,12 @@ async def kakashi(ckmkb):
         "⠄⠄⠄⠄⠄⣿⣿⠃⣦⣄⣿⣿⣿⠇⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄\n"
         "⠄⠄⠄⠄⢸⣿⠗⢈⡶⣷⣿⣿⡏⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄\n"
     )
-    await edit_or_reply(ckmkb, K)
+    await eor(ckmkb, K)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sshit$",
-    command=("sshit", plugin_category),
+    command=("sshit", menu_category),
     info={
         "header": "Fun art try yourself to know more",
         "usage": "{tr}sshit <text>",
@@ -300,4 +365,4 @@ async def kakashi(ckmkb):
 )
 async def kakashi(shit):
     "art command"
-    await edit_or_reply(shit, G)
+    await eor(shit, G)

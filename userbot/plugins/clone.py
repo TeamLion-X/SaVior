@@ -1,33 +1,21 @@
-# Credits of Plugin @ViperAdnan and @TeamLionX(revert)[will add sql soon]
 import html
 
 from telethon.tl import functions
 from telethon.tl.functions.users import GetFullUserRequest
 
 from ..Config import Config
-from . import (
-    ALIVE_NAME,
-    AUTONAME,
-    BOTLOG,
-    BOTLOG_CHATID,
-    DEFAULT_BIO,
-    edit_delete,
-    get_user_from_event,
-    lionub,
-)
+from . import ALIVE_NAME, BOTLOG, BOTLOG_CHATID, eod, get_user_from_event, savior
 
-plugin_category = "utils"
-DEFAULTUSER = str(AUTONAME) if AUTONAME else str(ALIVE_NAME)
+menu_category = "utils"
+DEFAULTUSER = gvarstatus("FIRST_NAME") or ALIVE_NAME
 DEFAULTUSERBIO = (
-    str(DEFAULT_BIO)
-    if DEFAULT_BIO
-    else "sıɥʇ ǝpoɔǝp uǝɥʇ llıʇu∩ ˙ ǝɔɐds ǝʇɐʌıɹd ǝɯos ǝɯ ǝʌı⅁˙"
+    gvarstatus("DEFAULT_BIO") or "I Am SaVior Because I Am A User Of @TheSaVior"
 )
 
 
-@lionub.lion_cmd(
-    pattern=r"clone(?:\s|$)([\s\S]*)",
-    command=("clone", plugin_category),
+@savior.savior_cmd(
+    pattern="clone(?:\s|$)([\s\S]*)",
+    command=("clone", menu_category),
     info={
         "header": "To clone account of mentiond user or replied user",
         "usage": "{tr}clone <username/userid/reply>",
@@ -59,9 +47,9 @@ async def _(event):
     try:
         pfile = await event.client.upload_file(profile_pic)
     except Exception as e:
-        return await edit_delete(event, f"**Failed to clone due to error:**\n__{e}__")
+        return await eod(event, f"**Failed to clone due to error:**\n__{e}__")
     await event.client(functions.photos.UploadProfilePhotoRequest(pfile))
-    await edit_delete(event, "**LET US BE AS ONE**")
+    await eod(event, "**LET US BE AS ONE**")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
@@ -69,29 +57,29 @@ async def _(event):
         )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="revert$",
-    command=("revert", plugin_category),
+    command=("revert", menu_category),
     info={
         "header": "To revert back to your original name , bio and profile pic",
         "note": "For proper Functioning of this command you need to set AUTONAME and DEFAULT_BIO with your profile name and bio respectively.",
         "usage": "{tr}revert",
     },
 )
-async def _(event):
+async def revert(event):
     "To reset your original details"
-    name = f"{DEFAULTUSER}"
-    blank = ""
-    bio = f"{DEFAULTUSERBIO}"
+    firstname = DEFAULTUSER
+    lastname = gvarstatus("LAST_NAME") or ""
+    bio = DEFAULTUSERBIO
     await event.client(
         functions.photos.DeletePhotosRequest(
             await event.client.get_profile_photos("me", limit=1)
         )
     )
     await event.client(functions.account.UpdateProfileRequest(about=bio))
-    await event.client(functions.account.UpdateProfileRequest(first_name=name))
-    await event.client(functions.account.UpdateProfileRequest(last_name=blank))
-    await edit_delete(event, "successfully reverted to your account back")
+    await event.client(functions.account.UpdateProfileRequest(first_name=firstname))
+    await event.client(functions.account.UpdateProfileRequest(last_name=lastname))
+    await eod(event, "successfully reverted to your account back")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,

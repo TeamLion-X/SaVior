@@ -1,23 +1,23 @@
 import random
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from . import fonts
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
-@lionub.lion_cmd(
-    pattern=r"fmusical(?:\s|$)([\s\S]*)",
-    command=("fmusical", plugin_category),
+@savior.savior_cmd(
+    pattern="fmusical(?:\s|$)([\s\S]*)",
+    command=("fmusical", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}fmusical <text>",
             "{tr}fmusical reply this command to text message",
         ],
-        "examples": "{tr}fmusical LionX",
+        "examples": "{tr}fmusical SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -27,7 +27,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normalfontcharacter in string:
@@ -36,19 +36,19 @@ async def stylish_generator(event):
                 fonts.normalfont.index(normalfontcharacter)
             ]
             string = string.replace(normalfontcharacter, musicalcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"ancient(?:\s|$)([\s\S]*)",
-    command=("ancient", plugin_category),
+@savior.savior_cmd(
+    pattern="ancient(?:\s|$)([\s\S]*)",
+    command=("ancient", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}ancient <text>",
             "{tr}ancient reply this command to text message",
         ],
-        "examples": "{tr}ancient LionX",
+        "examples": "{tr}ancient SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -58,7 +58,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normalfontcharacter in string:
@@ -67,16 +67,16 @@ async def stylish_generator(event):
                 fonts.normalfont.index(normalfontcharacter)
             ]
             string = string.replace(normalfontcharacter, ancientcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"vapor(?:\s|$)([\s\S]*)",
-    command=("vapor", plugin_category),
+@savior.savior_cmd(
+    pattern="vapor(?:\s|$)([\s\S]*)",
+    command=("vapor", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}vapor <text>", "{tr}vapor reply this command to text message"],
-        "examples": "{tr}vapor LionX",
+        "examples": "{tr}vapor SaViorX",
     },
 )
 async def vapor(event):
@@ -89,7 +89,7 @@ async def vapor(event):
     elif textx:
         message = textx.text
     else:
-        await edit_or_reply(event, "`Ｇｉｖｅ ｓｏｍｅ ｔｅｘｔ ｆｏｒ ｖａｐｏｒ！`")
+        await eor(event, "`Ｇｉｖｅ ｓｏｍｅ ｔｅｘｔ ｆｏｒ ｖａｐｏｒ！`")
         return
 
     for charac in message:
@@ -100,19 +100,19 @@ async def vapor(event):
         else:
             reply_text.append(charac)
 
-    await edit_or_reply(event, "".join(reply_text))
+    await eor(event, "".join(reply_text))
 
 
-@lionub.lion_cmd(
-    pattern=r"smallcaps(?:\s|$)([\s\S]*)",
-    command=("smallcaps", plugin_category),
+@savior.savior_cmd(
+    pattern="smallcaps(?:\s|$)([\s\S]*)",
+    command=("smallcaps", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}smallcaps <text>",
             "{tr}smallcaps reply this command to text message",
         ],
-        "examples": "{tr}smallcaps LionX",
+        "examples": "{tr}smallcaps SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -122,7 +122,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -131,19 +131,19 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, smallcapscharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"blackbf(?:\s|$)([\s\S]*)",
-    command=("blackbf", plugin_category),
+@savior.savior_cmd(
+    pattern="blackbf(?:\s|$)([\s\S]*)",
+    command=("blackbf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}blackbf <text>",
             "{tr}blackbf reply this command to text message",
         ],
-        "examples": "{tr}blackbf LionX",
+        "examples": "{tr}blackbf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -153,7 +153,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -162,19 +162,19 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, bubblesblackcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"bubbles(?:\s|$)([\s\S]*)",
-    command=("bubbles", plugin_category),
+@savior.savior_cmd(
+    pattern="bubbles(?:\s|$)([\s\S]*)",
+    command=("bubbles", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}bubbles <text>",
             "{tr}bubbles reply this command to text message",
         ],
-        "examples": "{tr}bubbles LionX",
+        "examples": "{tr}bubbles SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -184,7 +184,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -193,16 +193,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, bubblescharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"tanf(?:\s|$)([\s\S]*)",
-    command=("tanf", plugin_category),
+@savior.savior_cmd(
+    pattern="tanf(?:\s|$)([\s\S]*)",
+    command=("tanf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}tanf <text>", "{tr}tanf reply this command to text message"],
-        "examples": "{tr}tanf LionX",
+        "examples": "{tr}tanf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -212,7 +212,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -221,16 +221,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, tantextcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"boxf(?:\s|$)([\s\S]*)",
-    command=("boxf", plugin_category),
+@savior.savior_cmd(
+    pattern="boxf(?:\s|$)([\s\S]*)",
+    command=("boxf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}boxf <text>", "{tr}boxf reply this command to text message"],
-        "examples": "{tr}boxf LionX",
+        "examples": "{tr}boxf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -240,7 +240,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -249,19 +249,19 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, littleboxtextcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"smothtext(?:\s|$)([\s\S]*)",
-    command=("smothtext", plugin_category),
+@savior.savior_cmd(
+    pattern="smothtext(?:\s|$)([\s\S]*)",
+    command=("smothtext", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}smothtext <text>",
             "{tr}smothtext reply this command to text message",
         ],
-        "examples": "{tr}smothtext LionX",
+        "examples": "{tr}smothtext SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -271,7 +271,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -280,16 +280,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, smothtextcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"egyptf(?:\s|$)([\s\S]*)",
-    command=("egyptf", plugin_category),
+@savior.savior_cmd(
+    pattern="egyptf(?:\s|$)([\s\S]*)",
+    command=("egyptf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}egyptf <text>", "{tr}egyptf reply this command to text message"],
-        "examples": "{tr}egyptf LionX",
+        "examples": "{tr}egyptf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -299,7 +299,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -308,16 +308,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, egyptfontcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"maref(?:\s|$)([\s\S]*)",
-    command=("maref", plugin_category),
+@savior.savior_cmd(
+    pattern="maref(?:\s|$)([\s\S]*)",
+    command=("maref", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}maref <text>", "{tr}maref reply this command to text message"],
-        "examples": "{tr}maref LionX",
+        "examples": "{tr}maref SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -327,7 +327,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -336,16 +336,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, nightmarecharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"handcf(?:\s|$)([\s\S]*)",
-    command=("handcf", plugin_category),
+@savior.savior_cmd(
+    pattern="handcf(?:\s|$)([\s\S]*)",
+    command=("handcf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}handcf <text>", "{tr}handcf reply this command to text message"],
-        "examples": "{tr}handcf LionX",
+        "examples": "{tr}handcf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -355,7 +355,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -364,19 +364,19 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, hwcapitalcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"doublef(?:\s|$)([\s\S]*)",
-    command=("doublef", plugin_category),
+@savior.savior_cmd(
+    pattern="doublef(?:\s|$)([\s\S]*)",
+    command=("doublef", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": [
             "{tr}doublef <text>",
             "{tr}doublef reply this command to text message",
         ],
-        "examples": "{tr}doublef LionX",
+        "examples": "{tr}doublef SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -386,7 +386,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -395,16 +395,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, doubletextcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"mock(?:\s|$)([\s\S]*)",
-    command=("mock", plugin_category),
+@savior.savior_cmd(
+    pattern="mock(?:\s|$)([\s\S]*)",
+    command=("mock", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}mock <text>", "{tr}mock reply this command to text message"],
-        "examples": "{tr}mock LionX",
+        "examples": "{tr}mock SaViorX",
     },
 )
 async def spongemocktext(mock):
@@ -417,7 +417,7 @@ async def spongemocktext(mock):
     elif textx:
         message = textx.text
     else:
-        await edit_or_reply(mock, "`gIvE sOMEtHInG tO MoCk!`")
+        await eor(mock, "`gIvE sOMEtHInG tO MoCk!`")
         return
 
     for charac in message:
@@ -427,16 +427,16 @@ async def spongemocktext(mock):
         else:
             reply_text.append(charac)
 
-    await edit_or_reply(mock, "".join(reply_text))
+    await eor(mock, "".join(reply_text))
 
 
-@lionub.lion_cmd(
-    pattern=r"ghostf(?:\s|$)([\s\S]*)",
-    command=("ghostf", plugin_category),
+@savior.savior_cmd(
+    pattern="ghostf(?:\s|$)([\s\S]*)",
+    command=("ghostf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}ghostf <text>", "{tr}ghostf reply this command to text message"],
-        "examples": "{tr}ghostf LionX",
+        "examples": "{tr}ghostf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -446,7 +446,7 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
@@ -455,16 +455,16 @@ async def stylish_generator(event):
                 fonts.normaltext.index(normaltextcharacter)
             ]
             string = string.replace(normaltextcharacter, ghostfontcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
 
 
-@lionub.lion_cmd(
-    pattern=r"handsf(?:\s|$)([\s\S]*)",
-    command=("handsf", plugin_category),
+@savior.savior_cmd(
+    pattern="handsf(?:\s|$)([\s\S]*)",
+    command=("handsf", menu_category),
     info={
         "header": "Font style command.(Changes font style of the given text)",
         "usage": ["{tr}handsf <text>", "{tr}handsf reply this command to text message"],
-        "examples": "{tr}handsf LionX",
+        "examples": "{tr}handsf SaViorX",
     },
 )
 async def stylish_generator(event):
@@ -474,11 +474,311 @@ async def stylish_generator(event):
         get = await event.get_reply_message()
         args = get.text
     if not args:
-        await edit_or_reply(event, "What I am Supposed to change give text")
+        await eor(event, "What I am Supposed to change give text")
         return
     string = "  ".join(args).lower()
     for normaltextcharacter in string:
         if normaltextcharacter in fonts.normaltext:
             hwslcharacter = fonts.hwslfont[fonts.normaltext.index(normaltextcharacter)]
             string = string.replace(normaltextcharacter, hwslcharacter)
-    await edit_or_reply(event, string)
+    await eor(event, string)
+
+
+normiefont = [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+]
+weebyfont = [
+    "卂",
+    "乃",
+    "匚",
+    "刀",
+    "乇",
+    "下",
+    "厶",
+    "卄",
+    "工",
+    "丁",
+    "长",
+    "乚",
+    "从",
+    "𠘨",
+    "口",
+    "尸",
+    "㔿",
+    "尺",
+    "丂",
+    "丅",
+    "凵",
+    "リ",
+    "山",
+    "乂",
+    "丫",
+    "乙",
+]
+tantextfont = [
+    "Ꭿ",
+    "Ᏸ",
+    "Ꮳ",
+    "Ꮄ",
+    "Ꮛ",
+    "Ꮄ",
+    "Ꮆ",
+    "Ꮒ",
+    "i",
+    "Ꮰ",
+    "Ꮶ",
+    "l",
+    "m",
+    "Ꮑ",
+    "Ꮻ",
+    "Ꮅ",
+    "Ꮔ",
+    "ᖇ",
+    "Ꭶ",
+    "Ꮏ",
+    "Ꮜ",
+    "Ꮙ",
+    "Ꮿ",
+    "ﾒ",
+    "Ꭹ",
+    "Ꮓ",
+]
+linetextfont = [
+    "𝔸",
+    "𝔹",
+    "ℂ",
+    "𝔻",
+    "𝔼",
+    "𝔽",
+    "𝔾",
+    "ℍ",
+    "𝕀",
+    "𝕁",
+    "𝕂",
+    "𝕃",
+    "𝕄",
+    "ℕ",
+    "𝕆",
+    "ℙ",
+    "ℚ",
+    "ℝ",
+    "𝕊",
+    "𝕋",
+    "𝕌",
+    "𝕍",
+    "𝕎",
+    "𝕏",
+    "𝕐",
+    "ℤ",
+]
+boxtextfont = [
+    "🄰",
+    "🄱",
+    "🄲",
+    "🄳",
+    "🄴",
+    "🄵",
+    "🄶",
+    "🄷",
+    "🄸",
+    "🄹",
+    "🄺",
+    "🄻",
+    "🄼",
+    "🄽",
+    "🄾",
+    "🄿",
+    "🅀",
+    "🅁",
+    "🅂",
+    "🅃",
+    "🅄",
+    "🅅",
+    "🅆",
+    "🅇",
+    "🅈",
+    "🅉",
+]
+bubbletextfont = [
+    "Ⓐ",
+    "Ⓑ",
+    "Ⓒ",
+    "Ⓓ",
+    "Ⓔ",
+    "Ⓕ",
+    "Ⓖ",
+    "Ⓗ",
+    "Ⓘ",
+    "Ⓙ",
+    "Ⓚ",
+    "Ⓛ",
+    "Ⓜ",
+    "Ⓝ",
+    "Ⓞ",
+    "Ⓟ",
+    "Ⓠ",
+    "Ⓡ",
+    "Ⓢ",
+    "Ⓣ",
+    "Ⓤ",
+    "Ⓥ",
+    "Ⓦ",
+    "Ⓧ",
+    "Ⓨ",
+    "Ⓩ",
+]
+
+
+@savior.savior_cmd(
+    pattern="weebify(?:\s|$)([\s\S]*)",
+    command=("weebify", menu_category),
+    info={
+        "header": "Font style command.(Changes font style of the given text)",
+        "usage": [
+            "{tr}weebify <text>",
+            "{tr}weebify reply this command to text message",
+        ],
+        "examples": "{tr}weebify SaViorX",
+    },
+)
+async def weebify(event):
+    args = event.pattern_match.group(1)
+    if not args:
+        get = await event.get_reply_message()
+        args = get.text
+    if not args:
+        await eod(event, "`What I am Supposed to Weebify U Dumb`")
+        return
+    string = "".join(args).lower()
+    for normiecharacter in string:
+        if normiecharacter in normiefont:
+            weebycharacter = weebyfont[normiefont.index(normiecharacter)]
+            string = string.replace(normiecharacter, weebycharacter)
+    await eor(event, string)
+
+
+@savior.savior_cmd(
+    pattern="tanify(?:\s|$)([\s\S]*)",
+    command=("tanify", menu_category),
+    info={
+        "header": "Font style command.(Changes font style of the given text)",
+        "usage": ["{tr}tanify <text>", "{tr}tanify reply this command to text message"],
+        "examples": "{tr}tanify SaViorX",
+    },
+)
+async def tantxt(event):
+    args = event.pattern_match.group(1)
+    if not args:
+        get = await event.get_reply_message()
+        args = get.text
+    if not args:
+        await eod(event, "`What I am Supposed to tanify U Dumb`")
+        return
+    string = "".join(args).lower()
+    for normiecharacter in string:
+        if normiecharacter in normiefont:
+            tanycharacter = tantextfont[normiefont.index(normiecharacter)]
+            string = string.replace(normiecharacter, tanycharacter)
+    await eor(event, string)
+
+
+@savior.savior_cmd(
+    pattern="lintxt(?:\s|$)([\s\S]*)",
+    command=("lintxt", menu_category),
+    info={
+        "header": "Font style command.(Changes font style of the given text)",
+        "usage": ["{tr}lintxt <text>", "{tr}lintxt reply this command to text message"],
+        "examples": "{tr}lintxt SaViorX",
+    },
+)
+async def linetxt(event):
+    args = event.pattern_match.group(1)
+    if not args:
+        get = await event.get_reply_message()
+        args = get.text
+    if not args:
+        await eod(event, "`What I am Supposed to linefy U Dumb`")
+        return
+    string = "".join(args).lower()
+    for normiecharacter in string:
+        if normiecharacter in normiefont:
+            linecharacter = linetextfont[normiefont.index(normiecharacter)]
+            string = string.replace(normiecharacter, linecharacter)
+    await eor(event, string)
+
+
+@savior.savior_cmd(
+    pattern="boxify(?:\s|$)([\s\S]*)",
+    command=("boxify", menu_category),
+    info={
+        "header": "Font style command.(Changes font style of the given text)",
+        "usage": ["{tr}boxify <text>", "{tr}boxify reply this command to text message"],
+        "examples": "{tr}boxify SaViorX",
+    },
+)
+async def boxtxt(event):
+    if event.fwd_from:
+        return
+    args = event.pattern_match.group(1)
+    if not args:
+        get = await event.get_reply_message()
+        args = get.text
+    if not args:
+        await eod(event, "`What I am Supposed to boxify U Dumb`")
+        return
+    string = "".join(args).lower()
+    for normiecharacter in string:
+        if normiecharacter in normiefont:
+            boxcharacter = boxtextfont[normiefont.index(normiecharacter)]
+            string = string.replace(normiecharacter, boxcharacter)
+    await eor(event, string)
+
+
+@savior.savior_cmd(
+    pattern="bubble(?:\s|$)([\s\S]*)",
+    command=("bubble", menu_category),
+    info={
+        "header": "Font style command.(Changes font style of the given text)",
+        "usage": ["{tr}bubble <text>", "{tr}bubble reply this command to text message"],
+        "examples": "{tr}bubble SaViorX",
+    },
+)
+async def bubbletxt(event):
+    args = event.pattern_match.group(1)
+    if not args:
+        get = await event.get_reply_message()
+        args = get.text
+    if not args:
+        await eod(event, "`What I am Supposed to bubblify U Dumb`")
+        return
+    string = "".join(args).lower()
+    for normiecharacter in string:
+        if normiecharacter in normiefont:
+            bubblecharacter = bubbletextfont[normiefont.index(normiecharacter)]
+            string = string.replace(normiecharacter, bubblecharacter)
+    await eor(event, string)

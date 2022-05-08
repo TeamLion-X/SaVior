@@ -5,19 +5,19 @@ import shutil
 import time
 from pathlib import Path
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_delete, edit_or_reply
-from ..helpers.utils import _format, _lionutils
-from . import humanbytes
+from ..funcs.managers import eod, eor
+from ..helpers.progress import humanbytes
+from ..helpers.utils import _format, _saviorutils
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"ls(?:\s|$)([\s\S]*)",
-    command=("ls", plugin_category),
+@savior.savior_cmd(
+    pattern="ls(?:\s|$)([\s\S]*)",
+    command=("ls", menu_category),
     info={
         "header": "To list all files and folders.",
         "description": "Will show all files and folders if no path is given or folder path is given else will show file details(if file path os given).",
@@ -27,17 +27,17 @@ plugin_category = "utils"
 )
 async def lst(event):  # sourcery no-metrics
     "To list all files and folders."
-    lion = "".join(event.text.split(maxsplit=1)[1:])
-    path = lion or os.getcwd()
+    savior = "".join(event.text.split(maxsplit=1)[1:])
+    path = savior or os.getcwd()
     if not os.path.exists(path):
-        await edit_or_reply(
+        await eor(
             event,
-            f"there is no such directory or file with the name `{lion}` check again",
+            f"there is no such directory or file with the name `{savior}` check again",
         )
         return
-    path = Path(lion) if lion else os.getcwd()
+    path = Path(savior) if savior else os.getcwd()
     if os.path.isdir(path):
-        if lion:
+        if savior:
             msg = "Folders and Files in `{}` :\n".format(path)
         else:
             msg = "Folders and Files in Current Directory :\n"
@@ -45,25 +45,25 @@ async def lst(event):  # sourcery no-metrics
         files = ""
         folders = ""
         for contents in sorted(lists):
-            lionpath = os.path.join(path, contents)
-            if not os.path.isdir(lionpath):
-                size = os.stat(lionpath).st_size
+            saviorpath = os.path.join(path, contents)
+            if not os.path.isdir(saviorpath):
+                size = os.stat(saviorpath).st_size
                 if str(contents).endswith((".mp3", ".flac", ".wav", ".m4a")):
-                    files += f"🎵`{contents}`\n"
+                    files += "🎵" + f"`{contents}`\n"
                 if str(contents).endswith((".opus")):
-                    files += f"🎙`{contents}`\n"
+                    files += "🎙" + f"`{contents}`\n"
                 elif str(contents).endswith(
                     (".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")
                 ):
-                    files += f"🎞`{contents}`\n"
+                    files += "🎞" + f"`{contents}`\n"
                 elif str(contents).endswith((".zip", ".tar", ".tar.gz", ".rar")):
-                    files += f"🗜`{contents}`\n"
+                    files += "🗜" + f"`{contents}`\n"
                 elif str(contents).endswith(
                     (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico")
                 ):
-                    files += f"🖼`{contents}`\n"
+                    files += "🖼" + f"`{contents}`\n"
                 else:
-                    files += f"📄`{contents}`\n"
+                    files += "📄" + f"`{contents}`\n"
             else:
                 folders += f"📁`{contents}`\n"
         msg = msg + folders + files if files or folders else msg + "__empty path__"
@@ -102,12 +102,12 @@ async def lst(event):  # sourcery no-metrics
             )
             await event.delete()
     else:
-        await edit_or_reply(event, msg)
+        await eor(event, msg)
 
 
-@lionub.lion_cmd(
-    pattern=r"rem ([\s\S]*)",
-    command=("rem", plugin_category),
+@savior.savior_cmd(
+    pattern="rem ([\s\S]*)",
+    command=("rem", menu_category),
     info={
         "header": "To delete a file or folder from the server",
         "usage": "{tr}rem <path>",
@@ -116,34 +116,34 @@ async def lst(event):  # sourcery no-metrics
 )
 async def lst(event):
     "To delete a file or folder."
-    lion = event.pattern_match.group(1)
-    if lion:
-        path = Path(lion)
+    savior = event.pattern_match.group(1)
+    if savior:
+        path = Path(savior)
     else:
-        await edit_or_reply(event, "what should i delete")
+        await eor(event, "what should i delete")
         return
     if not os.path.exists(path):
-        await edit_or_reply(
+        await eor(
             event,
-            f"there is no such directory or file with the name `{lion}` check again",
+            f"there is no such directory or file with the name `{savior}` check again",
         )
         return
-    lioncmd = f"rm -rf {path}"
+    saviorcmd = f"rm -rf {path}"
     if os.path.isdir(path):
-        await _lionutils.runcmd(lioncmd)
-        await edit_or_reply(event, f"successfully removed `{path}` directory")
+        await _saviorutils.runcmd(saviorcmd)
+        await eor(event, f"successfully removed `{path}` directory")
     else:
-        await _lionutils.runcmd(lioncmd)
-        await edit_or_reply(event, f"successfully removed `{path}` file")
+        await _saviorutils.runcmd(saviorcmd)
+        await eor(event, f"successfully removed `{path}` file")
 
 
-@lionub.lion_cmd(
-    pattern=r"mkdir(?:\s|$)([\s\S]*)",
-    command=("mkdir", plugin_category),
+@savior.savior_cmd(
+    pattern="mkdir(?:\s|$)([\s\S]*)",
+    command=("mkdir", menu_category),
     info={
         "header": "To create a new directory.",
         "usage": "{tr}mkdir <topic>",
-        "examples": "{tr}mkdir lion",
+        "examples": "{tr}mkdir savior",
     },
 )
 async def _(event):
@@ -151,32 +151,30 @@ async def _(event):
     pwd = os.getcwd()
     input_str = event.pattern_match.group(1)
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event,
             "What should i create ?",
             parse_mode=_format.parse_pre,
         )
     original = os.path.join(pwd, input_str.strip())
     if os.path.exists(original):
-        await edit_delete(
+        await eod(
             event,
             f"Already a directory named {original} exists",
         )
         return
-    mone = await edit_or_reply(
-        event, "creating the directory ...", parse_mode=_format.parse_pre
-    )
+    mone = await eor(event, "creating the directory ...", parse_mode=_format.parse_pre)
     await asyncio.sleep(2)
     try:
-        await _lionutils.runcmd(f"mkdir {original}")
+        await _saviorutils.runcmd(f"mkdir {original}")
         await mone.edit(f"Successfully created the directory `{original}`")
     except Exception as e:
-        await edit_delete(mone, str(e), parse_mode=_format.parse_pre)
+        await eod(mone, str(e), parse_mode=_format.parse_pre)
 
 
-@lionub.lion_cmd(
-    pattern=r"cpto(?:\s|$)([\s\S]*)",
-    command=("cpto", plugin_category),
+@savior.savior_cmd(
+    pattern="cpto(?:\s|$)([\s\S]*)",
+    command=("cpto", menu_category),
     info={
         "header": "To copy a file from one directory to other directory",
         "usage": "{tr}cpto from ; to destination",
@@ -188,14 +186,14 @@ async def _(event):
     pwd = os.getcwd()
     input_str = event.pattern_match.group(1)
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event,
             "What and where should i move the file/folder.",
             parse_mode=_format.parse_pre,
         )
     loc = input_str.split(";")
     if len(loc) != 2:
-        return await edit_delete(
+        return await eod(
             event,
             "use proper syntax .cpto from ; to destination",
             parse_mode=_format.parse_pre,
@@ -204,25 +202,23 @@ async def _(event):
     location = os.path.join(pwd, loc[1].strip())
 
     if not os.path.exists(original):
-        await edit_delete(
+        await eod(
             event,
-            f"there is no such directory or file with the name `{lion}` check again",
+            f"there is no such directory or file with the name `{input_str}` check again",
         )
         return
-    mone = await edit_or_reply(
-        event, "copying the file ...", parse_mode=_format.parse_pre
-    )
+    mone = await eor(event, "copying the file ...", parse_mode=_format.parse_pre)
     await asyncio.sleep(2)
     try:
-        await _lionutils.runcmd(f"cp -r {original} {location}")
+        await _saviorutils.runcmd(f"cp -r {original} {location}")
         await mone.edit(f"Successfully copied the `{original}` to `{location}`")
     except Exception as e:
-        await edit_delete(mone, str(e), parse_mode=_format.parse_pre)
+        await eod(mone, str(e), parse_mode=_format.parse_pre)
 
 
-@lionub.lion_cmd(
-    pattern=r"mvto(?:\s|$)([\s\S]*)",
-    command=("mvto", plugin_category),
+@savior.savior_cmd(
+    pattern="mvto(?:\s|$)([\s\S]*)",
+    command=("mvto", menu_category),
     info={
         "header": "To move a file from one directory to other directory.",
         "usage": "{tr}mvto frompath ; topath",
@@ -234,14 +230,14 @@ async def _(event):
     pwd = os.getcwd()
     input_str = event.pattern_match.group(1)
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event,
             "What and where should i move the file/folder.",
             parse_mode=_format.parse_pre,
         )
     loc = input_str.split(";")
     if len(loc) != 2:
-        return await edit_delete(
+        return await eod(
             event,
             "use proper syntax .mvto from ; to destination",
             parse_mode=_format.parse_pre,
@@ -250,16 +246,14 @@ async def _(event):
     location = os.path.join(pwd, loc[1].strip())
 
     if not os.path.exists(original):
-        return await edit_delete(
+        return await eod(
             event,
             f"there is no such directory or file with the name `{original}` check again",
         )
-    mone = await edit_or_reply(
-        event, "Moving the file ...", parse_mode=_format.parse_pre
-    )
+    mone = await eor(event, "Moving the file ...", parse_mode=_format.parse_pre)
     await asyncio.sleep(2)
     try:
         shutil.move(original, location)
         await mone.edit(f"Successfully moved the `{original}` to `{location}`")
     except Exception as e:
-        await edit_delete(mone, str(e), parse_mode=_format.parse_pre)
+        await eod(mone, str(e), parse_mode=_format.parse_pre)

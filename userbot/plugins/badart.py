@@ -1,15 +1,15 @@
 """
-Created by @SimpleBoy786
-Plugin for LionX
+Created by @SaViorXBoy
+Plugin for SaViorX
 #credit @GulfysHalfyyyy
 """
 
 import asyncio
 
-from ..funcs.managers import edit_or_reply
-from . import lionub, mention
+from ..funcs.managers import eor
+from . import savior, mention
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
 # ==================================================================
@@ -34,12 +34,12 @@ C = (
     "\n....................,/¯../ "
     "\n.................../..../ "
     "\n............./´¯/'...'/´¯¯`·¸ "
-    r"\n........../'/.../..../......./¨¯\ "
+    "\n........../'/.../..../......./¨¯\ "
     "\n........('(...´...´.... ¯~/'...') "
-    r"\n.........\.................'...../ "
-    r"\n..........''...\.......... _.·´ "
-    r"\n............\..............( "
-    r"\n..............\.............\..."
+    "\n.........\.................'...../ "
+    "\n..........''...\.......... _.·´ "
+    "\n............\..............( "
+    "\n..............\.............\..."
 )
 
 
@@ -63,9 +63,9 @@ GAMBAR_TITIT = """
 # =======================================================
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="muth$",
-    command=("muth", plugin_category),
+    command=("muth", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}muth",
@@ -75,7 +75,7 @@ async def kakashi(bsdk):
     "Bad stuff"
     animation_interval = 0.3
     animation_ttl = range(100)
-    bsdk = await edit_or_reply(bsdk, "**Ahhhhhhhh......**💦💦...")
+    bsdk = await eor(bsdk, f"**Ahhhhhhhh......**💦💦...")
     animation_chars = [
         "8✊️===D",
         "8=✊️==D",
@@ -93,9 +93,9 @@ async def kakashi(bsdk):
         await bsdk.edit(animation_chars[i % 10])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="ohnoo$",
-    command=("ohnoo", plugin_category),
+    command=("ohnoo", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}ohnoo",
@@ -105,28 +105,28 @@ async def kakashi(bsdk):
     "Bad stuff"
     animation_interval = 1
     animation_ttl = range(11)
-    bsdk = await edit_or_reply(bsdk, "**Ohhh nooooo **💦💦...")
+    bsdk = await eor(bsdk, f"**Ohhh nooooo **💦💦...")
     animation_chars = [
         "**Ohhh Baby..**😈",
-        r"__**Ohh Yeaah..**__\n\n 😈\n  |\  \n  |  \   \n 8=👊-D\n  |   \         \n 👟 👟       😲",
-        r"__**Ohh ohhh..**__\n\n 😈\n  |\  \n  |  \   \n  8=👊-D\n  |   \         \n 👟 👟       😲",
-        r"__**Ohh.. **__\n\n 😈\n  |\  \n  |  \   \n 8=👊-D\n  |   \         \n 👟 👟       😲",
-        r"__**Ohh baby..**__\n\n 😈\n  |\  \n  |  \   \n8=👊-D💦\n  |   \         \n 👟 👟       😲",
-        r"__**Yeaah..**__\n\n 😣\n  |\  \n  |  \   \n 8=👊-D💦\n  |   \         \n 👟 👟       😲",
-        r"__**Yeaah Yaaah..**__\n\n 😣\n  |\  \n  |  \   \n  8=👊-D💦\n  |   \         💦\n 👟 👟       😲",
-        r"__**Yaah baby..**__\n\n 😘\n  |\  \n  |  \   \n 8=👊-D💦\n  |   \         💦\n 👟 👟       🤤",
-        r"__**Ohhh..**__\n\n 😍\n  |\  \n  |  \   \n8=👊-D💦\n  |   \         💦\n 👟 👟       🤤",
-        r"__**Love u..**__\n\n 😘\n  |\  \n  |  \   \n 8=👊-D💦\n  |   \         \n 👟 👟       🤤",
-        r"__**Love u babe**__\n\n 😍\n  |\  \n  |  \   \n 8=👊-D\n  |   \         \n 👟 👟       🤤",
+        "__**Ohh Yeaah..**__\n\n 😈\n  |\  \n  |  \   \n 8=👊-D\n  |   \         \n 👟 👟       😲",
+        "__**Ohh ohhh..**__\n\n 😈\n  |\  \n  |  \   \n  8=👊-D\n  |   \         \n 👟 👟       😲",
+        "__**Ohh.. **__\n\n 😈\n  |\  \n  |  \   \n 8=👊-D\n  |   \         \n 👟 👟       😲",
+        "__**Ohh baby..**__\n\n 😈\n  |\  \n  |  \   \n8=👊-D💦\n  |   \         \n 👟 👟       😲",
+        "__**Yeaah..**__\n\n 😣\n  |\  \n  |  \   \n 8=👊-D💦\n  |   \         \n 👟 👟       😲",
+        "__**Yeaah Yaaah..**__\n\n 😣\n  |\  \n  |  \   \n  8=👊-D💦\n  |   \         💦\n 👟 👟       😲",
+        "__**Yaah baby..**__\n\n 😘\n  |\  \n  |  \   \n 8=👊-D💦\n  |   \         💦\n 👟 👟       🤤",
+        "__**Ohhh..**__\n\n 😍\n  |\  \n  |  \   \n8=👊-D💦\n  |   \         💦\n 👟 👟       🤤",
+        "__**Love u..**__\n\n 😘\n  |\  \n  |  \   \n 8=👊-D💦\n  |   \         \n 👟 👟       🤤",
+        "__**Love u babe**__\n\n 😍\n  |\  \n  |  \   \n 8=👊-D\n  |   \         \n 👟 👟       🤤",
     ]
     for i in animation_ttl:
         await asyncio.sleep(animation_interval)
         await bsdk.edit(animation_chars[i % 11])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lovestory$",
-    command=("lovestory", plugin_category),
+    command=("lovestory", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}lovestory",
@@ -136,21 +136,21 @@ async def kakashi(event):
     "Bad stuff"
     animation_interval = 3
     animation_ttl = range(14)
-    event = await edit_or_reply(event, "Starting asf")
+    event = await eor(event, "Starting asf")
     animation_chars = [
         "1 ❤️ love story",
-        r"  😐             😕 \n/👕\         <👗\ \n 👖               /|",
-        r"  😉          😳 \n/👕\       /👗\ \n  👖            /|",
-        r"  😚            😒 \n/👕\         <👗> \n  👖             /|",
-        r"  😍         ☺️ \n/👕\      /👗\ \n  👖          /|",
-        r"  😍          😍 \n/👕\       /👗\ \n  👖           /|",
-        r"  😘   😊 \n /👕\/👗\ \n   👖   /|",
-        r" 😳  😁 \n /|\ /👙\ \n /     / |",
-        r"😈    /😰\ \n<|\      👙 \n /🍆    / |",
-        r"😅 \n/(),✊😮 \n /\         _/\\/|",
+        "  😐             😕 \n/👕\         <👗\ \n 👖               /|",
+        "  😉          😳 \n/👕\       /👗\ \n  👖            /|",
+        "  😚            😒 \n/👕\         <👗> \n  👖             /|",
+        "  😍         ☺️ \n/👕\      /👗\ \n  👖          /|",
+        "  😍          😍 \n/👕\       /👗\ \n  👖           /|",
+        "  😘   😊 \n /👕\/👗\ \n   👖   /|",
+        " 😳  😁 \n /|\ /👙\ \n /     / |",
+        "😈    /😰\ \n<|\      👙 \n /🍆    / |",
+        "😅 \n/(),✊😮 \n /\         _/\\/|",
         "😎 \n/\\_,__😫 \n  //    //       \\",
         "😖 \n/\\_,💦_😋  \n  //         //        \\",
-        r"  😭      ☺️ \n  /|\   /(👶)\ \n  /!\   / \ ",
+        "  😭      ☺️ \n  /|\   /(👶)\ \n  /!\   / \ ",
         "The End 😂...",
     ]
 
@@ -159,9 +159,9 @@ async def kakashi(event):
         await event.edit(animation_chars[i % 14])
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="ohhyaah$",
-    command=("ohhyaah", plugin_category),
+    command=("ohhyaah", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}ohhyaah",
@@ -169,31 +169,31 @@ async def kakashi(event):
 )
 async def kakashi(baby):
     "Bad stuff"
-    await edit_or_reply(
+    await eor(
         baby,
         "**💪💪Ohhh Yeeah Baby**...\n\n"
         "／ イ  ..........(((ヽ   \n"
         "(  ﾉ       ￣—--＼    \n"
-        r"| (＼  (\🎩/)   ｜    )  \n"
+        "| (＼  (\🎩/)   ｜    )  \n"
         "ヽ ヽ` ( ͡° ͜ʖ ͡°) _ノ    /  \n"
         " ＼ | ⌒Ｙ⌒ /  /  \n"
         "   ｜ヽ  ｜  ﾉ ／  \n"
         "     ＼トー仝ーイ \n"
         "        ｜ ミ土彡/ \n"
-        r"         ) \      °   /  \n"
-        r"        (     \🌿 /  \n"
+        "         ) \      °   /  \n"
+        "        (     \🌿 /  \n"
         "         /       /ѼΞΞΞΞΞΞΞD💨💦\n"
-        r"      /  /     /      \ \   \  \n"
+        "      /  /     /      \ \   \  \n"
         "      ( (    ).           ) ).  ) \n"
         "     (      ).            ( |    | \n"
-        r"      |    /                \    |\n"
+        "      |    /                \    |\n"
         "      👞.                  👞",
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="foff$",
-    command=("foff", plugin_category),
+    command=("foff", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}foff",
@@ -201,18 +201,18 @@ async def kakashi(baby):
 )
 async def kakashi(fooku):
     "Bad stuff"
-    await edit_or_reply(
+    await eor(
         fooku,
         ".                       /¯ )\n"
         "                      /¯  /\n"
         "                    /    /\n"
         "              /´¯/'   '/´¯¯`•¸\n"
-        r"          /'/   /    /       /¨¯\ \n"
+        "          /'/   /    /       /¨¯\ \n"
         "        ('(   (   (   (  ¯~/'  ')\n"
-        r"         \                        /\n"
-        r"          \                _.•´\n"
-        r"            \              (\n"
-        r"              \  \n"
+        "         \                        /\n"
+        "          \                _.•´\n"
+        "            \              (\n"
+        "              \  \n"
         "Roses are RED\n"
         "Violets are BLUE\n"
         "This is my middle finger\n"
@@ -220,9 +220,9 @@ async def kakashi(fooku):
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="mf$",
-    command=("mf", plugin_category),
+    command=("mf", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}mf",
@@ -230,12 +230,12 @@ async def kakashi(fooku):
 )
 async def kakashi(mf):
     "Bad stuff"
-    await edit_or_reply(mf, C)
+    await eor(mf, C)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sporn$",
-    command=("sporn", plugin_category),
+    command=("sporn", menu_category),
     info={
         "header": "bad animation, try yourself ",
         "usage": "{tr}sporn",
@@ -243,7 +243,7 @@ async def kakashi(mf):
 )
 async def kakashi(pornhub):
     "Bad stuff"
-    await edit_or_reply(
+    await eor(
         pornhub,
         "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n"
         "⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿\n"
@@ -272,9 +272,9 @@ async def kakashi(pornhub):
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="spika$",
-    command=("spika", plugin_category),
+    command=("spika", menu_category),
     info={
         "header": "bad art, try yourself ",
         "usage": "{tr}spika",
@@ -282,7 +282,7 @@ async def kakashi(pornhub):
 )
 async def kakashi(pikachu):
     "Bad stuff"
-    await edit_or_reply(
+    await eor(
         pikachu,
         "⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⣠⣤⣶⣶\n"
         "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⢰⣿⣿⣿⣿\n"
@@ -305,9 +305,9 @@ async def kakashi(pikachu):
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sxx$",
-    command=("sxx", plugin_category),
+    command=("sxx", menu_category),
     info={
         "header": "bad art, try yourself ",
         "usage": "{tr}sxx",
@@ -315,7 +315,7 @@ async def kakashi(pikachu):
 )
 async def kakashi(saxy):
     "Bad stuff"
-    await edit_or_reply(
+    await eor(
         saxy,
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
         "⢀⡴⠑⡄⠀⠀⠀⠀⠀⠀⠀⣀⣀⣤⣤⣤⣀⡀⠀⠀⠀⠀\n"
@@ -358,9 +358,9 @@ async def kakashi(saxy):
     )
 
 
-@lionub.lion_cmd(
-    pattern=r"sdick ([\s\S]*)",
-    command=("sdick", plugin_category),
+@savior.savior_cmd(
+    pattern="sdick ([\s\S]*)",
+    command=("sdick", menu_category),
     info={
         "header": "bad art, try yourself ",
         "usage": "{tr}sdick <text>",
@@ -369,7 +369,7 @@ async def kakashi(saxy):
 async def kakashi(dicksay):
     "Bad stuff"
     text = dicksay.pattern_match.group(1)
-    await edit_or_reply(
+    await eor(
         dicksay,
         f"**{mention} ➥ {text} .\n**"
         "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
@@ -392,9 +392,9 @@ async def kakashi(dicksay):
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern=r"^\.(?:penis|dick)\s?(.)?",
-    command=("penis|dick", plugin_category),
+    command=("penis|dick", menu_category),
     info={
         "header": "bad art, try yourself ",
         "usage": "{tr}penis",
