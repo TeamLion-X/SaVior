@@ -509,7 +509,7 @@ async def inline_handler(event):  # sourcery no-metrics
         elif string == "help":
             oso = gvarstatus("HELP_IMG")
             if oso is None:
-                help_pic = "https://telegra.ph/file/144d8ea74fef8ca12253c.jpg"
+                help_pic = "https://telegra.ph/file/f8d9e2647fcbdfb1db08d.jpg"
             else:
                 lol = [x for x in oso.split()]
                 PIC = list(lol)
