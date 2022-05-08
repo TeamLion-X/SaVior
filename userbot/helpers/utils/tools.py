@@ -31,51 +31,51 @@ async def media_to_pic(event, reply, noedits=False):  # sourcery no-metrics
     else:
         saviorevent = event
     saviormedia = None
-    swtfile = os.path.join("./temp/", "meme.png")
-    if os.path.exists(swtfile):
-        os.remove(swtfile)
+    saviorfile = os.path.join("./temp/", "meme.png")
+    if os.path.exists(saviorfile):
+        os.remove(saviorfile)
     if mediatype == "Photo":
         saviormedia = await reply.download_media(file="./temp")
         im = Image.open(saviormedia)
-        im.save(swtfile)
+        im.save(saviorfile)
     elif mediatype in ["Audio", "Voice"]:
-        await event.client.download_media(reply, swtfile, thumb=-1)
+        await event.client.download_media(reply, saviorfile, thumb=-1)
     elif mediatype == "Sticker":
         saviormedia = await reply.download_media(file="./temp")
         if saviormedia.endswith(".tgs"):
-            swtcmd = f"lottie_convert.py --frame 0 -if lottie -of png '{saviormedia}' '{swtfile}'"
-            stdout, stderr = (await runcmd(swtcmd))[:2]
+            saviorcmd = f"lottie_convert.py --frame 0 -if lottie -of png '{saviormedia}' '{saviorfile}'"
+            stdout, stderr = (await runcmd(saviorcmd))[:2]
             if stderr:
                 LOGS.info(stdout + stderr)
         elif saviormedia.endswith(".webm"):
             clip = VideoFileClip(saviormedia)
             try:
-                clip = clip.save_frame(swtfile, 0.1)
+                clip = clip.save_frame(saviorfile, 0.1)
             except Exception:
-                clip = clip.save_frame(swtfile, 0)
+                clip = clip.save_frame(saviorfile, 0)
         elif saviormedia.endswith(".webp"):
             im = Image.open(saviormedia)
-            im.save(swtfile)
+            im.save(saviorfile)
     elif mediatype in ["Round Video", "Video", "Gif"]:
-        await event.client.download_media(reply, swtfile, thumb=-1)
-        if not os.path.exists(swtfile):
+        await event.client.download_media(reply, saviorfile, thumb=-1)
+        if not os.path.exists(saviorfile):
             saviormedia = await reply.download_media(file="./temp")
             clip = VideoFileClip(saviormedia)
             try:
-                clip = clip.save_frame(swtfile, 0.1)
+                clip = clip.save_frame(saviorfile, 0.1)
             except Exception:
-                clip = clip.save_frame(swtfile, 0)
+                clip = clip.save_frame(saviorfile, 0)
     elif mediatype == "Document":
         mimetype = reply.document.mime_type
         mtype = mimetype.split("/")
         if mtype[0].lower() == "image":
             saviormedia = await reply.download_media(file="./temp")
             im = Image.open(saviormedia)
-            im.save(swtfile)
+            im.save(saviorfile)
     if saviormedia and os.path.lexists(saviormedia):
         os.remove(saviormedia)
-    if os.path.lexists(swtfile):
-        return saviorevent, swtfile, mediatype
+    if os.path.lexists(saviorfile):
+        return saviorevent, saviorfile, mediatype
     return saviorevent, None
 
 
