@@ -3,11 +3,11 @@ from datetime import datetime
 
 from telethon.errors import BadRequestError, FloodWaitError, ForbiddenError
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import reply_id, time_formatter
 from ..helpers.utils import _format
 from ..sql_helper.bot_blacklists import check_is_black_list, get_all_bl_users
@@ -23,33 +23,76 @@ from .botmanagers import (
 
 LOGS = logging.getLogger(__name__)
 
-plugin_category = "admin"
-botusername = Config.TG_BOT_USERNAME
-cmhd = Config.COMMAND_HAND_LER
+menu_category = "bot"
+botusername = Config.BOT_USERNAME
+cmhd = Config.HANDLER
 
 
-@lionub.bot_cmd(pattern="^/help$", from_users=Config.OWNER_ID)
+@savior.bot_cmd(
+    pattern=f"^/help({botusername})?([\s]+)?$",
+    incoming=True,
+)
 async def bot_help(event):
     await event.reply(
-        f"""The commands in the bot are:
-**Note : **__This commands work only in this bot__ {botusername}
-• **Cmd : **/uinfo <reply to user message>
-• **Info : **__You have noticed that forwarded stickers/emoji doesn't have forward tag so you can identify the user who sent thoose messages by this cmd.__
-• **Note : **__It works for all forwarded messages. even for users who's permission forward message nobody.__
-• **Cmd : **/ban <reason> or /ban <username/userid> <reason>
-• **Info : **__Reply to a user message with reason so he will be notified as you banned from the bot and his messages will not be forworded to you further.__
-• **Note : **__Reason is must. without reason it won't work. __
-• **Cmd : **/unban <reason(optional)> or /unban <username/userid>
-• **Info : **__Reply to user message or provide username/userid to unban from the bot.__
-• **Note : **__To check banned users list use__ `{cmhd}bblist`.
-• **Cmd : **/broadcast
-• **Info : **__Reply to a message to get broadcasted to every user who started your bot. To get list of users use__ `{cmhd}bot_users`.
-• **Note : **__if user stoped/blocked the bot then he will be removed from your database that is he will erased from the bot_starters list.__
+        f"""**✨Note : **__This commands work only in this bot__ {botusername}
+🔹 Add this Bot In Group To Access Command In Group 🔹**
+
+♦️ **Cmd : **/alive
+🕯️ **Info : **__To Check Bot Is Alive Or Not__
+✨**Note : **__ It Can Be Used By Anyone Add this Bot In Group__
+
+♦️ **Cmd : **/ping
+🕯️ **Info : **__To Check Your Bot Ping__
+✨**Note : **__It Can Be Used By Anyone Add This Bot In Group__
+
+♦️ **Cmd : **/purge <reply to message>
+🕯️ **Info : **__To delete message from where u have tagged that message__
+✨**Note : **__Used It In Group/Bot Chat__
+
+♦️ **Cmd : **/del <reply to message>
+🕯️ **Info : **__Reply to message to delete that message__
+✨**Note : **__Used In Group/Bot chat__
+
+♦️ **Cmd : **/bigspam <value> <text>
+🕯️ **Info : **__Used To Spam Group/Bot Spam__
+✨**Note : **__Value Must Be Great than 100__
+
+♦️ **Cmd : **/raid <value> <reply to any message>
+🕯️ **Info : **__To Start Raid as your value__
+✨**Note : **__No Flood Add this Bot in Group and used this____
+
+♦️ **Cmd : **/replyraid <reply to person>
+🕯️ **Info : **__To start raid on any person__
+✨**Note : **__Used In Group For best No Flood__
+
+♦️ **Cmd : **/dreplyraid <reply to same person>
+🕯️ **Info : **__To Stop Raid on__
+✨**Note : **__ Reply to same person on which u have started__
+
+♦️ **Cmd : **/spam <value> <text>
+🕯️ **Info : **__To Spam With Text__
+✨**Note : **__Value Must be less than 100__
+
+♦️ **Cmd : **/uinfo <reply to user message>
+🕯️ **Info : **__You have noticed that forwarded stickers/emoji doesn't have forward tag so you can identify the user who sent thoose messages by this cmd.__
+✨**Note : **__It works for all forwarded messages. even for users who's permission forward message nobody.__
+
+♦️ **Cmd : **/ban <reason> or /ban <username/userid> <reason>
+🕯️ **Info : **__Reply to a user message with reason so he will be notified as you banned from the bot and his messages will not be forworded to you further.__
+✨**Note : **__Reason is must. without reason it won't work. __
+
+♦️ **Cmd : **/unban <reason(optional)> or /unban <username/userid>
+🕯️ **Info : **__Reply to user message or provide username/userid to unban from the bot.__
+✨**Note : **__To check banned users list use__ `{cmhd}bblist`.
+
+♦️ **Cmd :** /broadcast
+🕯️ **Info :** __Reply to a message to get broadcasted to every user who started your bot. To get list of users use__ `{cmhd}bot_users`.
+✨**Note :** if user stoped/blocked the bot then he will be removed from your database that is he will erased from the bot_starters list
 """
     )
 
 
-@lionub.bot_cmd(pattern="^/broadcast$", from_users=Config.OWNER_ID)
+@savior.bot_cmd(pattern="^/broadcast$", from_users=Config.OWNER_ID)
 async def bot_broadcast(event):
     replied = await event.get_reply_message()
     if not replied:
@@ -108,9 +151,9 @@ async def bot_broadcast(event):
     await br_cast.edit(b_info, parse_mode="html")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bot_users$",
-    command=("bot_users", plugin_category),
+    command=("bot_users", menu_category),
     info={
         "header": "To get users list who started bot.",
         "description": "To get compelete list of users who started your bot",
@@ -121,14 +164,14 @@ async def ban_starters(event):
     "To get list of users who started bot."
     ulist = get_all_starters()
     if len(ulist) == 0:
-        return await edit_delete(event, "`No one started your bot yet.`")
+        return await eod(event, "`No one started your bot yet.`")
     msg = "**The list of users who started your bot are :\n\n**"
     for user in ulist:
         msg += f"• 👤 {_format.mentionuser(user.first_name , user.user_id)}\n**ID:** `{user.user_id}`\n**UserName:** @{user.username}\n**Date: **__{user.date}__\n\n"
-    await edit_or_reply(event, msg)
+    await eor(event, msg)
 
 
-@lionub.bot_cmd(pattern="^/ban\\s+([\\s\\S]*)", from_users=Config.OWNER_ID)
+@savior.bot_cmd(pattern="^/ban\\s+([\\s\\S]*)", from_users=Config.OWNER_ID)
 async def ban_botpms(event):
     user_id, reason = await get_user_and_reason(event)
     reply_to = await reply_id(event)
@@ -159,7 +202,7 @@ async def ban_botpms(event):
     await event.reply(msg)
 
 
-@lionub.bot_cmd(pattern="^/unban(?:\\s|$)([\\s\\S]*)", from_users=Config.OWNER_ID)
+@savior.bot_cmd(pattern="^/unban(?:\\s|$)([\\s\\S]*)", from_users=Config.OWNER_ID)
 async def ban_botpms(event):
     user_id, reason = await get_user_and_reason(event)
     reply_to = await reply_id(event)
@@ -183,9 +226,9 @@ async def ban_botpms(event):
     await event.reply(msg)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bblist$",
-    command=("bblist", plugin_category),
+    command=("bblist", menu_category),
     info={
         "header": "To get users list who are banned in bot.",
         "description": "To get list of users who are banned in bot.",
@@ -196,16 +239,16 @@ async def ban_starters(event):
     "To get list of users who are banned in bot."
     ulist = get_all_bl_users()
     if len(ulist) == 0:
-        return await edit_delete(event, "`No one is banned in your bot yet.`")
+        return await eod(event, "`No one is banned in your bot yet.`")
     msg = "**The list of users who are banned in your bot are :\n\n**"
     for user in ulist:
         msg += f"• 👤 {_format.mentionuser(user.first_name , user.chat_id)}\n**ID:** `{user.chat_id}`\n**UserName:** @{user.username}\n**Date: **__{user.date}__\n**Reason:** __{user.reason}__\n\n"
-    await edit_or_reply(event, msg)
+    await eor(event, msg)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bot_antif (on|off)$",
-    command=("bot_antif", plugin_category),
+    command=("bot_antif", menu_category),
     info={
         "header": "To enable or disable bot antiflood.",
         "description": "if it was turned on then after 10 messages or 10 edits of same messages in less time then your bot auto loacks them.",
@@ -220,11 +263,11 @@ async def ban_antiflood(event):
     input_str = event.pattern_match.group(1)
     if input_str == "on":
         if gvarstatus("bot_antif") is not None:
-            return await edit_delete(event, "`Bot Antiflood was already enabled.`")
+            return await eod(event, "`Bot Antiflood was already enabled.`")
         addgvar("bot_antif", True)
-        await edit_delete(event, "`Bot Antiflood Enabled.`")
+        await eod(event, "`Bot Antiflood Enabled.`")
     elif input_str == "off":
         if gvarstatus("bot_antif") is None:
-            return await edit_delete(event, "`Bot Antiflood was already disabled.`")
+            return await eod(event, "`Bot Antiflood was already disabled.`")
         delgvar("bot_antif")
-        await edit_delete(event, "`Bot Antiflood Disabled.`")
+        await eod(event, "`Bot Antiflood Disabled.`")

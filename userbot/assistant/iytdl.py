@@ -1,8 +1,3 @@
-""" Download Youtube Video / Audio in a User friendly interface """
-# --------------------------- #
-#   Modded ytdl by code-rgb   #
-# --------------------------- #
-
 import asyncio
 import glob
 import io
@@ -18,12 +13,12 @@ from telethon.events import CallbackQuery
 from telethon.utils import get_attributes
 from wget import download
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs import check_owner, pool
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import post_to_telegraph, progress, reply_id
 from ..helpers.functions.utube import (
     _mp3Dl,
@@ -41,12 +36,12 @@ YOUTUBE_REGEX = re.compile(
     r"(?:youtube\.com|youtu\.be)/(?:[\w-]+\?v=|embed/|v/|shorts/)?([\w-]{11})"
 )
 PATH = "./userbot/cache/ytsearch.json"
-plugin_category = "admin"
+menu_category = "bot"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="iytdl(?:\s|$)([\s\S]*)",
-    command=("iytdl", plugin_category),
+    command=("iytdl", menu_category),
     info={
         "header": "ytdl with inline buttons.",
         "description": "To search and download youtube videos by inline buttons.",
@@ -64,30 +59,30 @@ async def iytdl_inline(event):
     elif reply and reply.text:
         input_url = (reply.text).strip()
     if not input_url:
-        return await edit_delete(event, "Give input or reply to a valid youtube URL")
-    lionevent = await edit_or_reply(event, f"🔎 Searching Youtube for: `'{input_url}'`")
-    flag = True
+        return await eod(event, "Give input or reply to a valid youtube URL")
+    saviorevent = await eor(event, f"🔎 Searching Youtube for: `'{input_url}'`")
+    type = True
     cout = 0
     results = None
-    while flag:
+    while type:
         try:
             results = await event.client.inline_query(
-                Config.TG_BOT_USERNAME, f"ytdl {input_url}"
+                Config.BOT_USERNAME, f"ytdl {input_url}"
             )
-            flag = False
+            type = False
         except BotResponseTimeoutError:
             await asyncio.sleep(2)
         cout += 1
         if cout > 5:
-            flag = False
+            type = False
     if results:
-        await lionevent.delete()
+        await saviorevent.delete()
         await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     else:
-        await lionevent.edit("`Sorry!. Can't find any results`")
+        await saviorevent.edit("`Sorry!. Can't find any results`")
 
 
-@lionub.tgbot.on(
+@savior.tgbot.on(
     CallbackQuery(
         data=re.compile(b"^ytdl_download_(.*)_([\d]+|mkv|mp4|mp3)(?:_(a|v))?")
     )
@@ -141,7 +136,7 @@ async def ytdl_download_callback(c_q: CallbackQuery):  # sourcery no-metrics
         else:
             _fpath = _path
     if not _fpath:
-        await edit_delete(upload_msg, "nothing found !")
+        await eod(upload_msg, "nothing found !")
         return
     if not thumb_pic:
         thumb_pic = str(await pool.run_in_thread(download)(await get_ytthumb(yt_code)))
@@ -182,7 +177,7 @@ async def ytdl_download_callback(c_q: CallbackQuery):  # sourcery no-metrics
     )
 
 
-@lionub.tgbot.on(
+@savior.tgbot.on(
     CallbackQuery(data=re.compile(b"^ytdl_(listall|back|next|detail)_([a-z0-9]+)_(.*)"))
 )
 @check_owner

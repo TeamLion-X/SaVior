@@ -4,15 +4,16 @@ from telethon import Button
 from telethon.errors import MessageNotModifiedError
 from telethon.events import CallbackQuery
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
+from ..sql_helper.globals import addgvar, delgvar
 
 LOGS = logging.getLogger(__name__)
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(r"^age_verification_true")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(r"^age_verification_true")))
 async def age_verification_true(event: CallbackQuery):
     u_id = event.query.user_id
     if u_id != Config.OWNER_ID and u_id not in Config.SUDO_USERS:
@@ -28,8 +29,9 @@ async def age_verification_true(event: CallbackQuery):
         )
     ]
     try:
+        addgvar("ALLOW_NSFW", "true")
         await event.edit(
-            text="Set `ALLOW_NSFW` = True in Database Vars to access this plugin",
+            text="Done Now U Can Use NSFW Plugin \n\nTo Disable Use .deldb ALLOW_NSFW",
             file="https://telegra.ph/file/85f3071c31279bcc280ef.jpg",
             buttons=buttons,
         )
@@ -37,7 +39,7 @@ async def age_verification_true(event: CallbackQuery):
         pass
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(r"^age_verification_false")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(r"^age_verification_false")))
 async def age_verification_false(event: CallbackQuery):
     u_id = event.query.user_id
     if u_id != Config.OWNER_ID and u_id not in Config.SUDO_USERS:
@@ -53,6 +55,7 @@ async def age_verification_false(event: CallbackQuery):
         )
     ]
     try:
+        delgvar("ALLOW_NSFW")
         await event.edit(
             text="GO AWAY KID !",
             file="https://telegra.ph/file/1140f16a883d35224e6a1.jpg",
@@ -62,7 +65,7 @@ async def age_verification_false(event: CallbackQuery):
         pass
 
 
-@lionub.tgbot.on(CallbackQuery(data=re.compile(r"^chg_of_decision_")))
+@savior.tgbot.on(CallbackQuery(data=re.compile(r"^chg_of_decision_")))
 async def chg_of_decision_(event: CallbackQuery):
     u_id = event.query.user_id
     if u_id != Config.OWNER_ID and u_id not in Config.SUDO_USERS:
