@@ -1,7 +1,7 @@
 """
-credits to @TeamLionX and @TeamLionX
+credits to @SaViorXBoy
 """
-#    Copyright (C) 2020  Copyless786(π.$)
+#    Copyright (C) 2020  sandeep.n(π.$)
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
 #    published by the Free Software Foundation, either version 3 of the
@@ -12,54 +12,81 @@ credits to @TeamLionX and @TeamLionX
 #    GNU Affero General Public License for more details.
 #   You should have received a copy of the GNU Affero General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, UnicodeText
 
 from . import BASE, SESSION
 
 
-class GBan(BASE):
-    __tablename__ = "gban"
-    chat_id = Column(String(14), primary_key=True)
-    reason = Column(String(127))
+class Gban_Sql(BASE):
+    __tablename__ = "gban_sql"
+    user_id = Column(String(14), primary_key=True)
+    first_name = Column(UnicodeText)
+    date = Column(UnicodeText)
+    username = Column(UnicodeText)
+    reason = Column(UnicodeText)
 
-    def __init__(self, chat_id, reason=""):
-        self.chat_id = chat_id
+    def __init__(self, user_id, first_name, date, username, reason):
+        self.user_id = str(user_id)
+        self.first_name = first_name
+        self.date = date
+        self.username = username
         self.reason = reason
 
 
-GBan.__table__.create(checkfirst=True)
+Gban_Sql.__table__.create(checkfirst=True)
 
 
-def is_gbanned(chat_id):
+def gban(user_id, first_name, date, username, reason):
+    to_check = is_gbanned(user_id)
+    if not to_check:
+        user = Gban_Sql(str(user_id), first_name, date, username, reason)
+        SESSION.add(user)
+        SESSION.commit()
+        return True
+    rem = SESSION.query(Gban_Sql).get(str(user_id))
+    SESSION.delete(rem)
+    SESSION.commit()
+    user = Gban_Sql(str(user_id), first_name, date, username, reason)
+    SESSION.add(user)
+    SESSION.commit()
+    return True
+
+
+def gbanned(user_id):
+    to_check = is_gbanned(user_id)
+    if not to_check:
+        return False
+    rem = SESSION.query(Gban_Sql).get(str(user_id))
+    SESSION.delete(rem)
+    SESSION.commit()
+    return True
+
+
+def is_gbanned(user_id):
     try:
-        return SESSION.query(GBan).filter(GBan.chat_id == str(chat_id)).one()
+        _result = SESSION.query(Gban_Sql).get(str(user_id))
+        if _result:
+            return _result
+        return None
+    finally:
+        SESSION.close()
+
+
+def get_all_gbanned():
+    try:
+        return SESSION.query(Gban_Sql).all()
     except BaseException:
         return None
     finally:
         SESSION.close()
 
 
-def get_gbanuser(chat_id):
+def ungban_all():
     try:
-        return SESSION.query(GBan).get(str(chat_id))
+        SESSION.query(PmPermit_Sql).delete()
+        SESSION.commit()
+        return True
+    except BaseException:
+        return False
     finally:
         SESSION.close()
-
-
-def liongban(chat_id, reason):
-    adder = GBan(str(chat_id), str(reason))
-    SESSION.add(adder)
-    SESSION.commit()
-
-
-def lionungban(chat_id):
-    rem = SESSION.query(GBan).get(str(chat_id))
-    if rem:
-        SESSION.delete(rem)
-        SESSION.commit()
-
-
-def get_all_gbanned():
-    rem = SESSION.query(GBan).all()
-    SESSION.close()
-    return rem

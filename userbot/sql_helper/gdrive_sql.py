@@ -1,7 +1,7 @@
 """
-credits to @TeamLionX and @TeamLionX
+credits to @SaViorXBoy and @SaViorXBoy
 """
-#    Copyright (C) 2020  Copyless786(π.$)
+#    Copyright (C) 2020  sandeep.n(π.$)
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
 #    published by the Free Software Foundation, either version 3 of the
@@ -18,11 +18,11 @@ from . import BASE, SESSION
 
 
 class Gdrive(BASE):
-    __tablename__ = "liongdrive"
-    lion = Column(String(50), primary_key=True)
+    __tablename__ = "saviorgdrive"
+    savior = Column(String(50), primary_key=True)
 
-    def __init__(self, lion):
-        self.lion = lion
+    def __init__(self, savior):
+        self.savior = savior
 
 
 Gdrive.__table__.create(checkfirst=True)
@@ -30,7 +30,7 @@ Gdrive.__table__.create(checkfirst=True)
 
 def is_folder(folder_id):
     try:
-        return SESSION.query(Gdrive).filter(Gdrive.lion == str(folder_id))
+        return SESSION.query(Gdrive).filter(Gdrive.savior == str(folder_id))
     except BaseException:
         return None
     finally:
@@ -55,7 +55,6 @@ def get_parent_id():
 
 
 def rmparent_id(folder_id):
-    note = SESSION.query(Gdrive).filter(Gdrive.lion == folder_id)
-    if note:
+    if note := SESSION.query(Gdrive).filter(Gdrive.savior == folder_id):
         note.delete()
         SESSION.commit()
