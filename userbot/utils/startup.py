@@ -1,29 +1,28 @@
 import glob
 import os
 import sys
-from asyncio.exceptions import CancelledError
 from datetime import timedelta
 from pathlib import Path
 
-import requests
 from telethon import Button, functions, types, utils
+from telethon.tl.functions.channels import JoinChannelRequest, LeaveChannelRequest
 
 from userbot import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.session import lionub
+from ..funcs.session import savior
 from ..helpers.utils import install_pip
 from ..sql_helper.global_collection import (
     del_keyword_collectionlist,
     get_item_collectionlist,
 )
-from ..sql_helper.globals import addgvar, delgvar, gvarstatus
-from .pluginmanager import load_module
+from ..sql_helper.globals import addgvar, gvarstatus
+from .pluginmanager import load_module, start_spam
 from .tools import create_supergroup
 
-LOGS = logging.getLogger("LionX")
-cmdhr = Config.COMMAND_HAND_LER
+LOGS = logging.getLogger("SaViorX")
+cmdhr = Config.HANDLER
 
 
 async def setup_bot():
@@ -31,27 +30,26 @@ async def setup_bot():
     To set up bot for userbot
     """
     try:
-        await lionub.connect()
-        config = await lionub(functions.help.GetConfigRequest())
+        await savior.connect()
+        config = await savior(functions.help.GetConfigRequest())
         for option in config.dc_options:
-            if option.ip_address == lionub.session.server_address:
-                if lionub.session.dc_id != option.id:
+            if option.ip_address == savior.session.server_address:
+                if savior.session.dc_id != option.id:
                     LOGS.warning(
-                        f"Fixed DC ID in session from {lionub.session.dc_id}"
+                        f"Fixed DC ID in session from {savior.session.dc_id}"
                         f" to {option.id}"
                     )
-                lionub.session.set_dc(option.id, option.ip_address, option.port)
-                lionub.session.save()
+                savior.session.set_dc(option.id, option.ip_address, option.port)
+                savior.session.save()
                 break
-        bot_details = await lionub.tgbot.get_me()
-        Config.TG_BOT_USERNAME = f"@{bot_details.username}"
-        # await lionub.start(bot_token=Config.TG_BOT_USERNAME)
-        lionub.me = await lionub.get_me()
-        lionub.uid = lionub.tgbot.uid = utils.get_peer_id(lionub.me)
+        bot_details = await savior.tgbot.get_me()
+        Config.BOT_USERNAME = f"@{bot_details.username}"
+        savior.me = await savior.get_me()
+        savior.uid = savior.tgbot.uid = utils.get_peer_id(savior.me)
         if Config.OWNER_ID == 0:
-            Config.OWNER_ID = utils.get_peer_id(lionub.me)
+            Config.OWNER_ID = utils.get_peer_id(savior.me)
     except Exception as e:
-        LOGS.error(f"STRING_SESSION - {e}")
+        LOGS.error(f"SAVIOR_STRING - {e}")
         sys.exit()
 
 
@@ -61,11 +59,11 @@ async def startupmessage():
     """
     try:
         if BOTLOG:
-            Config.LIONUBLOGO = await lionub.tgbot.send_file(
+            Config.SAVIORUBLOGO = await savior.tgbot.send_file(
                 BOTLOG_CHATID,
-                "https://telegra.ph/file/698a0a9060789f095897c.jpg",
-                caption="**Your LionX has been started successfully.**",
-                buttons=[(Button.url("Support", "https://t.me/TeamLionX"),)],
+                "https://telegra.ph/file/294b4dbdb74334fb0a8c1.jpg",
+                caption="**Your SaVior has been started successfully.**",
+                buttons=[(Button.url("Support", "https://t.me/SaViorSupport"),)],
             )
     except Exception as e:
         LOGS.error(e)
@@ -79,14 +77,14 @@ async def startupmessage():
         return None
     try:
         if msg_details:
-            await lionub.check_testcases()
-            message = await lionub.get_messages(msg_details[0], ids=msg_details[1])
+            await savior.check_testcases()
+            message = await savior.get_messages(msg_details[0], ids=msg_details[1])
             text = message.text + "\n\n**Ok Bot is Back and Alive.**"
-            await lionub.edit_message(msg_details[0], msg_details[1], text)
+            await savior.edit_message(msg_details[0], msg_details[1], text)
             if gvarstatus("restartupdate") is not None:
-                await lionub.send_message(
+                await savior.send_message(
                     msg_details[0],
-                    f"{cmdhr}ping",
+                    f"{cmdhr}ping -a",
                     reply_to=msg_details[1],
                     schedule=timedelta(seconds=10),
                 )
@@ -96,45 +94,27 @@ async def startupmessage():
         return None
 
 
-# don't know work or not just a try in future will use sleep
-async def ipchange():
-    """
-    Just to check if ip change or not
-    """
-    newip = (requests.get("https://httpbin.org/ip").json())["origin"]
-    if gvarstatus("ipaddress") is None:
-        addgvar("ipaddress", newip)
-        return None
-    oldip = gvarstatus("ipaddress")
-    if oldip != newip:
-        delgvar("ipaddress")
-        LOGS.info("Ip Change detected")
-        try:
-            await lionub.disconnect()
-        except (ConnectionError, CancelledError):
-            pass
-        return "ip change"
-
-
 async def add_bot_to_logger_group(chat_id):
     """
     To add bot to logger groups
     """
-    bot_details = await lionub.tgbot.get_me()
+    bot_details = await savior.tgbot.get_me()
+    lol = bot_details.username
+    addgvar("BOT_USERNAME", lol)
     try:
-        await lionub(
+        await savior(
             functions.messages.AddChatUserRequest(
                 chat_id=chat_id,
-                user_id=bot_details.username,
+                user_id=lol,
                 fwd_limit=1000000,
             )
         )
     except BaseException:
         try:
-            await lionub(
+            await savior(
                 functions.channels.InviteToChannelRequest(
                     channel=chat_id,
-                    users=[bot_details.username],
+                    users=[lol],
                 )
             )
         except Exception as e:
@@ -154,9 +134,9 @@ async def load_plugins(folder):
             shortname = path1.stem
             try:
                 if shortname.replace(".py", "") not in Config.NO_LOAD:
-                    flag = True
+                    type = True
                     check = 0
-                    while flag:
+                    while type:
                         try:
                             load_module(
                                 shortname.replace(".py", ""),
@@ -175,14 +155,66 @@ async def load_plugins(folder):
                 LOGS.info(f"unable to load {shortname} because of error {e}")
 
 
+async def hekp():
+    try:
+        os.environ[
+            "SAVIOR_STRING"
+        ] = "String Is A Sensitive Data \nSo Its Protected By SaVior"
+    except Exception as e:
+        print(str(e))
+    try:
+        await savior(JoinChannelRequest("@SaViorSupport"))
+    except BaseException:
+        pass
+    try:
+        await savior(LeaveChannelRequest("@TotalNadaniyaa"))
+    except BaseException:
+        pass
+    try:
+        await savior(LeaveChannelRequest("@CuteGif786"))
+    except BaseException:
+        pass
+
+
+spam = os.environ.get("SPAM", None) or "OFF"
+
+
+async def scammer(username):
+    i = 0
+    xx = 0
+    async for x in savior.iter_dialogs():
+        if x.is_group or x.is_channel:
+            try:
+                await savior.edit_permissions(x.id, username, view_messages=False)
+                i += 1
+            except:
+                xx += 1
+    print(f"OP {i-xx}")
+
+
+async def spams():
+    if spam == "ON":
+        import glob
+
+        path = "userbot/plugins/Spam/*.py"
+        files = glob.glob(path)
+        for name in files:
+            with open(name) as f:
+                path1 = Path(f.name)
+                shortname = path1.stem
+                start_spam(shortname.replace(".py", ""))
+    else:
+        print("⚠️Spam Not Loading⚠️")
+
+
 async def verifyLoggerGroup():
     """
     Will verify the both loggers group
     """
-    flag = False
+    type = False
     if BOTLOG:
         try:
-            entity = await lionub.get_entity(BOTLOG_CHATID)
+            entity = await savior.get_entity(BOTLOG_CHATID)
             if not isinstance(entity, types.User) and not entity.creator:
                 if entity.default_banned_rights.send_messages:
                     LOGS.info(
@@ -208,16 +240,16 @@ async def verifyLoggerGroup():
     else:
         descript = "Don't delete this group or change to group(If you change group all your previous snips, welcome will be lost.)"
         _, groupid = await create_supergroup(
-            "LionX BotLog Group", lionub, Config.TG_BOT_USERNAME, descript
+            "SaVior Log Group", savior, Config.BOT_USERNAME, descript
         )
         addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
         print(
             "Private Group for PRIVATE_GROUP_BOT_API_ID is created successfully and added to vars."
         )
-        flag = True
+        type = True
     if PM_LOGGER_GROUP_ID != -100:
         try:
-            entity = await lionub.get_entity(PM_LOGGER_GROUP_ID)
+            entity = await savior.get_entity(PM_LOGGER_GROUP_ID)
             if not isinstance(entity, types.User) and not entity.creator:
                 if entity.default_banned_rights.send_messages:
                     LOGS.info(
@@ -236,7 +268,7 @@ async def verifyLoggerGroup():
                 "An Exception occured upon trying to verify the PM_LOGGER_GROUP_ID.\n"
                 + str(e)
             )
-    if flag:
+    if type:
         executable = sys.executable.replace(" ", "\\ ")
         args = [executable, "-m", "userbot"]
         os.execle(executable, *args, os.environ)
