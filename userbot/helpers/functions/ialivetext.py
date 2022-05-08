@@ -7,7 +7,7 @@ import requests
 from ...Config import Config
 from .utils import get_readable_time
 
-Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
+Heroku = heroku3.from_key(Config.API_KEY)
 heroku_api = "https://api.heroku.com"
 
 # UniBorg Telegram UseRBot
@@ -41,7 +41,7 @@ def check_data_base_heal_th():
     return is_database_working, output
 
 
-async def lionalive(StartTime):
+async def savioralive(StartTime):
     _, check_sgnirts = check_data_base_heal_th()
     sudo = "Enabled" if Config.SUDO_USERS else "Disabled"
     uptime = await get_readable_time((time.time() - StartTime))
@@ -54,7 +54,7 @@ async def lionalive(StartTime):
         user_id = Heroku.account().id
         headers = {
             "User-Agent": useragent,
-            "Authorization": f"Bearer {Config.HEROKU_API_KEY}",
+            "Authorization": f"Bearer {Config.API_KEY}",
             "Accept": "application/vnd.heroku+json; version=3.account-quotas",
         }
         path = f"/accounts/{user_id}/actions/get-quota"
@@ -83,9 +83,9 @@ async def lionalive(StartTime):
         dyno = f"{AppHours}h {AppMinutes}m/{hours}h {minutes}m"
     except Exception as e:
         dyno = e
-    return f"🖤༄ LionX Stats ༄🖤\
-                 \n\nღ Database : {check_sgnirts}\
-                  \nღ Sudo : {sudo}\
-                  \nღ Uptime : {uptime}\
-                  \nღ Dyno : {dyno}\
+    return f"꧁ SaVior Stats ꧂\
+                 \n\n༄ Database : {check_sgnirts}\
+                  \n༄ Sudo : {sudo}\
+                  \n༄ Uptime : {uptime}\
+                  \n༄ Dyno : {dyno}\
                   "
