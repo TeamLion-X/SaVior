@@ -207,7 +207,7 @@ RENDISTR = [
     "`CHAND PE CHADA HAI CHANDYAAN KA GHODA TERA NAAM HAI MANSUR TU HAI BEHAN KA LOD*😂`",
     "`Jab se dil lga baithe tanhai me maa chu*da baithe wo kho gyi kisi aur ke pyar hum apne hi jaato me aag lga baithe`",
     "`Chadii ke ander se lal pani kha se ata hai ky teri masuka ka bhosda bhi paan khata hai😂`",
-    "`Sun bhosdi ke By anonyCrew MOHABBAT KE SIWA AUR BHI GAM HAI JAMANE ME BSDK GAND PAHAT JATI HAI PAISA KAMANE ME`",
+    "`Sun bhosdi ke MOHABBAT KE SIWA AUR BHI GAM HAI JAMANE ME BSDK GAND PAHAT JATI HAI PAISA KAMANE ME`",
     "`Thaan liya tha Sayri nhi krege Unka pichwada dekha Alfaaz nikal gye`",
     "`Ravivaar ko dekha Chand Ka Tukra Itna Baar Dekha par Jaath na Ukra`",
     "`Katal kro Tir se Talwar me Ky Rkkha hai Maal Chodo Sari Me Salwar me Ky Rkkha hai`",
@@ -314,7 +314,7 @@ INSULT_STRINGS = [
     "Stupidity is not a crime so you are free to go.",
     "Try bathing with Hydrochloric Acid instead of water.",
     "Try jumping from a hundred story building but you can do it only once.",
-    "Try playing lionch and throw with RDX its fun.",
+    "Try playing catch and throw with RDX its fun.",
     "Try provoking a tiger while you both are in a cage.",
     "Try this: if you hold your breath underwater for an hour, you can then hold it forever.",
     "Try to spend one day in a coffin and it will be yours forever.",
@@ -366,7 +366,7 @@ RUNSREACTS = [
     '"Oh, look at me! I\'m so cool, I can run from a bot!" - this person',
     "Yeah yeah, just tap /kickme already.",
     "Here, take this ring and head to Mordor while you're at it.",
-    "Legend has it, they're still running...",
+    "SaVior has it, they're still running...",
     "Unlike Harry Potter, your parents can't protect you from me.",
     "Fear leads to anger. Anger leads to hate. Hate leads to suffering. If you keep running in fear, you might "
     "be the next Vader.",
@@ -603,9 +603,9 @@ WHERE = ["in the chest", "on the head", "on the butt", "on the crotch"]
 
 async def slap(replied_user, event, DEFAULTUSER):
     """Construct a funny slap sentence !!"""
-    user_id = replied_user.user.id
-    first_name = replied_user.user.first_name
-    if username := replied_user.user.username:
+    user_id = replied_user.id
+    first_name = replied_user.first_name
+    if username := replied_user.username:
         slapped = f"@{username}"
     else:
         slapped = f"[{first_name}](tg://user?id={user_id})"

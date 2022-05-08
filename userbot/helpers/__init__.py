@@ -1,11 +1,11 @@
 from . import fonts
-from . import memeshelper as lionmemes
+from . import memeshelper as swtmemes
 from .aiohttp_helper import AioHttp
 from .utils import *
 
-flag = True
+type = True
 check = 0
-while flag:
+while type:
     try:
         from . import nsfw as useless
         from .chatbot import *
@@ -14,7 +14,7 @@ while flag:
         from .progress import *
         from .qhelper import process
         from .tools import *
-        from .utils import _format, _liontools, _lionutils
+        from .utils import _format, _saviortools, _saviorutils
 
         break
     except ModuleNotFoundError as e:

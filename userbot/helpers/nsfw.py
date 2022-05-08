@@ -1,4 +1,9 @@
-from ..funcs.managers import edit_or_reply
+from telethon.tl import functions
+
+from ..funcs.logger import logging
+from ..funcs.managers import eor
+
+LOGS = logging.getLogger("SaViorX")
 
 pawn = [
     "nsfw",
@@ -106,20 +111,32 @@ hemtai = [
 
 
 async def importent(event):
-    lion = ["-1001199597035", "-1001459701099", "-1001436155389", "-1001321431101"]
-    if str(event.chat_id) in lion:
-        await edit_or_reply(event, "**Yes I'm GAY**")
+    savior = ["-1001289164396", "-1001344922859"]
+    if str(event.chat_id) in savior:
+        await eor(event, "**Yes I'm GAY**")
         await event.client.kick_participant(event.chat_id, "me")
         return True
     return False
 
 
-def nsfw(lionagory):
-    lionagory.sort(key=str.casefold)
+def nsfw(catagory):
+    catagory.sort(key=str.casefold)
     horny = "**Catagory :** "
-    for i in lionagory:
+    for i in catagory:
         horny += f" `{i.lower()}` ||"
     return horny
+
+
+async def unsave_gif(event, hgif):
+    try:
+        await event.client(
+            functions.messages.SaveGifRequest(
+                id=get_input_document(hgif),
+                unsave=True,
+            )
+        )
+    except Exception as e:
+        LOGS.info(e)
 
 
 API = "https://weaverbottest.herokuapp.com/gimme"
