@@ -1,11 +1,11 @@
-# pm and tagged messages logger for LionX by @TeamLionX (@TeamLionX)
+# pm and tagged messages logger for SaViorX by @SaViorXBoy (@SaViorXBoy)
 import asyncio
 
-from userbot import lionub
+from userbot import savior
 from userbot.funcs.logger import logging
 
 from ..Config import Config
-from ..funcs.managers import edit_delete
+from ..funcs.managers import eod
 from ..helpers.tools import media_type
 from ..helpers.utils import _format
 from ..sql_helper import no_log_pms_sql
@@ -14,7 +14,7 @@ from . import BOTLOG, BOTLOG_CHATID
 
 LOGS = logging.getLogger(__name__)
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
 class LOG_CHATS:
@@ -27,7 +27,9 @@ class LOG_CHATS:
 LOG_CHATS_ = LOG_CHATS()
 
 
-@lionub.lion_cmd(incoming=True, func=lambda e: e.is_private, edited=False, forword=None)
+@savior.savior_cmd(
+    incoming=True, func=lambda e: e.is_private, edited=False, forword=None
+)
 async def monito_p_m_s(event):  # sourcery no-metrics
     if Config.PM_LOGGER_GROUP_ID == -100:
         return
@@ -67,7 +69,9 @@ async def monito_p_m_s(event):  # sourcery no-metrics
                 LOGS.warn(str(e))
 
 
-@lionub.lion_cmd(incoming=True, func=lambda e: e.mentioned, edited=False, forword=None)
+@savior.savior_cmd(
+    incoming=True, func=lambda e: e.mentioned, edited=False, forword=None
+)
 async def log_tagged_messages(event):
     hmm = await event.get_chat()
     from .afk import AFK_
@@ -106,9 +110,9 @@ async def log_tagged_messages(event):
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"save(?:\s|$)([\s\S]*)",
-    command=("save", plugin_category),
+@savior.savior_cmd(
+    pattern="save(?:\s|$)([\s\S]*)",
+    command=("save", menu_category),
     info={
         "header": "To log the replied message to bot log group so you can check later.",
         "description": "Set PRIVATE_GROUP_BOT_API_ID in vars for functioning of this",
@@ -137,9 +141,9 @@ async def log(log_text):
     await log_text.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="log$",
-    command=("log", plugin_category),
+    command=("log", menu_category),
     info={
         "header": "To turn on logging of messages from that chat.",
         "description": "Set PM_LOGGER_GROUP_ID in vars to work this",
@@ -154,14 +158,14 @@ async def set_no_log_p_m(event):
         chat = await event.get_chat()
         if no_log_pms_sql.is_approved(chat.id):
             no_log_pms_sql.disapprove(chat.id)
-            await edit_delete(
+            await eod(
                 event, "`logging of messages from this group has been started`", 5
             )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="nolog$",
-    command=("nolog", plugin_category),
+    command=("nolog", menu_category),
     info={
         "header": "To turn off logging of messages from that chat.",
         "description": "Set PM_LOGGER_GROUP_ID in vars to work this",
@@ -176,14 +180,12 @@ async def set_no_log_p_m(event):
         chat = await event.get_chat()
         if not no_log_pms_sql.is_approved(chat.id):
             no_log_pms_sql.approve(chat.id)
-            await edit_delete(
-                event, "`Logging of messages from this chat has been stopped`", 5
-            )
+            await eod(event, "`Logging of messages from this chat has been stopped`", 5)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="pmlog (on|off)$",
-    command=("pmlog", plugin_category),
+    command=("pmlog", menu_category),
     info={
         "header": "To turn on or turn off logging of Private messages in pmlogger group.",
         "description": "Set PM_LOGGER_GROUP_ID in vars to work this",
@@ -196,7 +198,7 @@ async def set_no_log_p_m(event):
 async def set_pmlog(event):
     "To turn on or turn off logging of Private messages"
     if Config.PM_LOGGER_GROUP_ID == -100:
-        return await edit_delete(
+        return await eod(
             event,
             "__For functioning of this you need to set PM_LOGGER_GROUP_ID in config vars__",
             10,
@@ -223,9 +225,9 @@ async def set_pmlog(event):
         await event.edit("`Pm logging is already disabled`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="grplog (on|off)$",
-    command=("grplog", plugin_category),
+    command=("grplog", menu_category),
     info={
         "header": "To turn on or turn off group tags logging in pmlogger group.",
         "description": "Set PM_LOGGER_GROUP_ID in vars to work this",
@@ -238,7 +240,7 @@ async def set_pmlog(event):
 async def set_grplog(event):
     "To turn on or turn off group tags logging"
     if Config.PM_LOGGER_GROUP_ID == -100:
-        return await edit_delete(
+        return await eod(
             event,
             "__For functioning of this you need to set PM_LOGGER_GROUP_ID in config vars__",
             10,

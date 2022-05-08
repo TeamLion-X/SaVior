@@ -6,13 +6,13 @@ import subprocess
 
 import requests
 
-from userbot import lionub
+from userbot import savior
 from userbot.funcs.logger import logging
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "utils"
+menu_category = "misc"
 LOGS = logging.getLogger(__name__)
 
 # originally created by
@@ -20,13 +20,13 @@ LOGS = logging.getLogger(__name__)
 
 
 link_regex = re.compile(
-    r"((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)", re.DOTALL
+    "((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)", re.DOTALL
 )
 
 
-@lionub.lion_cmd(
-    pattern=r"labstack(?:\s|$)([\s\S]*)",
-    command=("labstack", plugin_category),
+@savior.savior_cmd(
+    pattern="labstack(?:\s|$)([\s\S]*)",
+    command=("labstack", menu_category),
     info={
         "header": "To upload media to labstack.",
         "description": "Will upload media to labstack and shares you link so that you can share with friends and it expires automatically after 7 days",
@@ -35,7 +35,7 @@ link_regex = re.compile(
 )
 async def labstack(event):
     "to upload media to labstack"
-    editor = await edit_or_reply(event, "Processing...")
+    editor = await eor(event, "Processing...")
     input_str = event.pattern_match.group(1)
     reply = await event.get_reply_message()
     if input_str:
@@ -87,9 +87,9 @@ async def labstack(event):
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="webupload ?(.+?|) --(fileio|anonfiles|transfer|filebin|anonymousfiles|bayfiles)",
-    command=("webupload", plugin_category),
+    command=("webupload", menu_category),
     info={
         "header": "To upload media to some online media sharing platforms.",
         "description": "you can upload media to any of the sites mentioned. so you can share link to others.",
@@ -110,10 +110,10 @@ async def labstack(event):
 )
 async def _(event):
     "To upload media to some online media sharing platforms"
-    editor = await edit_or_reply(event, "processing ...")
+    editor = await eor(event, "processing ...")
     input_str = event.pattern_match.group(1)
     selected_transfer = event.pattern_match.group(2)
-    lioncheck = None
+    SaViorCheck = None
     if input_str:
         file_name = input_str
     else:
@@ -121,7 +121,7 @@ async def _(event):
         file_name = await event.client.download_media(
             reply.media, Config.TMP_DOWNLOAD_DIRECTORY
         )
-        lioncheck = True
+        SaViorCheck = True
     # a dictionary containing the shell commands
     CMD_WEB = {
         "fileio": 'curl -F "file=@{full_file_path}" https://file.io',
@@ -164,5 +164,5 @@ async def _(event):
         await editor.edit(result)
     else:
         await editor.edit(error)
-    if lioncheck:
+    if SaViorCheck:
         os.remove(file_name)

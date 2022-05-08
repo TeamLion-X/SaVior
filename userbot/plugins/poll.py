@@ -4,17 +4,17 @@ from telethon.errors.rpcbaseerrors import ForbiddenError
 from telethon.errors.rpcerrorlist import PollOptionInvalidError
 from telethon.tl.types import InputMediaPoll, Poll
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from . import Build_Poll, reply_id
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
-@lionub.lion_cmd(
-    pattern=r"poll(?:\s|$)([\s\S]*)",
-    command=("poll", plugin_category),
+@savior.savior_cmd(
+    pattern="poll(?:\s|$)([\s\S]*)",
+    command=("poll", menu_category),
     info={
         "header": "To create a poll.",
         "description": "If you doesnt give any input it sends a default poll",
@@ -22,15 +22,15 @@ plugin_category = "tools"
         "examples": "{tr}poll Are you an early bird or a night owl ;Early bird ; Night owl",
     },
 )
-async def pollcreator(lionpoll):
+async def pollcreator(owopoll):
     "To create a poll"
-    reply_to_id = await reply_id(lionpoll)
-    string = "".join(lionpoll.text.split(maxsplit=1)[1:])
+    reply_to_id = await reply_id(owopoll)
+    string = "".join(owopoll.text.split(maxsplit=1)[1:])
     if not string:
         options = Build_Poll(["Yah sure 😊✌️", "Nah 😏😕", "Whatever die sur 🥱🙄"])
         try:
-            await lionpoll.client.send_message(
-                lionpoll.chat_id,
+            await owopoll.client.send_message(
+                owopoll.chat_id,
                 file=InputMediaPoll(
                     poll=Poll(
                         id=random.getrandbits(32),
@@ -40,44 +40,43 @@ async def pollcreator(lionpoll):
                 ),
                 reply_to=reply_to_id,
             )
-            await lionpoll.delete()
+            await owopoll.delete()
         except PollOptionInvalidError:
-            await edit_or_reply(
-                lionpoll,
-                "`A poll option used invalid data (the data may be too long).`",
+            await eor(
+                owopoll, "`A poll option used invalid data (the data may be too long).`"
             )
         except ForbiddenError:
-            await edit_or_reply(lionpoll, "`This chat has forbidden the polls`")
+            await eor(owopoll, "`This chat has forbidden the polls`")
         except exception as e:
-            await edit_or_reply(lionpoll, str(e))
+            await eor(owopoll, str(e))
     else:
-        lioninput = string.split(";")
-        if len(lioninput) > 2 and len(lioninput) < 12:
-            options = Build_Poll(lioninput[1:])
+        saviorinput = string.split(";")
+        if len(saviorinput) > 2 and len(saviorinput) < 12:
+            options = Build_Poll(saviorinput[1:])
             try:
-                await lionpoll.client.send_message(
-                    lionpoll.chat_id,
+                await owopoll.client.send_message(
+                    owopoll.chat_id,
                     file=InputMediaPoll(
                         poll=Poll(
                             id=random.getrandbits(32),
-                            question=lioninput[0],
+                            question=saviorinput[0],
                             answers=options,
                         )
                     ),
                     reply_to=reply_to_id,
                 )
-                await lionpoll.delete()
+                await owopoll.delete()
             except PollOptionInvalidError:
-                await edit_or_reply(
-                    lionpoll,
+                await eor(
+                    owopoll,
                     "`A poll option used invalid data (the data may be too long).`",
                 )
             except ForbiddenError:
-                await edit_or_reply(lionpoll, "`This chat has forbidden the polls`")
+                await eor(owopoll, "`This chat has forbidden the polls`")
             except Exception as e:
-                await edit_or_reply(lionpoll, str(e))
+                await eor(owopoll, str(e))
         else:
-            await edit_or_reply(
-                lionpoll,
+            await eor(
+                owopoll,
                 "Make sure that you used Correct syntax `.poll question ; option1 ; option2`",
             )

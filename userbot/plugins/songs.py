@@ -1,30 +1,41 @@
-# by  @TeamLionX ( https://t.me/TeamLionX  )
-
-# songs finder for LionX
 import asyncio
-import base64
 import io
 import os
-from pathlib import Path
+import time
 
+import requests
+import yt_dlp
 from ShazamAPI import Shazam
 from telethon import types
-from telethon.errors.rpcerrorlist import YouBlockedUserError
-from telethon.tl.functions.messages import ImportChatInviteRequest as Get
-from validators.url import url
+from telethon.tl.types import DocumentAttributeAudio
+from youtube_dl import YoutubeDL
+from youtube_dl.utils import (
+    ContentTooShortError,
+    DownloadError,
+    ExtractorError,
+    GeoRestrictedError,
+    MaxDownloadsReached,
+    PostProcessingError,
+    UnavailableVideoError,
+    XAttrMetadataError,
+)
+from youtube_search import YoutubeSearch
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
-from ..helpers.functions import name_dl, song_dl, video_dl, yt_data, yt_search
+from ..funcs.managers import eod, eor
+from ..helpers import progress
 from ..helpers.tools import media_type
-from ..helpers.utils import _lionutils, reply_id
-from . import hmention
+from ..helpers.yt_helper import *
+from . import deEmojify, mention
 
-plugin_category = "utils"
+menu_category = "utils"
 LOGS = logging.getLogger(__name__)
 
+perf = "SaVior"
+
+# from youtubesearchpython import *
 # =========================================================== #
 #                           STRINGS                           #
 # =========================================================== #
@@ -37,169 +48,309 @@ SONGBOT_BLOCKED_STRING = "<code>Please unblock @songdl_bot and try again</code>"
 # =========================================================== #
 
 
-@lionub.lion_cmd(
-    pattern=r"song(320)?(?:\s|$)([\s\S]*)",
-    command=("song", plugin_category),
+@savior.savior_cmd(
+    pattern="ytlink(?:\s|$)([\s\S]*)",
+    command=("ytlink", menu_category),
     info={
-        "header": "To get songs from youtube.",
-        "description": "Basically this command searches youtube and send the first video as audio file.",
-        "flags": {
-            "320": "if you use song320 then you get 320k quality else 128k quality",
-        },
-        "usage": "{tr}song <song name>",
-        "examples": "{tr}song memories song",
+        "header": "Get Link of query from youtube limit 7",
+        "usage": "{tr}ytlink",
+    },
+)
+async def hmm(ytwala):
+    query = ytwala.pattern_match.group(1)
+    if not query:
+        await eor(ytwala, "`Enter query to search`")
+    await eor(ytwala, "`Processing...`")
+    try:
+        results = json.loads(YoutubeSearch(query, max_results=7).to_json())
+    except KeyError:
+        return await eor(ytwala, "Unable to find relevant search queries...")
+    output = f"**Search Query:**\n`{query}`\n\n**Results:**\n\n"
+    for i in results["videos"]:
+        output += f"--> `{i['title']}`\nhttps://www.youtube.com{i['url_suffix']}\n\n"
+    await eor(ytwala, output, link_preview=False)
+
+
+@savior.savior_cmd(
+    pattern="slyrics(?:\s|$)([\s\S]*)",
+    command=("slyrics", menu_category),
+    info={
+        "header": "Lyrics Of Song",
+        "usage": "{tr}slyrics",
+    },
+)
+async def nope(aura):
+    KANNADIGA = aura.pattern_match.group(1)
+    if not KANNADIGA:
+        if aura.is_reply:
+            (await aura.get_reply_message()).message
+        else:
+            await aura.edit(
+                "`Sir please give some query to search and download it for you..!`"
+            )
+            return
+
+    troll = await bot.inline_query("iLyricsBot", f"{(deEmojify(KANNADIGA))}")
+
+    await troll[0].click(
+        aura.chat_id,
+        reply_to=aura.reply_to_msg_id,
+        silent=True if aura.is_reply else False,
+        hide_via=True,
+    )
+
+    await aura.delete()
+
+
+@savior.savior_cmd(
+    pattern="ssong(?:\s|$)([\s\S]*)",
+    command=("ssong", menu_category),
+    info={
+        "header": "Search Song",
+        "usage": "{tr}ssong",
     },
 )
 async def _(event):
-    "To search songs"
-    reply_to_id = await reply_id(event)
-    reply = await event.get_reply_message()
-    if event.pattern_match.group(2):
-        query = event.pattern_match.group(2)
-    elif reply and reply.message:
-        query = reply.message
-    else:
-        return await edit_or_reply(event, "`What I am Supposed to find `")
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
-    lionevent = await edit_or_reply(event, "`wi8..! I am finding your song....`")
-    video_link = await yt_search(str(query))
-    if not url(video_link):
-        return await lionevent.edit(
-            f"Sorry!. I can't find any related video/audio for `{query}`"
-        )
-    cmd = event.pattern_match.group(1)
-    q = "320k" if cmd == "320" else "128k"
-    song_cmd = song_dl.format(QUALITY=q, video_link=video_link)
-    name_cmd = name_dl.format(video_link=video_link)
+    query = event.text[6:]
+    max_results = 1
+    if query == "":
+        return await eod(event, "__Please give a song name to search.__")
+    hell = await eor(event, f"__Searching for__ `{query}`")
+    hel_ = await song_search(event, query, max_results, details=True)
+    x, title, views, duration, thumb = hel_[0], hel_[1], hel_[2], hel_[3], hel_[4]
+    thumb_name = f"thumb.jpg"
+    thumbnail = requests.get(thumb, allow_redirects=True)
+    open(thumb_name, "wb").write(thumbnail.content)
+    url = x.replace("\n", "")
     try:
-        lion = Get(lion)
-        await event.client(lion)
-    except BaseException:
-        pass
-    stderr = (await _lionutils.runcmd(song_cmd))[1]
-    if stderr:
-        return await lionevent.edit(f"**Error :** `{stderr}`")
-    lionname, stderr = (await _lionutils.runcmd(name_cmd))[:2]
-    if stderr:
-        return await lionevent.edit(f"**Error :** `{stderr}`")
-    # stderr = (await runcmd(thumb_cmd))[1]
-    lionname = os.path.splitext(lionname)[0]
-    # if stderr:
-    #    return await lionevent.edit(f"**Error :** `{stderr}`")
-    song_file = Path(f"{lionname}.mp3")
-    if not os.path.exists(song_file):
-        return await lionevent.edit(
-            f"Sorry!. I can't find any related video/audio for `{query}`"
+        await event.edit("**Fetching Song**")
+        with YoutubeDL(song_opts) as somg:
+            hell_data = somg.extract_info(url)
+    except DownloadError as DE:
+        return await eor(hell, f"`{str(DE)}`")
+    except ContentTooShortError:
+        return await eor(hell, "`The download content was too short.`")
+    except GeoRestrictedError:
+        return await eor(
+            hell,
+            "`Video is not available from your geographic location due to geographic restrictions imposed by a website.`",
         )
-    await lionevent.edit("`yeah..! i found something wi8..🥰`")
-    lionthumb = Path(f"{lionname}.jpg")
-    if not os.path.exists(lionthumb):
-        lionthumb = Path(f"{lionname}.webp")
-    elif not os.path.exists(lionthumb):
-        lionthumb = None
-    ytdata = await yt_data(video_link)
+    except MaxDownloadsReached:
+        return await eor(hell, "`Max-downloads limit has been reached.`")
+    except PostProcessingError:
+        return await eor(hell, "`There was an error during post processing.`")
+    except UnavailableVideoError:
+        return await eor(hell, "`Media is not available in the requested format.`")
+    except XAttrMetadataError as XAME:
+        return await eor(hell, f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
+    except ExtractorError:
+        return await eor(hell, "`There was an error during info extraction.`")
+    c_time = time.time()
+    await event.edit(
+        f"**🎶 Preparing to upload song 🎶 :** \n\n{hell_data['title']} \n**By :** {hell_data['uploader']}"
+    )
     await event.client.send_file(
         event.chat_id,
-        song_file,
-        force_document=False,
-        caption=f"<b><i>➥ Title :- {ytdata['title']}</i></b>\n<b><i>➥ Uploaded by :- {hmention}</i></b>",
-        parse_mode="html",
-        thumb=lionthumb,
+        f"{hell_data['id']}.mp3",
         supports_streaming=True,
-        reply_to=reply_to_id,
+        caption=f"**✘ Song -** `{title}` \n**✘ Views -** `{views}` \n**✘ Duration -** `{duration}` \n\n**✘ By :** {mention}",
+        thumb=thumb_name,
+        attributes=[
+            DocumentAttributeAudio(
+                duration=int(hell_data["duration"]),
+                title=str(hell_data["title"]),
+                performer=perf,
+            )
+        ],
+        progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+            progress(d, t, event, c_time, "Uploading..", f"{hell_data['title']}.mp3")
+        ),
     )
-    await lionevent.delete()
-    for files in (lionthumb, song_file):
-        if files and os.path.exists(files):
-            os.remove(files)
+    await event.delete()
+    os.remove(f"{hell_data['id']}.mp3")
 
 
-async def delete_messages(event, chat, from_message):
-    itermsg = event.client.iter_messages(chat, min_id=from_message.id)
-    msgs = [from_message.id]
-    async for i in itermsg:
-        msgs.append(i.id)
-    await event.client.delete_messages(chat, msgs)
-    await event.client.send_read_acknowledge(chat)
-
-
-@lionub.lion_cmd(
-    pattern=r"vsong(?:\s|$)([\s\S]*)",
-    command=("vsong", plugin_category),
+@savior.savior_cmd(
+    pattern="vssong(?:\s|$)([\s\S]*)",
+    command=("vssong", menu_category),
     info={
-        "header": "To get video songs from youtube.",
-        "description": "Basically this command searches youtube and sends the first video",
-        "usage": "{tr}vsong <song name>",
-        "examples": "{tr}vsong memories song",
+        "header": "Search Song",
+        "usage": "{tr}vssong",
     },
 )
 async def _(event):
-    "To search video songs"
-    reply_to_id = await reply_id(event)
-    reply = await event.get_reply_message()
-    if event.pattern_match.group(1):
-        query = event.pattern_match.group(1)
-    elif reply and reply.message:
-        query = reply.message
-    else:
-        return await edit_or_reply(event, "`What I am Supposed to find`")
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
-    lionevent = await edit_or_reply(event, "`wi8..! I am finding your song....`")
-    video_link = await yt_search(str(query))
-    if not url(video_link):
-        return await lionevent.edit(
-            f"Sorry!. I can't find any related video/audio for `{query}`"
-        )
-    name_cmd = name_dl.format(video_link=video_link)
-    video_cmd = video_dl.format(video_link=video_link)
-    stderr = (await _lionutils.runcmd(video_cmd))[1]
-    if stderr:
-        return await lionevent.edit(f"**Error :** `{stderr}`")
-    lionname, stderr = (await _lionutils.runcmd(name_cmd))[:2]
-    if stderr:
-        return await lionevent.edit(f"**Error :** `{stderr}`")
-    # stderr = (await runcmd(thumb_cmd))[1]
+    query = event.text[7:]
+    max_results = 1
+    if query == "":
+        return await eod(event, "__Please give a song name to search.__")
+    hell = await eor(event, f"__Searching for__ `{query}`")
+    hel_ = await song_search(event, query, max_results, details=True)
+    x, title, views, duration, thumb = hel_[0], hel_[1], hel_[2], hel_[3], hel_[4]
+    thumb_name = f"thumb.jpg"
+    thumbnail = requests.get(thumb, allow_redirects=True)
+    open(thumb_name, "wb").write(thumbnail.content)
+    url = x.replace("\n", "")
     try:
-        lion = Get(lion)
-        await event.client(lion)
-    except BaseException:
-        pass
-    # if stderr:
-    #    return await lionevent.edit(f"**Error :** `{stderr}`")
-    lionname = os.path.splitext(lionname)[0]
-    vsong_file = Path(f"{lionname}.mp4")
-    if not os.path.exists(vsong_file):
-        vsong_file = Path(f"{lionname}.mkv")
-    elif not os.path.exists(vsong_file):
-        return await lionevent.edit(
-            f"Sorry!. I can't find any related video/audio for `{query}`"
+        await event.edit("**Fetching Video**")
+        with YoutubeDL(video_opts) as somg:
+            hell_data = somg.extract_info(url)
+    except DownloadError as DE:
+        return await eor(hell, f"`{str(DE)}`")
+    except ContentTooShortError:
+        return await eor(hell, "`The download content was too short.`")
+    except GeoRestrictedError:
+        return await eor(
+            hell,
+            "`Video is not available from your geographic location due to geographic restrictions imposed by a website.`",
         )
-    await lionevent.edit("`yeah..! i found something wi8..🥰`")
-    lionthumb = Path(f"{lionname}.jpg")
-    if not os.path.exists(lionthumb):
-        lionthumb = Path(f"{lionname}.webp")
-    elif not os.path.exists(lionthumb):
-        lionthumb = None
-    ytdata = await yt_data(video_link)
+    except MaxDownloadsReached:
+        return await eor(hell, "`Max-downloads limit has been reached.`")
+    except PostProcessingError:
+        return await eor(hell, "`There was an error during post processing.`")
+    except UnavailableVideoError:
+        return await eor(hell, "`Media is not available in the requested format.`")
+    except XAttrMetadataError as XAME:
+        return await eor(hell, f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`")
+    except ExtractorError:
+        return await eor(hell, "`There was an error during info extraction.`")
+    except Exception as e:
+        return await eor(hell, e)
+    c_time = time.time()
+    await event.edit(
+        f"**📺 Preparing to upload video 📺 :** \n\n{hell_data['title']}\n**By :** {hell_data['uploader']}"
+    )
     await event.client.send_file(
         event.chat_id,
-        vsong_file,
-        force_document=False,
-        caption=f"<b><i>➥ Title :- {ytdata['title']}</i></b>\n<b><i>➥ Uploaded by :- {hmention}</i></b>",
-        parse_mode="html",
-        thumb=lionthumb,
+        f"{hell_data['id']}.mp4",
         supports_streaming=True,
-        reply_to=reply_to_id,
+        caption=f"**✘ Video :** `{title}` \n\n**✘ By :** {mention}",
+        thumb=thumb_name,
+        progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+            progress(d, t, event, c_time, "Uploading..", f"{hell_data['title']}.mp4")
+        ),
     )
-    await lionevent.delete()
-    for files in (lionthumb, vsong_file):
-        if files and os.path.exists(files):
-            os.remove(files)
+    await event.delete()
+    os.remove(f"{hell_data['id']}.mp4")
 
 
-@lionub.lion_cmd(
-    pattern="shazam$",
-    command=("shazam", plugin_category),
+def time_to_seconds(time):
+    stringt = str(time)
+    return sum(int(x) * 60**i for i, x in enumerate(reversed(stringt.split(":"))))
+
+
+@savior.savior_cmd(
+    pattern="vsong(?:\s|$)([\s\S]*)",
+    command=("vsong", menu_category),
+    info={
+        "header": " Video Search Song",
+        "usage": "{tr}vsong",
+    },
+)
+async def shazamcmd(event):
+    # ydl_opts = {"format": "bestvideo[ext=mp4]"}
+    ydl_opts = {
+        "format": "best",
+        "addmetadata": True,
+        "key": "FFmpegMetadata",
+        "age_limit": 25,
+        "prefer_ffmpeg": True,
+        "geo_bypass": True,
+        "nocheckcertificate": True,
+        "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
+        "outtmpl": "%(id)s.mp4",
+        "logtostderr": False,
+        "quiet": True,
+    }
+    m = await eor(event, "searching video song")
+    query = event.text[6:]
+    try:
+        results = YoutubeSearch(query, max_results=1).to_dict()
+        link = f"https://youtube.com{results[0]['url_suffix']}"
+        title = results[0]["title"][:40]
+        thumbnail = results[0]["thumbnails"][0]
+        thumb_name = f"thumb{title}.jpg"
+        thumb = requests.get(thumbnail, allow_redirects=True)
+        open(thumb_name, "wb").write(thumb.content)
+        duration = results[0]["duration"]
+        views = results[0]["views"]
+    except Exception:
+        await m.edit("𝐒𝐨𝐧𝐠 𝐍𝐨𝐭 𝐅𝐨𝐮𝐧𝐝.")
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(link, download=False)
+            audio_file = ydl.prepare_filename(info_dict)
+            ydl.process_info(info_dict)
+        secmul, dur, dur_arr = 1, 0, duration.split(":")
+        for i in range(len(dur_arr) - 1, -1, -1):
+            dur += int(dur_arr[i]) * secmul
+            secmul *= 60
+    except Exception as e:
+        await m.edit("**𝐘𝐨𝐮𝐭𝐮𝐛𝐞  𝐄𝐫𝐫𝐨𝐫 **")
+        print(e)
+    await event.client.send_file(
+        event.chat_id,
+        audio_file,
+        supports_streaming=True,
+        caption=f"**✘ Video Song -** `{title}` \n**✘ Views -** `{views}` \n**✘ Duration -** `{duration}` \n\n**✘ By :** {mention}",
+        thumb=thumb_name,
+    )
+    await event.delete()
+    os.remove(audio_file)
+    os.remove(thumb_name)
+
+
+@savior.savior_cmd(
+    pattern="song(?:\s|$)([\s\S]*)",
+    command=("song", menu_category),
+    info={
+        "header": "Search Song",
+        "usage": "{tr}song",
+    },
+)
+async def shazamcmd(event):
+    ydl_opts = {"format": "bestaudio[ext=m4a]"}
+    m = await eor(event, "searching song")
+    query = event.text[6:]
+    try:
+        results = YoutubeSearch(query, max_results=1).to_dict()
+        link = f"https://youtube.com{results[0]['url_suffix']}"
+        title = results[0]["title"][:40]
+        thumbnail = results[0]["thumbnails"][0]
+        thumb_name = f"thumb{title}.jpg"
+        thumb = requests.get(thumbnail, allow_redirects=True)
+        open(thumb_name, "wb").write(thumb.content)
+        duration = results[0]["duration"]
+        views = results[0]["views"]
+
+    except Exception:
+        m.edit("𝐒𝐨𝐧𝐠 🥀 𝐍𝐨𝐭 😔 𝐅𝐨𝐮𝐧𝐝.")
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(link, download=False)
+            audio_file = ydl.prepare_filename(info_dict)
+            ydl.process_info(info_dict)
+        secmul, dur, dur_arr = 1, 0, duration.split(":")
+        for i in range(len(dur_arr) - 1, -1, -1):
+            dur += int(dur_arr[i]) * secmul
+            secmul *= 60
+    except Exception as e:
+        m.edit("**𝐘𝐨𝐮𝐭𝐮𝐛𝐞  𝐄𝐫𝐫𝐨𝐫 ❌**")
+        print(e)
+    await event.client.send_file(
+        event.chat_id,
+        audio_file,
+        supports_streaming=True,
+        caption=f"**✘ Song -** `{title}` \n**✘ Views -** `{views}` \n**✘ Duration -** `{duration}` \n\n**✘ By :** {mention}",
+        thumb=thumb_name,
+    )
+    await event.delete()
+    os.remove(audio_file)
+    os.remove(thumb_name)
+
+
+@savior.savior_cmd(
+    pattern="spic$",
+    command=("spic", menu_category),
     info={
         "header": "To reverse search song.",
         "description": "Reverse search audio file using shazam api",
@@ -211,10 +362,10 @@ async def shazamcmd(event):
     reply = await event.get_reply_message()
     mediatype = media_type(reply)
     if not reply or not mediatype or mediatype not in ["Voice", "Audio"]:
-        return await edit_delete(
+        return await eod(
             event, "__Reply to Voice clip or Audio clip to reverse search that song.__"
         )
-    lionevent = await edit_or_reply(event, "__Downloading the audio clip...__")
+    saviorevent = await eor(event, "__Downloading the audio clip...__")
     try:
         for attr in getattr(reply.document, "attributes", []):
             if isinstance(attr, types.DocumentAttributeFilename):
@@ -231,8 +382,8 @@ async def shazamcmd(event):
         track = next(recognize_generator)[1]["track"]
     except Exception as e:
         LOGS.error(e)
-        return await edit_delete(
-            lionevent, f"**Error while reverse searching song:**\n__{e}__"
+        return await eod(
+            saviorevent, f"**Error while reverse searching song:**\n__{e}__"
         )
 
     image = track["images"]["background"]
@@ -240,94 +391,4 @@ async def shazamcmd(event):
     await event.client.send_file(
         event.chat_id, image, caption=f"**Song:** `{song}`", reply_to=reply
     )
-    await lionevent.delete()
-
-
-@lionub.lion_cmd(
-    pattern=r"song2(?:\s|$)([\s\S]*)",
-    command=("song2", plugin_category),
-    info={
-        "header": "To search songs and upload to telegram",
-        "description": "Searches the song you entered in query and sends it quality of it is 320k",
-        "usage": "{tr}song2 <song name>",
-        "examples": "{tr}song2 memories song",
-    },
-)
-async def _(event):
-    "To search songs"
-    song = event.pattern_match.group(1)
-    chat = "@songdl_bot"
-    reply_id_ = await reply_id(event)
-    lionevent = await edit_or_reply(event, SONG_SEARCH_STRING, parse_mode="html")
-    async with event.client.conversation(chat) as conv:
-        try:
-            purgeflag = await conv.send_message("/start")
-            await conv.get_response()
-            await conv.send_message(song)
-            hmm = await conv.get_response()
-            while hmm.edit_hide is not True:
-                await asyncio.sleep(0.1)
-                hmm = await event.client.get_messages(chat, ids=hmm.id)
-            baka = await event.client.get_messages(chat)
-            if baka[0].message.startswith(
-                ("I don't like to say this but I failed to find any such song.")
-            ):
-                await delete_messages(event, chat, purgeflag)
-                return await edit_delete(
-                    lionevent, SONG_NOT_FOUND, parse_mode="html", time=5
-                )
-            await lionevent.edit(SONG_SENDING_STRING, parse_mode="html")
-            await baka[0].click(0)
-            await conv.get_response()
-            await conv.get_response()
-            music = await conv.get_response()
-            await event.client.send_read_acknowledge(conv.chat_id)
-        except YouBlockedUserError:
-            return await lionevent.edit(SONGBOT_BLOCKED_STRING, parse_mode="html")
-        await event.client.send_file(
-            event.chat_id,
-            music,
-            caption=f"<b>➥ Song :- <code>{song}</code></b>",
-            parse_mode="html",
-            reply_to=reply_id_,
-        )
-        await lionevent.delete()
-        await delete_messages(event, chat, purgeflag)
-
-
-# reverse search by  @Lal_bakthan
-@lionub.lion_cmd(
-    pattern="szm$",
-    command=("szm", plugin_category),
-    info={
-        "header": "To reverse search music file.",
-        "description": "music file lenght must be around 10 sec so use ffmpeg plugin to trim it.",
-        "usage": "{tr}szm",
-    },
-)
-async def _(event):
-    "To reverse search music by bot."
-    if not event.reply_to_msg_id:
-        return await edit_delete(event, "```Reply to an audio message.```")
-    reply_message = await event.get_reply_message()
-    chat = "@auddbot"
-    lionevent = await edit_or_reply(event, "```Identifying the song```")
-    async with event.client.conversation(chat) as conv:
-        try:
-            await conv.send_message("/start")
-            await conv.get_response()
-            await conv.send_message(reply_message)
-            check = await conv.get_response()
-            if not check.text.startswith("Audio received"):
-                return await lionevent.edit(
-                    "An error while identifying the song. Try to use a 5-10s long audio message."
-                )
-            await lionevent.edit("Wait just a sec...")
-            result = await conv.get_response()
-            await event.client.send_read_acknowledge(conv.chat_id)
-        except YouBlockedUserError:
-            await lionevent.edit("```Please unblock (@auddbot) and try again```")
-            return
-    namem = f"**Song Name : **`{result.text.splitlines()[0]}`\
-        \n\n**Details : **__{result.text.splitlines()[2]}__"
-    await lionevent.edit(namem)
+    await saviorevent.delete()

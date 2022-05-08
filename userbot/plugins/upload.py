@@ -12,18 +12,18 @@ from hachoir.parser import createParser
 from telethon.tl import types
 from telethon.utils import get_attributes
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import progress
 from ..helpers.utils import reply_id
 
-plugin_category = "utils"
+menu_category = "misc"
 
 PATH = os.path.join("./temp", "temp_vid.mp4")
 thumb_image_path = os.path.join(Config.TMP_DOWNLOAD_DIRECTORY, "thumb_image.jpg")
-plugin_category = "utils"
+menu_category = "misc"
 downloads = pathlib.Path("./downloads/").absolute()
 NAME = "untitled"
 
@@ -36,7 +36,7 @@ class UPLOAD:
 UPLOAD_ = UPLOAD()
 
 
-async def lionlst_of_files(path):
+async def lst_of_files(path):
     files = []
     for dirname, dirnames, filenames in os.walk(path):
         # print path to all filenames.
@@ -54,6 +54,7 @@ def get_video_thumb(file, output=None, width=320):
         file,
         "-ss",
         str(int((0, metadata.get("duration").seconds)[metadata.has("duration")] / 2)),
+        # '-filter:v', 'scale={}:-1'.format(width),
         "-vframes",
         "1",
         output,
@@ -69,33 +70,33 @@ def get_video_thumb(file, output=None, width=320):
 
 
 def sortthings(contents, path):
-    lionsort = []
+    lolsort = []
     contents.sort()
     for file in contents:
-        lionpath = os.path.join(path, file)
-        if os.path.isfile(lionpath):
-            lionsort.append(file)
+        saviorpath = os.path.join(path, file)
+        if os.path.isfile(saviorpath):
+            lolsort.append(file)
     for file in contents:
-        lionpath = os.path.join(path, file)
-        if os.path.isdir(lionpath):
-            lionsort.append(file)
-    return lionsort
+        saviorpath = os.path.join(path, file)
+        if os.path.isdir(saviorpath):
+            lolsort.append(file)
+    return lolsort
 
 
 async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
     return str(path.absolute()) if full else path.stem + path.suffix
 
 
-async def upload(path, event, udir_event, lionflag=None):  # sourcery no-metrics
-    lionflag = lionflag or False
+async def upload(path, event, udir_event, redeyepe=None):  # sourcery no-metrics
+    redeyepe = redeyepe or False
     reply_to_id = await reply_id(event)
     if os.path.isdir(path):
         await event.client.send_message(event.chat_id, f"**Folder : **`{path}`")
         Files = os.listdir(path)
         Files = sortthings(Files, path)
         for file in Files:
-            lionpath = os.path.join(path, file)
-            await upload(Path(lionpath), event, udir_event)
+            saviorpath = os.path.join(path, file)
+            await upload(Path(saviorpath), event, udir_event)
     elif os.path.isfile(path):
         fname = os.path.basename(path)
         c_time = time.time()
@@ -114,7 +115,7 @@ async def upload(path, event, udir_event, lionflag=None):  # sourcery no-metrics
             file=uploaded,
             mime_type=mime_type,
             attributes=attributes,
-            force_file=lionflag,
+            force_file=redeyepe,
             thumb=await event.client.upload_file(thumb) if thumb else None,
         )
         await event.client.send_file(
@@ -127,16 +128,16 @@ async def upload(path, event, udir_event, lionflag=None):  # sourcery no-metrics
         UPLOAD_.uploaded += 1
 
 
-@lionub.lion_cmd(
-    pattern=r"upload( -f)? ([\s\S]*)",
-    command=("upload", plugin_category),
+@savior.savior_cmd(
+    pattern="upload( -f)? ([\s\S]*)",
+    command=("upload", menu_category),
     info={
         "header": "To upload files from server to telegram",
         "description": "To upload files which are downloaded in your bot.",
         "flags": {"f": "Use this to make upload files as documents."},
         "examples": [
             "{tr}upload <file/folder path>",
-            "{tr}upload -f <file/folder path>",
+            "{tr}upload -f ./downloads",
         ],
     },
 )
@@ -145,31 +146,31 @@ async def uploadir(event):
     input_str = event.pattern_match.group(2)
     path = Path(input_str)
     start = datetime.now()
-    flag = event.pattern_match.group(1)
-    flag = bool(flag)
+    type = event.pattern_match.group(1)
+    type = bool(type)
     if not os.path.exists(path):
-        return await edit_or_reply(
+        return await eor(
             event,
             f"`there is no such directory/file with the name {path} to upload`",
         )
-    udir_event = await edit_or_reply(event, "Uploading....")
+    udir_event = await eor(event, "Uploading....")
     if os.path.isdir(path):
-        await edit_or_reply(udir_event, f"`Gathering file details in directory {path}`")
+        await eor(udir_event, f"`Gathering file details in directory {path}`")
         UPLOAD_.uploaded = 0
-        await upload(path, event, udir_event, lionflag=flag)
+        await upload(path, event, udir_event, redeyepe=type)
         end = datetime.now()
         ms = (end - start).seconds
-        await edit_delete(
+        await eod(
             udir_event,
             f"`Uploaded {UPLOAD_.uploaded} files successfully in {ms} seconds. `",
         )
     else:
-        await edit_or_reply(udir_event, "`Uploading file .....`")
+        await eor(udir_event, "`Uploading file .....`")
         UPLOAD_.uploaded = 0
-        await upload(path, event, udir_event, lionflag=flag)
+        await upload(path, event, udir_event, redeyepe=type)
         end = datetime.now()
         ms = (end - start).seconds
-        await edit_delete(
+        await eod(
             udir_event,
             f"`Uploaded file {path} successfully in {ms} seconds. `",
         )

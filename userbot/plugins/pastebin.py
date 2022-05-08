@@ -9,16 +9,16 @@ from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.utils import get_extension
 from urlextract import URLExtract
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.events import MessageEdited
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.tools import media_type
 from ..helpers.utils import pastetext, reply_id
 
-plugin_category = "utils"
+menu_category = "utils"
 
 extractor = URLExtract()
 
@@ -38,13 +38,13 @@ def get_key(val):
             return key
 
 
-@lionub.lion_cmd(
-    pattern=r"pcode(?:\s|$)([\s\S]*)",
-    command=("pcode", plugin_category),
+@savior.savior_cmd(
+    pattern="pcode(?:\s|$)([\s\S]*)",
+    command=("pcode", menu_category),
     info={
         "header": "Will paste the entire text on the blank white image.",
         "flags": {
-            "f": "Use this flag to send it as file rather than image",
+            "f": "Use this type to send it as file rather than image",
         },
         "usage": ["{tr}pcode <reply>", "{tr}pcode text"],
     },
@@ -53,7 +53,7 @@ async def paste_img(event):
     "To paste text to image."
     reply_to = await reply_id(event)
     d_file_name = None
-    lionevent = await edit_or_reply(event, "`Pasting the text on image`")
+    saviorevent = await eor(event, "`Pasting the text on image`")
     input_str = event.pattern_match.group(1)
     reply = await event.get_reply_message()
     ext = re.findall(r"-f", input_str)
@@ -74,8 +74,8 @@ async def paste_img(event):
         if reply and reply.text:
             text_to_print = reply.raw_text
         else:
-            return await edit_delete(
-                lionevent,
+            return await eod(
+                saviorevent,
                 "`Either reply to text/code file or reply to text message or give text along with command`",
             )
     pygments.highlight(
@@ -91,28 +91,28 @@ async def paste_img(event):
             force_document=bool(extension),
             reply_to=reply_to,
         )
-        await lionevent.delete()
+        await saviorevent.delete()
         os.remove("out.png")
         if d_file_name is not None:
             os.remove(d_file_name)
     except Exception as e:
-        await edit_delete(lionevent, f"**Error:**\n`{e}`", time=10)
+        await eod(saviorevent, f"**Error:**\n`{e}`", time=10)
 
 
-@lionub.lion_cmd(
-    pattern=r"(d|p|s|n)?(paste|neko)(?:\s|$)([\S\s]*)",
-    command=("paste", plugin_category),
+@savior.savior_cmd(
+    pattern="(d|p|s|n)?(paste|neko)(?:\s|$)([\S\s]*)",
+    command=("paste", menu_category),
     info={
         "header": "To paste text to a paste bin.",
-        "description": "Uploads the given text to website so that you can share text/code with others easily. If no flag is used then it will use p as default",
+        "description": "Uploads the given text to website so that you can share text/code with others easily. If no type is used then it will use p as default",
         "flags": {
             "d": "Will paste text to dog.bin",
             "p": "Will paste text to pasty.lus.pm",
             "s": "Will paste text to spaceb.in (language extension not there at present.)",
         },
         "usage": [
-            "{tr}{flags}paste <reply/text>",
-            "{tr}{flags}paste {extension} <reply/text>",
+            "{tr}{types}paste <reply/text>",
+            "{tr}{types}paste {extension} <reply/text>",
         ],
         "examples": [
             "{tr}spaste <reply/text>",
@@ -122,7 +122,7 @@ async def paste_img(event):
 )
 async def paste_bin(event):
     "To paste text to a paste bin."
-    lionevent = await edit_or_reply(event, "`pasting text to paste bin....`")
+    saviorevent = await eor(event, "`pasting text to paste bin....`")
     input_str = event.pattern_match.group(3)
     reply = await event.get_reply_message()
     ext = re.findall(r"-\w+", input_str)
@@ -148,8 +148,8 @@ async def paste_bin(event):
         if reply and reply.text:
             text_to_print = reply.raw_text
         else:
-            return await edit_delete(
-                lionevent,
+            return await eod(
+                saviorevent,
                 "`Either reply to text/code file or reply to text message or give text along with command`",
             )
     if extension and extension.startswith("."):
@@ -157,8 +157,8 @@ async def paste_bin(event):
     try:
         response = await pastetext(text_to_print, pastetype, extension)
         if "error" in response:
-            return await edit_delete(
-                lionevent,
+            return await eod(
+                saviorevent,
                 "**Error while pasting text:**\n`Unable to process your request may be pastebins are down.`",
             )
 
@@ -168,13 +168,13 @@ async def paste_bin(event):
         result += f"<b>Pasted to: <a href={response['url']}>{response['bin']}</a></b>"
         if response["raw"] != "":
             result += f"\n<b>Raw link: <a href={response['raw']}>Raw</a></b>"
-        await lionevent.edit(result, link_preview=False, parse_mode="html")
+        await saviorevent.edit(result, link_preview=False, parse_mode="html")
     except Exception as e:
-        await edit_delete(lionevent, f"**Error while pasting text:**\n`{e}`")
+        await eod(saviorevent, f"**Error while pasting text:**\n`{e}`")
 
 
-@lionub.lion_cmd(
-    command=("neko", plugin_category),
+@savior.savior_cmd(
+    command=("neko", menu_category),
     info={
         "header": "To paste text to a neko bin.",
         "description": "Uploads the given text to nekobin so that you can share text/code with others easily.",
@@ -190,9 +190,9 @@ async def _(event):
     # just to show in help menu as seperate
 
 
-@lionub.lion_cmd(
-    pattern=r"g(et)?paste(?:\s|$)([\s\S]*)",
-    command=("getpaste", plugin_category),
+@savior.savior_cmd(
+    pattern="g(et)?paste(?:\s|$)([\s\S]*)",
+    command=("getpaste", menu_category),
     info={
         "header": "To paste text into telegram from pastebin link.",
         "description": "Gets the content of a pastebin. You can provide link along with cmd or reply to link.",
@@ -211,13 +211,13 @@ async def get_dogbin_content(event):
                 ("pasty" in iurl)
                 or ("spaceb" in iurl)
                 or ("nekobin" in iurl)
-                or ("lionbin" in iurl)
+                or ("saviorbin" in iurl)
             ):
                 url = iurl
                 break
     if not url:
-        return await edit_delete(event, "__I can't find any pastebin link.__")
-    lionevent = await edit_or_reply(event, "`Getting Contents of pastebin.....`")
+        return await eod(event, "__I can't find any pastebin link.__")
+    saviorevent = await eor(event, "`Getting Contents of pastebin.....`")
     rawurl = None
     if "raw" in url:
         rawurl = url
@@ -229,32 +229,32 @@ async def get_dogbin_content(event):
             rawurl = f"https://spaceb.in/api/v1/documents/{fid[0]}/raw"
         elif "nekobin" in url:
             rawurl = f"nekobin.com/raw/{fid[0]}"
-        elif "lionbin" in url:
-            rawurl = f"http://lionbin.up.railway.app/raw/{fid[0]}"
+        elif "saviorbin" in url:
+            rawurl = f"http://saviorbin.up.railway.app/raw/{fid[0]}"
         else:
-            return await edit_delete(event, "__This pastebin is not supported.__")
+            return await eod(event, "__This pastebin is not supported.__")
     resp = requests.get(rawurl)
     try:
         resp.raise_for_status()
     except requests.exceptions.HTTPError as HTTPErr:
-        return await lionevent.edit(
+        return await saviorevent.edit(
             f"**Request returned an unsuccessful status code.**\n\n__{str(HTTPErr)}__"
         )
     except requests.exceptions.Timeout as TimeoutErr:
-        return await lionevent.edit(f"**Request timed out.**__{str(TimeoutErr)}__")
+        return await saviorevent.edit(f"**Request timed out.**__{str(TimeoutErr)}__")
     except requests.exceptions.TooManyRedirects as RedirectsErr:
-        return await lionevent.edit(
+        return await saviorevent.edit(
             (
                 f"**Request exceeded the configured number of maximum redirections.**__{str(RedirectsErr)}__"
             )
         )
     reply_text = f"**Fetched dogbin URL content successfully!**\n\n**Content:** \n```{resp.text}```"
-    await edit_or_reply(lionevent, reply_text)
+    await eor(saviorevent, reply_text)
 
 
-@lionub.lion_cmd(
-    pattern=r"paster(?:\s|$)([\s\S]*)",
-    command=("paster", plugin_category),
+@savior.savior_cmd(
+    pattern="paster(?:\s|$)([\s\S]*)",
+    command=("paster", menu_category),
     info={
         "header": "Create a instant view or a paste it in telegraph file.",
         "usage": ["{tr}paster <reply>", "{tr}paster text"],
@@ -262,7 +262,7 @@ async def get_dogbin_content(event):
 )
 async def _(event):
     "Create a instant view or a paste it in telegraph file."
-    lionevent = await edit_or_reply(event, "`pasting text to paste bin....`")
+    saviorevent = await eor(event, "`pasting text to paste bin....`")
     input_str = event.pattern_match.group(1)
     reply = await event.get_reply_message()
     pastetype = "d"
@@ -277,23 +277,23 @@ async def _(event):
         if reply and reply.text:
             text_to_print = reply.raw_text
         else:
-            return await edit_delete(
-                lionevent,
+            return await eod(
+                saviorevent,
                 "`Either reply to text/code file or reply to text message or give text along with command`",
             )
     try:
         response = await pastetext(text_to_print, pastetype, extension="txt")
         if "error" in response:
-            return await edit_delete(
-                lionevent,
+            return await eod(
+                saviorevent,
                 "**Error while pasting text:**\n`Unable to process your request may be pastebins are down.`",
             )
 
     except Exception as e:
-        return await edit_delete(lionevent, f"**Error while pasting text:**\n`{e}`")
+        return await eod(saviorevent, f"**Error while pasting text:**\n`{e}`")
     url = response["url"]
     chat = "@CorsaBot"
-    await lionevent.edit("`Making instant view...`")
+    await saviorevent.edit("`Making instant view...`")
     async with event.client.conversation(chat) as conv:
         try:
             response = conv.wait_event(
@@ -302,7 +302,7 @@ async def _(event):
             await event.client.send_message(chat, url)
             response = await response
         except YouBlockedUserError:
-            return await lionevent.edit("```Please unblock me (@CorsaBot) and try```")
+            return await saviorevent.edit("```Please unblock me (@CorsaBot) and try```")
         result = ""
         if response:
             await event.client.send_read_acknowledge(conv.chat_id)
@@ -311,4 +311,4 @@ async def _(event):
                 result = f"The instant preview is [here]({urls[0]})"
         if result == "":
             result = "I can't make it as instant view"
-        await lionevent.edit(result, link_preview=True)
+        await saviorevent.edit(result, link_preview=True)

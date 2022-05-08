@@ -1,16 +1,16 @@
 import html
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..sql_helper import warns_sql as sql
 
-plugin_category = "admin"
+menu_category = "admin"
 
 
-@lionub.lion_cmd(
-    pattern=r"warn(?:\s|$)([\s\S]*)",
-    command=("warn", plugin_category),
+@savior.savior_cmd(
+    pattern="warn(?:\s|$)([\s\S]*)",
+    command=("warn", menu_category),
     info={
         "header": "To warn a user.",
         "description": "will warn the replied user.",
@@ -45,12 +45,12 @@ async def _(event):
         )
         if warn_reason:
             reply += "\nReason for last warn:\n{}".format(html.escape(warn_reason))
-    await edit_or_reply(event, reply)
+    await eor(event, reply)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="warns",
-    command=("warns", plugin_category),
+    command=("warns", menu_category),
     info={
         "header": "To get users warns list.",
         "usage": "{tr}warns <reply>",
@@ -60,14 +60,14 @@ async def _(event):
     "To get users warns list"
     reply_message = await event.get_reply_message()
     if not reply_message:
-        return await edit_delete(event, "__Reply to user to get his warns.__")
+        return await eod(event, "__Reply to user to get his warns.__")
     result = sql.get_warns(reply_message.sender_id, event.chat_id)
     if not result or result[0] == 0:
-        return await edit_or_reply(event, "this user hasn't got any warnings!")
+        return await eor(event, "this user hasn't got any warnings!")
     num_warns, reasons = result
     limit, soft_warn = sql.get_warn_setting(event.chat_id)
     if not reasons:
-        return await edit_or_reply(
+        return await eor(
             event,
             "this user has {} / {} warning, but no reasons for any of them.".format(
                 num_warns, limit
@@ -82,9 +82,9 @@ async def _(event):
     await event.edit(text)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="r(eset)?warns$",
-    command=("resetwarns", plugin_category),
+    command=("resetwarns", menu_category),
     info={
         "header": "To reset warns of the replied user",
         "usage": [
@@ -97,4 +97,4 @@ async def _(event):
     "To reset warns"
     reply_message = await event.get_reply_message()
     sql.reset_warns(reply_message.sender_id, event.chat_id)
-    await edit_or_reply(event, "__Warnings have been reset!__")
+    await eor(event, "__Warnings have been reset!__")

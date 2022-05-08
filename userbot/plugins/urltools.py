@@ -1,16 +1,16 @@
 import requests
 from validators.url import url
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"dns(?:\s|$)([\s\S]*)",
-    command=("dns", plugin_category),
+@savior.savior_cmd(
+    pattern="dns(?:\s|$)([\s\S]*)",
+    command=("dns", menu_category),
     info={
         "header": "To get Domain Name System(dns) of the given link.",
         "usage": "{tr}dns <url/reply to url>",
@@ -24,32 +24,29 @@ async def _(event):
     if not input_str and reply:
         input_str = reply.text
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event, "`Either reply to link or give link as input to get data`", 5
         )
     check = url(input_str)
     if not check:
-        lionstr = "http://" + input_str
-        check = url(lionstr)
+        lolstr = f"http://{input_str}"
+        check = url(lolstr)
     if not check:
-        return await edit_delete(event, "`the given link is not supported`", 5)
+        return await eod(event, "`the given link is not supported`", 5)
     sample_url = f"https://da.gd/dns/{input_str}"
-    response_api = requests.get(sample_url).text
-    if response_api:
-        await edit_or_reply(event, f"DNS records of {input_str} are \n{response_api}")
+    if response_api := requests.get(sample_url).text:
+        await eor(event, f"DNS records of {input_str} are \n{response_api}")
     else:
-        await edit_or_reply(
-            event, f"__I can't seem to find `{input_str}` on the internet__"
-        )
+        await eor(event, f"__I can't seem to find `{input_str}` on the internet__")
 
 
-@lionub.lion_cmd(
-    pattern=r"short(?:\s|$)([\s\S]*)",
-    command=("short", plugin_category),
+@savior.savior_cmd(
+    pattern="short(?:\s|$)([\s\S]*)",
+    command=("short", menu_category),
     info={
         "header": "To short the given url.",
         "usage": "{tr}short <url/reply to url>",
-        "examples": "{tr}short https://github.com/TeamLionX/LionX",
+        "examples": "{tr}short https://github.com/TheSaVior/SAVIOR",
     },
 )
 async def _(event):
@@ -59,30 +56,29 @@ async def _(event):
     if not input_str and reply:
         input_str = reply.text
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event, "`Either reply to link or give link as input to get data`", 5
         )
     check = url(input_str)
     if not check:
-        lionstr = f"http://" + input_str
-        check = url(lionstr)
+        lolstr = f"http://{input_stt}"
+        check = url(lolstr)
     if not check:
-        return await edit_delete(event, "`the given link is not supported`", 5)
+        return await eod(event, "`the given link is not supported`", 5)
     if not input_str.startswith("http"):
-        input_str = "http://" + input_str
+        input_str = f"http://{input_str}"
     sample_url = f"https://da.gd/s?url={input_str}"
-    response_api = requests.get(sample_url).text
-    if response_api:
-        await edit_or_reply(
+    if response_api := requests.get(sample_url).text:
+        await eor(
             event, f"Generated {response_api} for {input_str}.", link_preview=False
         )
     else:
-        await edit_or_reply(event, "`Something is wrong, please try again later.`")
+        await eor(event, "`Something is wrong, please try again later.`")
 
 
-@lionub.lion_cmd(
-    pattern=r"unshort(?:\s|$)([\s\S]*)",
-    command=("unshort", plugin_category),
+@savior.savior_cmd(
+    pattern="unshort(?:\s|$)([\s\S]*)",
+    command=("unshort", menu_category),
     info={
         "header": "To unshort the given dagb shorten url.",
         "usage": "{tr}unshort <url/reply to url>",
@@ -96,35 +92,35 @@ async def _(event):
     if not input_str and reply:
         input_str = reply.text
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event, "`Either reply to link or give link as input to get data`", 5
         )
     check = url(input_str)
     if not check:
-        lionstr = "http://" + input_str
-        check = url(lionstr)
+        lolstr = f"http://{input_str}"
+        check = url(lolstr)
     if not check:
-        return await edit_delete(event, "`the given link is not supported`", 5)
+        return await eod(event, "`the given link is not supported`", 5)
     if not input_str.startswith("http"):
-        input_str = "http://" + input_str
+        input_str = f"http://{input_str}"
     r = requests.get(input_str, allow_redirects=False)
     if str(r.status_code).startswith("3"):
-        await edit_or_reply(
+        await eor(
             event,
             f"Input URL: {input_str}\nReDirected URL: {r.headers['Location']}",
             link_preview=False,
         )
     else:
-        await edit_or_reply(
+        await eor(
             event,
             "Input URL {} returned status_code {}".format(input_str, r.status_code),
         )
 
 
 # By Priyam Kalra
-@lionub.lion_cmd(
-    pattern=r"hl(?:\s|$)([\s\S]*)",
-    command=("hl", plugin_category),
+@savior.savior_cmd(
+    pattern="hl(?:\s|$)([\s\S]*)",
+    command=("hl", menu_category),
     info={
         "header": "To hide the url with white spaces using hyperlink.",
         "usage": "{tr}hl <url/reply to url>",
@@ -138,13 +134,13 @@ async def _(event):
     if not input_str and reply:
         input_str = reply.text
     if not input_str:
-        return await edit_delete(
+        return await eod(
             event, "`Either reply to link or give link as input to get data`", 5
         )
     check = url(input_str)
     if not check:
-        lionstr = "http://" + input_str
-        check = url(lionstr)
+        lolstr = f"http://{input_str}"
+        check = url(lolstr)
     if not check:
-        return await edit_delete(event, "`the given link is not supported`", 5)
-    await edit_or_reply(event, "[ㅤㅤㅤㅤㅤㅤㅤ](" + input_str + ")")
+        return await eod(event, "`the given link is not supported`", 5)
+    await eor(event, f"[ㅤㅤㅤㅤㅤㅤㅤ]({input_str})")

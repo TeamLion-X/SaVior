@@ -9,23 +9,22 @@ import nekos
 import requests
 from fake_useragent import UserAgent
 from PIL import Image
-from simplejson.errors import JSONDecodeError
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.functions import age_verification
-from ..helpers.utils import _lionutils, reply_id
-from . import lionub, useless
+from ..helpers.utils import _saviorutils, reply_id
+from . import savior, useless
 
-plugin_category = "fun"
+menu_category = "useless"
 
 
 def user_agent():
     return UserAgent().random
 
 
-@lionub.lion_cmd(
-    pattern=r"nn ?([\s\S]*)",
-    command=("nn", plugin_category),
+@savior.savior_cmd(
+    pattern="nn ?([\s\S]*)",
+    command=("nn", menu_category),
     info={
         "header": "Contains NSFW \nSearch images from nekos",
         "usage": "{tr}nn <argument from choice>",
@@ -38,28 +37,29 @@ async def _(event):
     reply_to = await reply_id(event)
     choose = event.pattern_match.group(1)
     if choose not in useless.hemtai:
-        return await edit_delete(
+        return await eod(
             event,
-            f"**Wrong lionagory!! Choose from here:**\n\n{useless.nsfw(useless.hemtai)}",
+            f"**Wrong catagory!! Choose from here:**\n\n{useless.nsfw(useless.hemtai)}",
             60,
         )
     if await age_verification(event, reply_to):
         return
-    lionevent = await edit_or_reply(event, "`Processing Nekos...`")
-    flag = await useless.importent(event)
-    if flag:
+    saviorevent = await eor(event, "`Processing Nekos...`")
+    type = await useless.importent(event)
+    if type:
         return
     target = nekos.img(f"{choose}")
     nohorny = await event.client.send_file(
         event.chat_id, file=target, caption=f"**{choose}**", reply_to=reply_to
     )
-    await _lionutils.unsavegif(event, nohorny)
-    await lionevent.delete()
+    await _saviorutils.unsavegif(event, nohorny)
+    await saviorevent.delete()
 
 
-@lionub.lion_cmd(
+"""
+@savior.savior_cmd(
     pattern="dva$",
-    command=("dva", plugin_category),
+    command=("dva", menu_category),
     info={
         "header": "Search dva images",
         "usage": "{tr}dva",
@@ -77,18 +77,18 @@ async def dva(event):
         ).json()
         url = nsfw.get("url")
     except JSONDecodeError:
-        return await edit_delete(
-            event, "`uuuf.. seems like api down, try again later.`"
-        )
+        return await eod(event, "`uuuf.. seems like api down, try again later.`")
     if not url:
-        return await edit_delete(event, "`uuuf.. No URL found from the API`")
+        return await eod(event, "`uuuf.. No URL found from the API`")
     await event.client.send_file(event.chat_id, file=url, reply_to=reply_to)
     await event.delete()
 
+"""
 
-@lionub.lion_cmd(
+
+@savior.savior_cmd(
     pattern="nsfw$",
-    command=("nsfw", plugin_category),
+    command=("nsfw", menu_category),
     info={
         "header": "NSFW \nSearch nsfw from nekos",
         "usage": "{tr}nsfw",
@@ -99,8 +99,8 @@ async def avatarlewd(event):
     reply_to = await reply_id(event)
     if await age_verification(event, reply_to):
         return
-    flag = await useless.importent(event)
-    if flag:
+    type = await useless.importent(event)
+    if type:
         return
     with open("temp.png", "wb") as f:
         target = "nsfw_avatar"
@@ -114,9 +114,9 @@ async def avatarlewd(event):
     await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lewdn$",
-    command=("lewdn", plugin_category),
+    command=("lewdn", menu_category),
     info={
         "header": "NSFW \nSearch lewd nekos",
         "usage": "{tr}lewdn",
@@ -127,20 +127,20 @@ async def lewdn(event):
     reply_to = await reply_id(event)
     if await age_verification(event, reply_to):
         return
-    flag = await useless.importent(event)
-    if flag:
+    type = await useless.importent(event)
+    if type:
         return
     nsfw = requests.get("https://nekos.life/api/lewd/neko").json()
     url = nsfw.get("neko")
     if not url:
-        return await edit_delete(event, "`Uff.. No NEKO found from the API`")
+        return await eod(event, "`Uff.. No NEKO found from the API`")
     await event.client.send_file(event.chat_id, file=url, reply_to=reply_to)
     await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="gasm$",
-    command=("gasm", plugin_category),
+    command=("gasm", menu_category),
     info={
         "header": "NSFW \nIt's gasm",
         "usage": "{tr}gasm",
@@ -151,8 +151,8 @@ async def gasm(event):
     reply_to = await reply_id(event)
     if await age_verification(event, reply_to):
         return
-    flag = await useless.importent(event)
-    if flag:
+    type = await useless.importent(event)
+    if type:
         return
     with open("temp.png", "wb") as f:
         target = "gasm"
@@ -166,9 +166,9 @@ async def gasm(event):
     await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="ifu$",
-    command=("ifu", plugin_category),
+    command=("ifu", menu_category),
     info={
         "header": "Search waifus from nekos",
         "usage": "{tr}ifu",

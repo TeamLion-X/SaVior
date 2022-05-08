@@ -1,18 +1,18 @@
-# created by @SimpleBoy786
-# LionX
+# created by @SaViorXBoy
+# SaViorX
 
 import os
 import urllib
 
 from ..helpers.functions import clippy, convert_tosticker, higlighted_text
-from . import deEmojify, edit_delete, lionub, reply_id
+from . import deEmojify, eod, savior, reply_id
 
-plugin_category = "fun"
+menu_category = "useless"
 
 
-@lionub.lion_cmd(
-    pattern=r"(|b)quby(?:\s|$)([\s\S]*)",
-    command=("quby", plugin_category),
+@savior.savior_cmd(
+    pattern="(|b)quby(?:\s|$)([\s\S]*)",
+    command=("quby", menu_category),
     info={
         "header": "Make doge say anything.",
         "flags": {
@@ -36,10 +36,8 @@ async def quby(event):
     if not text and event.is_reply:
         text = (await event.get_reply_message()).message
     if not text:
-        return await edit_delete(
-            event, "__What is quby supposed to say? Give some text.__"
-        )
-    await edit_delete(event, "`Wait, processing.....`")
+        return await eod(event, "__What is quby supposed to say? Give some text.__")
+    await eod(event, "`Wait, processing.....`")
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
     temp_name = "./temp/quby_temp.png"
@@ -66,9 +64,9 @@ async def quby(event):
         position=position,
     )
     if cmd == "b":
-        lion = convert_tosticker(file_name)
+        lol = convert_tosticker(file_name)
         await event.client.send_file(
-            event.chat_id, lion, reply_to=reply_to_id, force_document=False
+            event.chat_id, lol, reply_to=reply_to_id, force_document=False
         )
     else:
         await clippy(event.client, file_name, event.chat_id, reply_to_id)
@@ -78,9 +76,9 @@ async def quby(event):
             os.remove(files)
 
 
-@lionub.lion_cmd(
-    pattern=r"(|b)blob(?:\s|$)([\s\S]*)",
-    command=("blob", plugin_category),
+@savior.savior_cmd(
+    pattern="(|b)blob(?:\s|$)([\s\S]*)",
+    command=("blob", menu_category),
     info={
         "header": "Give the sticker on background.",
         "flags": {
@@ -104,10 +102,8 @@ async def knife(event):
     if not text and event.is_reply:
         text = (await event.get_reply_message()).message
     if not text:
-        return await edit_delete(
-            event, "__What is knife supposed to say? Give some text.__"
-        )
-    await edit_delete(event, "`Wait, processing.....`")
+        return await eod(event, "__What is knife supposed to say? Give some text.__")
+    await eod(event, "`Wait, processing.....`")
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
     temp_name = "./temp/knife_temp.png"
@@ -135,9 +131,9 @@ async def knife(event):
         direction="upwards",
     )
     if cmd == "b":
-        lion = convert_tosticker(file_name)
+        lol = convert_tosticker(file_name)
         await event.client.send_file(
-            event.chat_id, lion, reply_to=reply_to_id, force_document=False
+            event.chat_id, lol, reply_to=reply_to_id, force_document=False
         )
     else:
         await clippy(event.client, file_name, event.chat_id, reply_to_id)
@@ -147,9 +143,9 @@ async def knife(event):
             os.remove(files)
 
 
-@lionub.lion_cmd(
-    pattern=r"(|h)doge(?:\s|$)([\s\S]*)",
-    command=("doge", plugin_category),
+@savior.savior_cmd(
+    pattern="(|h)doge(?:\s|$)([\s\S]*)",
+    command=("doge", menu_category),
     info={
         "header": "Make doge say anything.",
         "flags": {
@@ -173,10 +169,8 @@ async def doge(event):
     if not text and event.is_reply:
         text = (await event.get_reply_message()).message
     if not text:
-        return await edit_delete(
-            event, "__What is doge supposed to say? Give some text.__"
-        )
-    await edit_delete(event, "`Wait, processing.....`")
+        return await eod(event, "__What is doge supposed to say? Give some text.__")
+    await eod(event, "`Wait, processing.....`")
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
     temp_name = "./temp/doge_temp.jpg"
@@ -202,9 +196,9 @@ async def doge(event):
         foreground=fg,
         transparency=alpha,
     )
-    lion = convert_tosticker(file_name)
+    lol = convert_tosticker(file_name)
     await event.client.send_file(
-        event.chat_id, lion, reply_to=reply_to_id, force_document=False
+        event.chat_id, lol, reply_to=reply_to_id, force_document=False
     )
     await event.delete()
     for files in (temp_name, file_name):
@@ -213,9 +207,9 @@ async def doge(event):
 
 
 # by Yato
-@lionub.lion_cmd(
-    pattern=r"(|h)penguin(?:\s|$)([\s\S]*)",
-    command=("penguin", plugin_category),
+@savior.savior_cmd(
+    pattern="(|h)penguin(?:\s|$)([\s\S]*)",
+    command=("penguin", menu_category),
     info={
         "header": "To make penguin meme sticker. ",
         "flags": {
@@ -239,10 +233,8 @@ async def penguin(event):
     if not text and event.is_reply:
         text = (await event.get_reply_message()).message
     if not text:
-        return await edit_delete(
-            event, "What is penguin supposed to say? Give some text."
-        )
-    await edit_delete(event, "Wait, processing.....")
+        return await eod(event, "What is penguin supposed to say? Give some text.")
+    await eod(event, "Wait, processing.....")
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
     temp_name = "./temp/peguin_temp.jpg"
@@ -268,9 +260,9 @@ async def penguin(event):
         foreground=fg,
         transparency=alpha,
     )
-    lion = convert_tosticker(file_name)
+    olo = convert_tosticker(file_name)
     await event.client.send_file(
-        event.chat_id, lion, reply_to=reply_to_id, force_document=False
+        event.chat_id, olo, reply_to=reply_to_id, force_document=False
     )
     await event.delete()
     for files in (temp_name, file_name):
@@ -279,9 +271,9 @@ async def penguin(event):
 
 
 # by Yato
-@lionub.lion_cmd(
-    pattern=r"(|h)gandhi(?:\s|$)([\s\S]*)",
-    command=("gandhi", plugin_category),
+@savior.savior_cmd(
+    pattern="(|h)gandhi(?:\s|$)([\s\S]*)",
+    command=("gandhi", menu_category),
     info={
         "header": "Make gandhi text sticker.",
         "flags": {
@@ -305,10 +297,8 @@ async def gandhi(event):
     if not text and event.is_reply:
         text = (await event.get_reply_message()).message
     if not text:
-        return await edit_delete(
-            event, "What is gandhi supposed to write? Give some text."
-        )
-    await edit_delete(event, "Wait, processing.....")
+        return await eod(event, "What is gandhi supposed to write? Give some text.")
+    await eod(event, "Wait, processing.....")
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
     temp_name = "./temp/gandhi_temp.jpg"
@@ -334,9 +324,9 @@ async def gandhi(event):
         foreground=fg,
         transparency=alpha,
     )
-    lion = convert_tosticker(file_name)
+    olo = convert_tosticker(file_name)
     await event.client.send_file(
-        event.chat_id, lion, reply_to=reply_to_id, force_document=False
+        event.chat_id, olo, reply_to=reply_to_id, force_document=False
     )
     await event.delete()
     for files in (temp_name, file_name):

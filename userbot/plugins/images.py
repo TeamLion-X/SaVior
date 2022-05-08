@@ -1,29 +1,29 @@
-# image search for LionX
+# image search for SaViorX
 import os
 import shutil
 
 from telethon.errors.rpcerrorlist import MediaEmptyError
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers.google_image_download import googleimagesdownload
 from ..helpers.utils import reply_id
 
-plugin_category = "utils"
+menu_category = "misc"
 
 
-@lionub.lion_cmd(
-    pattern=r"img(?: |$)(\d*)? ?([\s\S]*)",
-    command=("img", plugin_category),
+@savior.savior_cmd(
+    pattern="img(?: |$)(\d*)? ?([\s\S]*)",
+    command=("img", menu_category),
     info={
         "header": "Google image search.",
         "description": "To search images in google. By default will send 3 images.you can get more images(upto 10 only by changing limit value as shown in usage and examples.",
         "usage": ["{tr}img <1-10> <query>", "{tr}img <query>"],
         "examples": [
-            "{tr}img 10 LionX",
-            "{tr}img LionX",
-            "{tr}img 7 LionX",
+            "{tr}img 10 SaViorX",
+            "{tr}img SaViorX",
+            "{tr}img 7 SaViorX",
         ],
     },
 )
@@ -36,17 +36,16 @@ async def img_sampler(event):
     else:
         query = str(event.pattern_match.group(2))
     if not query:
-        return await edit_or_reply(
-            event, "Reply to a message or pass a query to search!"
-        )
-    lion = await edit_or_reply(event, "`Processing...`")
+        return await eor(event, "Reply to a message or pass a query to search!")
+    savior = await eor(event, "`Processing...`")
     if event.pattern_match.group(1) != "":
         lim = int(event.pattern_match.group(1))
-        lim = min(lim, 10)
+        if lim > 10:
+            lim = int(10)
         if lim <= 0:
-            lim = 1
+            lim = int(1)
     else:
-        lim = 3
+        lim = int(3)
     response = googleimagesdownload()
     # creating list of arguments
     arguments = {
@@ -59,7 +58,7 @@ async def img_sampler(event):
     try:
         paths = response.download(arguments)
     except Exception as e:
-        return await lion.edit(f"Error: \n`{e}`")
+        return await savior.edit(f"Error: \n`{e}`")
     lst = paths[0][query.replace(",", " ")]
     try:
         await event.client.send_file(event.chat_id, lst, reply_to=reply_to_id)
@@ -70,4 +69,4 @@ async def img_sampler(event):
             except MediaEmptyError:
                 pass
     shutil.rmtree(os.path.dirname(os.path.abspath(lst[0])))
-    await lion.delete()
+    await savior.delete()

@@ -1,4 +1,4 @@
-# telegraph utils for LionX
+# telegraph utils for SaViorX
 import os
 import random
 import string
@@ -8,15 +8,15 @@ from PIL import Image
 from telegraph import Telegraph, exceptions, upload_file
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_or_reply
-from . import BOTLOG, BOTLOG_CHATID, mention
+from ..funcs.managers import eor
+from . import mention
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "utils"
+menu_category = "utils"
 
 
 telegraph = Telegraph()
@@ -29,9 +29,9 @@ def resize_image(image):
     im.save(image, "PNG")
 
 
-@lionub.lion_cmd(
-    pattern=r"(t(ele)?g(raph)?) ?(m|t|media|text)(?:\s|$)([\s\S]*)",
-    command=("telegraph", plugin_category),
+@savior.savior_cmd(
+    pattern="(t(ele)?g(raph)?) ?(m|t|media|text)(?:\s|$)([\s\S]*)",
+    command=("telegraph", menu_category),
     info={
         "header": "To get telegraph link.",
         "description": "Reply to text message to paste that text on telegraph you can also pass input along with command \
@@ -50,15 +50,10 @@ def resize_image(image):
 )  # sourcery no-metrics
 async def _(event):
     "To get telegraph link."
-    lionevent = await edit_or_reply(event, "`processing........`")
-    if BOTLOG:
-        await event.client.send_message(
-            BOTLOG_CHATID,
-            f"Created New Telegraph account {auth_url} for the current session. \n**Do not give this url to anyone, even if they say they are from Telegram!**",
-        )
+    saviorevent = await eor(event, "`processing........`")
     optional_title = event.pattern_match.group(5)
     if not event.reply_to_msg_id:
-        return await lionevent.edit(
+        return await saviorevent.edit(
             "`Reply to a message to get a permanent telegra.ph link.`",
         )
 
@@ -69,22 +64,23 @@ async def _(event):
         downloaded_file_name = await event.client.download_media(
             r_message, Config.TEMP_DIR
         )
-        await lionevent.edit(f"`Downloaded to {downloaded_file_name}`")
+        await saviorevent.edit(f"`Downloaded to {downloaded_file_name}`")
         if downloaded_file_name.endswith((".webp")):
             resize_image(downloaded_file_name)
         try:
             media_urls = upload_file(downloaded_file_name)
         except exceptions.TelegraphException as exc:
-            await lionevent.edit(f"**Error : **\n`{exc}`")
+            await saviorevent.edit(f"**Error : **\n`{exc}`")
             os.remove(downloaded_file_name)
         else:
             end = datetime.now()
             ms = (end - start).seconds
             os.remove(downloaded_file_name)
-            await lionevent.edit(
-                f"**➥ Uploaded to :-**[telegraph](https://telegra.ph{media_urls[0]})\
-                 \n**➥ Uploaded in {ms} seconds.**\
-                 \n**➥ Uploaded by :-** {mention}",
+            await saviorevent.edit(
+                f"**✓ Uploaded to :-**[telegraph](https://telegra.ph{media_urls[0]})\
+                 \n**✓ Uploaded in {ms} seconds.**\
+                 \n**✓ Uploaded by :-** {mention}\
+                 \n**✓ Telegraph :** `https://telegra.ph{media_urls[0]}`",
                 link_preview=True,
             )
     elif input_str in ["text", "t"]:
@@ -118,10 +114,11 @@ async def _(event):
             response = telegraph.create_page(title_of_page, html_content=page_content)
         end = datetime.now()
         ms = (end - start).seconds
-        lion = f"https://telegra.ph/{response['path']}"
-        await lionevent.edit(
-            f"**➥ Uploaded to :-** [telegraph]({lion})\
-                 \n**➥ Uploaded in {ms} seconds.**\
-                 \n**➥ Uploaded by :-** {mention}",
+        savior = f"https://telegra.ph/{response['path']}"
+        await saviorevent.edit(
+            f"**✓ Uploaded to :-** [telegraph]({savior})\
+                 \n**✓ Uploaded in {ms} seconds.**\
+                 \n**✓ Uploaded by :-** {mention}\
+                 \n**✓ Telegraph :-** `{savior}`",
             link_preview=True,
         )

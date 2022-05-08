@@ -1,25 +1,25 @@
-# credits to @TeamLionX (@TeamLionX)
+# credits to @SaViorXBoy (@SaViorXBoy)
 
 import re
 
 import lyricsgenius
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "tools"
+menu_category = "extra"
 
 GENIUS = Config.GENIUS_API_TOKEN
 
 
-@lionub.lion_cmd(
-    pattern=r"lyrics(?:\s|$)([\s\S]*)",
-    command=("lyrics", plugin_category),
+@savior.savior_cmd(
+    pattern="lyrics(?:\s|$)([\s\S]*)",
+    command=("lyrics", menu_category),
     info={
         "header": "Song lyrics searcher using genius api.",
-        "description": "if you want to provide artist name with song name then use this format {tr}lyrics <artist name> - <song name> . if you use this format in your query then flags won't work. by default it will show first query.",
+        "description": "if you want to provide artist name with song name then use this format {tr}lyrics <artist name> - <song name> . if you use this format in your query then types won't work. by default it will show first query.",
         "flags": {
             "-l": "to get list of search lists.",
             "-g": "To get paticular song lyrics.",
@@ -40,9 +40,9 @@ GENIUS = Config.GENIUS_API_TOKEN
 async def lyrics(event):  # sourcery no-metrics
     "To fetch song lyrics"
     if GENIUS is None:
-        return await edit_or_reply(
+        return await eor(
             event,
-            "`Set genius access token in heroku vars for functioning of this command`",
+            "`Set genius access token in heroku vars for functioning of this command\n》 VAR :- GENIUS_API_TOKEN\n》 Generate From:- https://genius.com/developers`",
         )
     match = event.pattern_match.group(1)
     songno = re.findall(r"-n\d+", match)
@@ -55,9 +55,9 @@ async def lyrics(event):  # sourcery no-metrics
     except IndexError:
         songno = 1
     if songno < 1 or songno > 10:
-        return await edit_or_reply(
+        return await eor(
             event,
-            "`song number must be in between 1 to 10 use -l flag to query results`",
+            "`song number must be in between 1 to 10 use -l type to query results`",
         )
     match = match.replace("-l", "")
     listview = bool(listview)
@@ -67,22 +67,20 @@ async def lyrics(event):  # sourcery no-metrics
         args = query.split("-", 1)
         artist = args[0].strip(" ")
         song = args[1].strip(" ")
-        lionevent = await edit_or_reply(
-            event, f"`Searching lyrics for {artist} - {song}...`"
-        )
+        saviorevent = await eor(event, f"`Searching lyrics for {artist} - {song}...`")
         try:
             songs = genius.search_song(song, artist)
         except TypeError:
             songs = None
         if songs is None:
-            return await lionevent.edit(f"Song **{artist} - {song}** not found!")
+            return await saviorevent.edit(f"Song **{artist} - {song}** not found!")
         result = f"**Search query**: \n`{artist} - {song}`\n\n```{songs.lyrics}```"
     else:
-        lionevent = await edit_or_reply(event, f"`Searching lyrics for {query}...`")
+        saviorevent = await eor(event, f"`Searching lyrics for {query}...`")
         response = genius.search_songs(query)
         msg = f"**The songs found for the given query:** `{query}`\n\n"
         if len(response["hits"]) == 0:
-            return await edit_or_reply(
+            return await eor(
                 event, f"**I can't find lyrics for the given query: **`{query}`"
             )
         for i, an in enumerate(response["hits"], start=1):
@@ -92,10 +90,10 @@ async def lyrics(event):  # sourcery no-metrics
         else:
             result = f"**The song found for the given query:** `{query}`\n\n"
             if songno > len(response["hits"]):
-                return await edit_or_reply(
+                return await eor(
                     event,
                     f"**Invalid song selection for the query select proper number**\n{msg}",
                 )
             songtitle = response["hits"][songno - 1]["result"]["title"]
             result += f"`{genius.search_song(songtitle).lyrics}`"
-    await edit_or_reply(lionevent, result)
+    await eor(saviorevent, result)

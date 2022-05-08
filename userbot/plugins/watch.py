@@ -8,14 +8,14 @@ import os
 from justwatch import JustWatch, justwatchapi
 from pySmartDL import SmartDL
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "utils"
+menu_category = "utils"
 
 moviepath = os.path.join(os.getcwd(), "temp", "moviethumb.jpg")
 
@@ -87,9 +87,9 @@ def get_provider(url):
     return url
 
 
-@lionub.lion_cmd(
-    pattern=r"watch ([\s\S]*)",
-    command=("watch", plugin_category),
+@savior.savior_cmd(
+    pattern="watch ([\s\S]*)",
+    command=("watch", menu_category),
     info={
         "header": "To search online streaming sites for that movie.",
         "description": "Fetches the list of sites(standard) where you can watch that movie.",
@@ -100,7 +100,7 @@ def get_provider(url):
 async def _(event):
     "To search online streaming sites for that movie."
     query = event.pattern_match.group(1)
-    et = await edit_or_reply(event, "`Finding Sites...`")
+    et = await eor(event, "`Finding Sites...`")
     try:
         streams = get_stream_data(query)
     except Exception as e:

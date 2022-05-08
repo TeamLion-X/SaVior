@@ -5,11 +5,10 @@ import regex
 from telethon import events
 from telethon.tl import functions, types
 
-from userbot import lionub
-
 from ..Config import Config
+from ..funcs.session import savior
 
-plugin_category = "tools"
+menu_category = "tools"
 
 HEADER = "「sed」\n"
 KNOWN_RE_BOTS = re.compile(Config.GROUP_REG_SED_EX_BOT_S, flags=re.IGNORECASE)
@@ -41,7 +40,7 @@ def doit(chat_id, match, original):
         elif f == "g":
             count = 0
         else:
-            return None, f"Unknown flag: {f}"
+            return None, f"Unknown type: {f}"
 
     def actually_doit(original):
         try:
@@ -67,21 +66,21 @@ def doit(chat_id, match, original):
 
 async def group_has_sedbot(group):
     if isinstance(group, types.InputPeerChannel):
-        full = await lionub(functions.channels.GetFullChannelRequest(group))
+        full = await savior(functions.channels.GetFullChannelRequest(group))
     elif isinstance(group, types.InputPeerChat):
-        full = await lionub(functions.messages.GetFullChatRequest(group.chat_id))
+        full = await savior(functions.messages.GetFullChatRequest(group.chat_id))
     else:
         return False
 
     return any(KNOWN_RE_BOTS.match(x.username or "") for x in full.users)
 
 
-@lionub.on(events.NewMessage)
+@savior.on(events.NewMessage)
 async def on_message(event):
     last_msgs[event.chat_id].appendleft(event.message)
 
 
-@lionub.on(events.MessageEdited)
+@savior.on(events.MessageEdited)
 async def on_edit(event):
     for m in last_msgs[event.chat_id]:
         if m.id == event.id:
@@ -89,9 +88,9 @@ async def on_edit(event):
             break
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="^s/((?:\\/|[^/])+)/((?:\\/|[^/])*)(/.*)?",
-    command=("sed", plugin_category),
+    command=("sed", menu_category),
     info={
         "header": "Replaces a word or words with other words.",
         "description": "Tag any sentence and type s/a/b. where is required word to replace and b is correct word.",
@@ -103,7 +102,7 @@ async def on_edit(event):
 async def on_regex(event):
     "To replace words in sentences"
     if not event.is_private and await group_has_sedbot(await event.get_input_chat()):
-        await edit_delete(event, "This group has a sed bot. Ignoring this message!")
+        await eod(event, "This group has a sed bot. Ignoring this message!")
         return
     m, s = doit(event.chat_id, event.pattern_match, await event.get_reply_message())
     if m is not None:
@@ -113,5 +112,5 @@ async def on_regex(event):
         )
         last_msgs[event.chat_id].appendleft(out)
     elif s is not None:
-        await edit_or_reply(event, s)
+        await eor(event, s)
     raise events.StopPropagation

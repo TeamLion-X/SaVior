@@ -1,27 +1,44 @@
 from telethon import functions
-from telethon.errors import (
-    ChannelInvalidError,
-    ChannelPrivateError,
-    ChannelPublicGroupNaError,
+from telethon.tl import functions
+from telethon.tl.functions.channels import InviteToChannelRequest
+
+from userbot import savior
+
+from ..funcs.managers import eod, eor
+
+menu_category = "utils"
+
+
+@savior.savior_cmd(
+    pattern="join ([\s\S]*)",
+    command=("join", menu_category),
+    info={
+        "header": "To Join a Group Or Channel .",
+        "description": "U Can Join Channel or Group Without Going Into That Chat",
+        "usage": "{tr}join <username>",
+        "examples": "{tr}join @TheSaVior",
+    },
 )
-from telethon.tl.functions.channels import GetFullChannelRequest
-from telethon.tl.functions.messages import GetFullChatRequest
+async def lol(event):
+    a = event.text
+    bol = a[5:]
+    redeye = "Joining...."
+    await event.reply(redeye, parse_mode=None, link_preview=None)
+    try:
+        await savior(functions.channels.JoinChannelRequest(bol))
+        await event.edit("Done Joined Successfully")
+    except Exception as e:
+        await event.edit(str(e))
 
-from userbot import lionub
 
-from ..funcs.managers import edit_delete, edit_or_reply
-
-plugin_category = "tools"
-
-
-@lionub.lion_cmd(
-    pattern=r"invite ([\s\S]*)",
-    command=("invite", plugin_category),
+@savior.savior_cmd(
+    pattern="add ([\s\S]*)",
+    command=("add", menu_category),
     info={
         "header": "Add the given user/users to the group where u used the command.",
         "description": "Adds only mentioned person or bot not all members",
-        "usage": "{tr}invite <username(s)/userid(s)>",
-        "examples": "{tr}invite @combot @MissRose_bot",
+        "usage": "{tr}add <username(s)/userid(s)>",
+        "examples": "{tr}add @combot @MissRose_bot",
     },
 )
 async def _(event):
@@ -37,7 +54,7 @@ async def _(event):
                     )
                 )
             except Exception as e:
-                return await edit_delete(event, f"`{str(e)}`", 5)
+                return await eod(event, f"`{str(e)}`", 5)
     else:
         # https://lonamiwebs.github.io/Telethon/methods/channels/invite_to_channel.html
         for user_id in to_add_users.split(" "):
@@ -48,108 +65,107 @@ async def _(event):
                     )
                 )
             except Exception as e:
-                return await edit_delete(event, f"`{e}`", 5)
+                return await eod(event, f"`{e}`", 5)
 
-    await edit_or_reply(event, f"`{to_add_users} is/are Invited Successfully`")
-
-
-async def get_chatinfo(event):
-    chat = event.pattern_match.group(1)
-    chat_info = None
-    if chat:
-        try:
-            chat = int(chat)
-        except ValueError:
-            pass
-    if not chat:
-        if event.reply_to_msg_id:
-            replied_msg = await event.get_reply_message()
-            if replied_msg.fwd_from and replied_msg.fwd_from.channel_id is not None:
-                chat = replied_msg.fwd_from.channel_id
-        else:
-            chat = event.chat_id
-    try:
-        chat_info = await event.client(GetFullChatRequest(chat))
-    except BaseException:
-        try:
-            chat_info = await event.client(GetFullChannelRequest(chat))
-        except ChannelInvalidError:
-            await event.reply("`Invalid channel/group`")
-            return None
-        except ChannelPrivateError:
-            await event.reply(
-                "`This is a private channel/group or I am banned from there`"
-            )
-            return None
-        except ChannelPublicGroupNaError:
-            await event.reply("`Channel or supergroup doesn't exist`")
-            return None
-        except (TypeError, ValueError):
-            await event.reply("`Invalid channel/group`")
-            return None
-    return chat_info
+    await eor(event, f"`{to_add_users} is/are Invited Successfully`")
 
 
-def make_mention(user):
-    if user.username:
-        return f"@{user.username}"
-    return inline_mention(user)
-
-
-def inline_mention(user):
-    full_name = user_full_name(user) or "No Name"
-    return f"[{full_name}](tg://user?id={user.id})"
-
-
-def user_full_name(user):
-    names = [user.first_name, user.last_name]
-    names = [i for i in list(names) if i]
-    full_name = " ".join(names)
-    return full_name
-
-
-@lionub.lion_cmd(
-    pattern=r"inviteall ?(.*)",
-    command=("inviteall", plugin_category),
+@savior.savior_cmd(
+    pattern="inviteall ([\s\S]*)",
+    command=("inviteall", menu_category),
     info={
-        "header": "Add the given grouplink to the group where u used the command.",
-        "description": "Adds all members",
-        "usage": "{tr}inviteall <grouplink(s)/groupid(s)>",
-        "examples": "{tr} @MissRose_bot",
+        "header": "To add member from Group untill telethon restricted your id.",
+        "usage": "{tr}inviteall <group username>",
+        "examples": "{tr}inviteall @saviorsgroupforsaviors",
+        "note": "⚠️ If u using this cmd i am not responsible for ur id ban or delete",
     },
 )
 async def get_users(event):
+    legen_ = event.text[10:]
+    savior_chat = legen_.lower
+    restricted = ["@SaViorSupport", "@SaViorUpdates"]
+    SAVIOR = await eor(event, f"**Inviting members from** {legen_}")
+    if savior_chat in restricted:
+        return await SAVIOR.edit(event, "You can't Invite Members from there.")
     sender = await event.get_sender()
     me = await event.client.get_me()
     if not sender.id == me.id:
-        rkp = await event.reply("`inviting...`")
+        await SAVIOR.edit("`processing...`")
     else:
-        rkp = await event.edit("`inviting...`")
-    rk1 = await get_chatinfo(event)
-    chat = await event.get_chat()
+        await SAVIOR.edit("`processing...`")
     if event.is_private:
-        return await rkp.edit("`Sorry, Can't add users here`")
+        return await SAVIOR.edit("`Sorry, Cant add users here`")
     s = 0
     f = 0
     error = "None"
-
-    await rkp.edit("**InvitingStatus**\n\n`Collecting Users.......`")
-    async for user in event.client.iter_participants(rk1.full_chat.id):
+    await SAVIOR.edit(
+        "**⚜️[Terminal Status](https://t.me/SaViorSupport)**\n\n`👨‍💻Inviting Users.......`"
+    )
+    async for user in event.client.iter_participants(event.pattern_match.group(1)):
         try:
             if error.startswith("Too"):
-                return await rkp.edit(
-                    f"**Inviting Finished With Error**\n(`May Got Limit Error from telethon Please try agin Later`)\n**Error** : \n`{error}`\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people"
+                return await SAVIOR.edit(
+                    f"**Terminal Finished With Error**\n(`May Got Limit Error from telethon Please try agin Later`)\n**Error** : \n`{error}`\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people"
                 )
-            await event.client(
-                functions.channels.InviteToChannelRequest(channel=chat, users=[user.id])
-            )
+            tol = f"@{user.username}"
+            lol = tol.split("`")
+            await savior(InviteToChannelRequest(channel=event.chat_id, users=lol))
             s = s + 1
-            await rkp.edit(
-                f"**Inviting...**\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people\n\n**× LastError:** `{error}`"
+            await SAVIOR.edit(
+                f"🔹 **Inviting Users** 🔹\n\n**📜 Invited :**  `{s}` users \n**📜 Failed to Invite :**  `{f}` users.\n\n**👉 Error :**  `{error}`"
             )
         except Exception as e:
             error = str(e)
             f = f + 1
-    return await rkp.edit(
-        f"**Kidnapping** \n\n• Successfully Invited `{s}` people \n• failed to invite `{f}` people"
+    return await SAVIOR.edit(
+        f"[Terminal Finished](https://t.me/SaViorSupport) \n\n🔸 Successfully Invited `{s}` ρєορℓє \n⚠️ Failed To Invite`{f}` ρєορℓє"
+    )
+
+
+@savior.savior_cmd(
+    pattern="invitesall ([\s\S]*)",
+    command=("invitesall", menu_category),
+    info={
+        "header": "To add member from Group untill telethon restricted your id.",
+        "usage": "{tr}inviteall <group username>",
+        "examples": "{tr}inviteall @saviorsgroupforsaviors",
+        "note": "⚠️ If u using this cmd i am not responsible for ur id ban or delete",
+    },
+)
+async def get_users(event):
+    legen_ = event.text[11:]
+    savior_chat = legen_.lower
+    restricted = ["@SaViorSupport", "@SaViorUpdates"]
+    SAVIOR = await eor(event, f"**Inviting members from** {legen_}")
+    if savior_chat in restricted:
+        return await SAVIOR.edit(event, "You can't Invite Members from there.")
+    sender = await event.get_sender()
+    me = await event.client.get_me()
+    if not sender.id == me.id:
+        await SAVIOR.edit("`processing...`")
+    else:
+        await SAVIOR.edit("`processing...`")
+    if event.is_private:
+        return await SAVIOR.edit("`Sorry, Cant add users here`")
+    s = 0
+    f = 0
+    error = "None"
+    await SAVIOR.edit("**TerminalStatus**\n\n`Collecting Users.......`")
+    async for user in event.client.iter_participants(event.pattern_match.group(1)):
+        try:
+            if error.startswith("Too"):
+                return await SAVIOR.edit(
+                    f"**Terminal Finished With Error**\n(`May Got Limit Error from telethon Please try agin Later`)\n**Error** : \n`{error}`\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people"
+                )
+            tol = user.id
+            await savior(InviteToChannelRequest(channel=event.chat_id, users=[tol]))
+            s = s + 1
+            await SAVIOR.edit(
+                f"**Terminal Running...**\n\n• Invited `{s}` people \n• Failed to Invite `{f}` people\n\n**× LastError:** `{error}`"
+            )
+        except Exception as e:
+            error = str(e)
+            f = f + 1
+    return await SAVIOR.edit(
+        f"**《Terminal Finished》** \n\n♡ Successfully Invited `{s}` people \n♡ failed to invite `{f}` people"
     )

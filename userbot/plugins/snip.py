@@ -1,17 +1,17 @@
 # ported from paperplaneExtended by avinashreddy3108 for media support
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.utils import reply_id
 from ..sql_helper.snip_sql import add_note, get_note, get_notes, rm_note
 from . import BOTLOG, BOTLOG_CHATID, get_message_link
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"\#(\S+)",
+@savior.savior_cmd(
+    pattern="\#(\S+)",
 )
 async def incom_note(event):
     if not BOTLOG:
@@ -46,9 +46,9 @@ async def incom_note(event):
         pass
 
 
-@lionub.lion_cmd(
-    pattern=r"snips (\w*)",
-    command=("snips", plugin_category),
+@savior.savior_cmd(
+    pattern="snips (\w*)",
+    command=("snips", menu_category),
     info={
         "header": "To save notes to the bot.",
         "description": "Saves the replied message as a note with the notename. (Works with pics, docs, and stickers too!. and get them by using #notename",
@@ -58,7 +58,7 @@ async def incom_note(event):
 async def add_snip(event):
     "To save notes to bot."
     if not BOTLOG:
-        return await edit_delete(
+        return await eod(
             event, "`To save snip or notes you need to set PRIVATE_GROUP_BOT_API_ID`"
         )
     keyword = event.pattern_match.group(1)
@@ -78,7 +78,7 @@ async def add_snip(event):
         )
         msg_id = msg_o.id
     elif msg:
-        return await edit_delete(
+        return await eod(
             event,
             "`What should i save for your snip either do reply or give snip text along with keyword`",
         )
@@ -94,21 +94,19 @@ async def add_snip(event):
             msg_id = msg_o.id
             string = None
         else:
-            return await edit_delete(event, "`what should i save for your snip`")
+            return await eod(event, "`what should i save for your snip`")
     success = "Note {} is successfully {}. Use` #{} `to get it"
     if add_note(keyword, string, msg_id) is False:
         rm_note(keyword)
         if add_note(keyword, string, msg_id) is False:
-            return await edit_or_reply(
-                event, f"Error in saving the given snip {keyword}"
-            )
-        return await edit_or_reply(event, success.format(keyword, "updated", keyword))
-    return await edit_or_reply(event, success.format(keyword, "added", keyword))
+            return await eor(event, f"Error in saving the given snip {keyword}")
+        return await eor(event, success.format(keyword, "updated", keyword))
+    return await eor(event, success.format(keyword, "added", keyword))
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="snipl$",
-    command=("snipl", plugin_category),
+    command=("snipl", menu_category),
     info={
         "header": "To list all notes in bot.",
         "usage": "{tr}snipl",
@@ -119,7 +117,7 @@ async def on_snip_list(event):
     message = "You havent saved any notes/snip"
     notes = get_notes()
     if not BOTLOG:
-        return await edit_delete(
+        return await eod(
             event, "`For saving snip you must set PRIVATE_GROUP_BOT_API_ID`"
         )
     for note in notes:
@@ -131,12 +129,12 @@ async def on_snip_list(event):
             message += f"  [preview]({msglink})\n"
         else:
             message += "  No preview\n"
-    await edit_or_reply(event, message)
+    await eor(event, message)
 
 
-@lionub.lion_cmd(
-    pattern=r"snipd (\S+)",
-    command=("snipd", plugin_category),
+@savior.savior_cmd(
+    pattern="snipd (\S+)",
+    command=("snipd", menu_category),
     info={
         "header": "To delete paticular note in bot.",
         "usage": "{tr}snipd <keyword>",
@@ -146,11 +144,9 @@ async def on_snip_delete(event):
     "To delete paticular note in bot."
     name = event.pattern_match.group(1)
     name = name.lower()
-    lionsnip = get_note(name)
-    if lionsnip:
+    lolsnip = get_note(name)
+    if lolsnip:
         rm_note(name)
     else:
-        return await edit_or_reply(
-            event, f"Are you sure that #{name} is saved as snip?"
-        )
-    await edit_or_reply(event, f"`snip #{name} deleted successfully`")
+        return await eor(event, f"Are you sure that #{name} is saved as snip?")
+    await eor(event, f"`snip #{name} deleted successfully`")

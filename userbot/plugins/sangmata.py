@@ -2,18 +2,18 @@ import asyncio
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import get_user_from_event, sanga_seperator
 from ..helpers.utils import _format
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"sg(u)?(?:\s|$)([\s\S]*)",
-    command=("sg", plugin_category),
+@savior.savior_cmd(
+    pattern="sg(u)?(?:\s|$)([\s\S]*)",
+    command=("sg", menu_category),
     info={
         "header": "To get name history of the user.",
         "flags": {
@@ -31,7 +31,7 @@ async def _(event):  # sourcery no-metrics
     input_str = "".join(event.text.split(maxsplit=1)[1:])
     reply_message = await event.get_reply_message()
     if not input_str and not reply_message:
-        await edit_delete(
+        await eod(
             event,
             "`reply to  user's text message to get name/username history or give userid/username`",
         )
@@ -40,12 +40,12 @@ async def _(event):  # sourcery no-metrics
         return
     uid = user.id
     chat = "@SangMataInfo_bot"
-    lionevent = await edit_or_reply(event, "`Processing...`")
+    saviorevent = await eor(event, "`Processing...`")
     async with event.client.conversation(chat) as conv:
         try:
             await conv.send_message(f"/search_id {uid}")
         except YouBlockedUserError:
-            await edit_delete(lionevent, "`unblock @Sangmatainfo_bot and then try`")
+            await eod(saviorevent, "`unblock @Sangmatainfo_bot and then try`")
         responses = []
         while True:
             try:
@@ -55,16 +55,16 @@ async def _(event):  # sourcery no-metrics
             responses.append(response.text)
         await event.client.send_read_acknowledge(conv.chat_id)
     if not responses:
-        await edit_delete(lionevent, "`bot can't fetch results`")
+        await eod(saviorevent, "`bot can't fetch results`")
     if "No records found" in responses:
-        await edit_delete(lionevent, "`The user doesn't have any record`")
+        await eod(saviorevent, "`The user doesn't have any record`")
     names, usernames = await sanga_seperator(responses)
     cmd = event.pattern_match.group(1)
-    nadan = None
+    SAVIOR = None
     check = usernames if cmd == "u" else names
     for i in check:
-        if nadan:
+        if SAVIOR:
             await event.reply(i, parse_mode=_format.parse_pre)
         else:
-            nadan = True
-            await lionevent.edit(i, parse_mode=_format.parse_pre)
+            SAVIOR = True
+            await saviorevent.edit(i, parse_mode=_format.parse_pre)

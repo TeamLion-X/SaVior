@@ -32,16 +32,16 @@ from urllib.error import HTTPError
 
 from pySmartDL import SmartDL
 
-from userbot import lionub
+from userbot import savior
 from userbot.funcs.logger import logging
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from . import humanbytes, time_formatter
 
 LOGS = logging.getLogger(__name__)
 
-plugin_category = "utils"
+menu_category = "misc"
 
 
 TMP_DOWNLOAD_DIRECTORY = Config.TMP_DOWNLOAD_DIRECTORY
@@ -62,9 +62,9 @@ async def subprocess_run(megadl, cmd):
     return stdout.decode().strip(), stderr.decode().strip(), exitCode
 
 
-@lionub.lion_cmd(
-    pattern=r"mega(?:\s|$)([\s\S]*)",
-    command=("mega", plugin_category),
+@savior.savior_cmd(
+    pattern="mega(?:\s|$)([\s\S]*)",
+    command=("mega", menu_category),
     info={
         "header": "Downloads mega files from it links.",
         "description": "Pass mega link to command so that it will download to bot server, for uploading to TG, check .help -c upload. Folder is not supported currently and only mega file links are supported.",
@@ -73,7 +73,7 @@ async def subprocess_run(megadl, cmd):
 )
 async def mega_downloader(megadl):  # sourcery no-metrics
     "To download mega files from mega.nz links."
-    lionevent = await edit_or_reply(megadl, "`Collecting information...`")
+    saviorevent = await eor(megadl, "`Collecting information...`")
     if not os.path.isdir(TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(TMP_DOWNLOAD_DIRECTORY)
     msg_link = await megadl.get_reply_message()
@@ -83,24 +83,24 @@ async def mega_downloader(megadl):  # sourcery no-metrics
     elif msg_link:
         link = msg_link.text
     else:
-        return await lionevent.edit("Usage: `.mega` **<MEGA.nz link>**")
+        return await saviorevent.edit("Usage: `.mega` **<MEGA.nz link>**")
     try:
         link = re.findall(r"\bhttps?://.*mega.*\.nz\S+", link)[0]
         # - Mega changed their URL again -
         if "file" in link:
             link = link.replace("#", "!").replace("file/", "#!")
         elif "folder" in link or "#F" in link or "#N" in link:
-            await lionevent.edit("`folder download support are removed...`")
+            await saviorevent.edit("`folder download support are removed...`")
             return
     except IndexError:
-        await lionevent.edit("`MEGA.nz link not found...`")
+        await saviorevent.edit("`MEGA.nz link not found...`")
         return None
     cmd = f"bin/megadown -q -m {link}"
-    result = await subprocess_run(lionevent, cmd)
+    result = await subprocess_run(saviorevent, cmd)
     try:
         data = json.loads(result[0])
     except json.JSONDecodeError:
-        await lionevent.edit("**JSONDecodeError**: `failed to extract link...`")
+        await saviorevent.edit("**JSONDecodeError**: `failed to extract link...`")
         return None
     except (IndexError, TypeError):
         return
@@ -115,14 +115,14 @@ async def mega_downloader(megadl):  # sourcery no-metrics
         try:
             raise FileExistsError(errno.EEXIST, os.strerror(errno.EEXIST), file_path)
         except FileExistsError as e:
-            await lionevent.edit(f"`{str(e)}`")
+            await saviorevent.edit(f"`{str(e)}`")
             return None
     downloader = SmartDL(file_url, temp_file_path, progress_bar=False)
     display_message = None
     try:
         downloader.start(blocking=False)
     except HTTPError as e:
-        await lionevent.edit(f"**HTTPError**: `{str(e)}`")
+        await saviorevent.edit(f"**HTTPError**: `{str(e)}`")
         return None
     start = time.time()
     while not downloader.isFinished():
@@ -153,7 +153,7 @@ async def mega_downloader(megadl):  # sourcery no-metrics
             if round(diff % 15.00) == 0 and (
                 display_message != current_message or total_length == downloaded
             ):
-                await lionevent.edit(current_message)
+                await saviorevent.edit(current_message)
                 await asyncio.sleep(1)
                 display_message = current_message
         except Exception as e:
@@ -167,17 +167,17 @@ async def mega_downloader(megadl):  # sourcery no-metrics
         try:
             P = multiprocessing.Process(
                 target=await decrypt_file(
-                    lionevent, file_path, temp_file_path, hex_key, hex_raw_key
+                    saviorevent, file_path, temp_file_path, hex_key, hex_raw_key
                 ),
                 name="Decrypt_File",
             )
             P.start()
             P.join()
         except FileNotFoundError as e:
-            await lionevent.edit(f"`{str(e)}`")
+            await saviorevent.edit(f"`{str(e)}`")
             return None
         else:
-            await lionevent.edit(
+            await saviorevent.edit(
                 f"**➥ file name : **`{file_name}`\n\n"
                 f"**➥ Successfully downloaded in : ** `{file_path}`.\n"
                 f"**➥ Download took :** {time_formatter(download_time)}."
@@ -193,7 +193,7 @@ async def mega_downloader(megadl):  # sourcery no-metrics
 
 
 async def decrypt_file(megadl, file_path, temp_file_path, hex_key, hex_raw_key):
-    cmd = "lion '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'".format(
+    cmd = "savior '{}' | openssl enc -d -aes-128-ctr -K {} -iv {} > '{}'".format(
         temp_file_path, hex_key, hex_raw_key, file_path
     )
     if await subprocess_run(megadl, cmd):

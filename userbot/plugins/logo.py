@@ -1,10 +1,11 @@
 """
-Created by @SimpleBoy786
-#LionX
+Created by @SaViorXBoy
+#SaViorX
 """
 
 import asyncio
 import os
+import random
 import re
 import urllib
 
@@ -12,13 +13,14 @@ import PIL
 import requests
 from bs4 import BeautifulSoup
 from PIL import Image, ImageDraw, ImageFont
+from telethon.tl.types import InputMessagesFilterDocument, InputMessagesFilterPhotos
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.functions import clippy
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
-from . import convert_toimage, reply_id
+from . import convert_toimage, mention, reply_id
 
 # ======================================================================================================================================================================================
 
@@ -35,12 +37,14 @@ vars_list = {
 
 # ======================================================================================================================================================================================
 
-plugin_category = "tools"
+menu_category = "useless"
+
+PICS_STR = []
 
 
-@lionub.lion_cmd(
-    pattern=r"(|s)logo(?: |$)([\s\S]*)",
-    command=("logo", plugin_category),
+@savior.savior_cmd(
+    pattern="(|s)logo(?: |$)([\s\S]*)",
+    command=("logo", menu_category),
     info={
         "header": "Make a logo in image or sticker",
         "description": "Just a fun purpose plugin to create logo in image or in sticker.",
@@ -50,10 +54,12 @@ plugin_category = "tools"
         "usage": [
             "{tr}logo <text>",
             "{tr}slogo <text>",
+            "{tr}ologo <text> <reply to image media only>",
         ],
         "examples": [
-            "{tr}logo lion",
-            "{tr}slogo lion",
+            "{tr}logo SaVior",
+            "{tr}slogo SaVior",
+            "{tr}ologo SaVior",
         ],
     },
 )
@@ -65,9 +71,9 @@ async def very(event):
     if not text and reply:
         text = reply.text
     if not text:
-        return await edit_delete(event, "**ಠ∀ಠ Gimmi text to make logo**")
+        return await eod(event, "**ಠ∀ಠ Gimmi text to make logo**")
     reply_to_id = await reply_id(event)
-    lionevent = await edit_or_reply(event, "`Processing.....`")
+    saviorevent = await eor(event, "`Processing.....`")
     LOGO_FONT_SIZE = gvarstatus("LOGO_FONT_SIZE") or 220
     LOGO_FONT_WIDTH = gvarstatus("LOGO_FONT_WIDTH") or 2
     LOGO_FONT_HEIGHT = gvarstatus("LOGO_FONT_HEIGHT") or 2
@@ -76,11 +82,11 @@ async def very(event):
     LOGO_FONT_STROKE_COLOR = gvarstatus("LOGO_FONT_STROKE_COLOR") or None
     LOGO_BACKGROUND = (
         gvarstatus("LOGO_BACKGROUND")
-        or f"https://raw.githubusercontent.com/TeamLionX/Files/main/background/black.jpg"
+        or "https://raw.githubusercontent.com/TheSaVior/RESOURCES/master/background/black.jpg"
     )
     LOGO_FONT = (
         gvarstatus("LOGO_FONT")
-        or f"https://github.com/TeamLionX/Files/blob/main/fonts/Streamster.ttf?raw=true"
+        or "https://github.com/TheSaVior/RESOURCES/blob/master/fonts/VampireWars.ttf?raw=true"
     )
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -118,7 +124,7 @@ async def very(event):
             stroke_width=0,
             stroke_fill=None,
         )
-    file_name = "badcat.png"
+    file_name = "PRO.png"
     img.save(file_name, "png")
     if cmd == "":
         await event.client.send_file(
@@ -128,14 +134,130 @@ async def very(event):
         )
     elif cmd == "s":
         await clippy(event.client, file_name, event.chat_id, reply_to_id)
-    await lionevent.delete()
+    await saviorevent.delete()
     if os.path.exists(file_name):
         os.remove(file_name)
 
 
-@lionub.lion_cmd(
-    pattern=r"(|c)lbg(?:\s|$)([\s\S]*)",
-    command=("lbg", plugin_category),
+@savior.savior_cmd(
+    pattern="ologo(?: |$)([\s\S]*)",
+    command=("ologo", menu_category),
+    info={
+        "header": "Make a logo in image or sticker",
+        "description": "Just a fun purpose plugin to create logo in image or in sticker.",
+        "usage": [
+            "{tr}logo <text>",
+            "{tr}slogo <text>",
+            "{tr}ologo <text> <reply to image media only>",
+        ],
+        "examples": [
+            "{tr}logo SaVior",
+        ],
+    },
+)
+async def lg1(event):
+    "To create a Random logo"
+    event = await eor(event, "`Processing.....`")
+    gvarstatus("LOGO_FONT_SIZE") or 220
+    LOGO_FONT_WIDTH = gvarstatus("LOGO_FONT_WIDTH") or 2
+    LOGO_FONT_HEIGHT = gvarstatus("LOGO_FONT_HEIGHT") or 2
+    LOGO_FONT_COLOR = gvarstatus("LOGO_FONT_COLOR") or "black"
+    LOGO_FONT_STROKE_WIDTH = gvarstatus("LOGO_FONT_STROKE_WIDTH") or 0
+    LOGO_FONT_STROKE_COLOR = gvarstatus("LOGO_FONT_STROKE_COLOR") or None
+    fnt = await get_font_file(event.client, "@SaVior_Fonts")
+    """
+    cmd = event.pattern_match.group(1).lower()
+    text = event.pattern_match.group(2)
+    reply = await event.get_reply_message()
+    if not text and reply:
+        text = reply.text
+    if not text:
+        return await eod(event, "**ಠ∀ಠ Gimmi text to make logo**")
+    """
+    if event.reply_to_msg_id:
+        rply = await event.get_reply_message()
+        if rply.text:
+            logo_ = rply.text
+        else:
+            logo_ = await rply.download_media()
+    else:
+        async for i in event.client.iter_messages(
+            "@SaVior_Bgs", filter=InputMessagesFilterPhotos
+        ):
+            PICS_STR.append(i)
+        pic = random.choice(PICS_STR)
+        logo_ = await pic.download_media()
+    text = event.pattern_match.group(1)
+    if len(text) <= 8:
+        font_size_ = 150
+    elif len(text) >= 9:
+        font_size_ = 50
+    else:
+        font_size_ = 130
+    if not text:
+        await eod(event, "**Give some text to make a logo !!**")
+        return
+    img = Image.open(logo_)
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.truetype(fnt, font_size_)
+    image_widthz, image_heightz = img.size
+    w, h = draw.textsize(text, font=font)
+    h += int(h * 0.21)
+    image_width, image_height = img.size
+    try:
+        draw.text(
+            (
+                (image_widthz - w) / float(LOGO_FONT_WIDTH),
+                (image_heightz - h) / float(LOGO_FONT_HEIGHT),
+            ),
+            text,
+            font=font,
+            fill=LOGO_FONT_COLOR,
+            stroke_width=int(LOGO_FONT_STROKE_WIDTH),
+            stroke_fill=LOGO_FONT_STROKE_COLOR,
+        )
+    except OSError:
+        draw.text(
+            (
+                (image_widthz - w) / float(LOGO_FONT_WIDTH),
+                (image_heightz - h) / float(LOGO_FONT_HEIGHT),
+            ),
+            text,
+            font=font,
+            fill=LOGO_FONT_COLOR,
+            stroke_width=0,
+            stroke_fill=None,
+        )
+    file_name = "SAVIOR.png"
+    img.save(file_name, "png")
+    await event.client.send_file(
+        event.chat_id,
+        file_name,
+        caption=f"**Made By :** {mention}",
+    )
+    await event.delete()
+    try:
+        os.remove(file_name)
+        os.remove(fnt)
+        os.remove(logo_)
+    except:
+        pass
+
+
+async def get_font_file(client, channel_id):
+    font_file_message_s = await client.get_messages(
+        entity=channel_id,
+        filter=InputMessagesFilterDocument,
+        limit=None,
+    )
+    font_file_message = random.choice(font_file_message_s)
+
+    return await client.download_media(font_file_message)
+
+
+@savior.savior_cmd(
+    pattern="(|c)lbg(?:\s|$)([\s\S]*)",
+    command=("lbg", menu_category),
     info={
         "header": "Change the background of logo",
         "description": "To change the background on which logo will created, in **bg** there few built-in backgrounds.",
@@ -156,15 +278,17 @@ async def bad(event):
     "To change background of logo"
     cmd = event.pattern_match.group(1).lower()
     input_str = event.pattern_match.group(2)
-    source = requests.get("https://github.com/TeamLionX/Files/tree/main/backgroud")
+    source = requests.get(
+        "https://github.com/TheSaVior/RESOURCES/tree/master/background"
+    )
     soup = BeautifulSoup(source.text, features="html.parser")
     links = soup.find_all("a", class_="js-navigation-open Link--primary")
     bg_name = []
     lbg_list = "**Available background names are here:-**\n\n"
     for i, each in enumerate(links, start=1):
-        lion = os.path.splitext(each.text)[0]
-        bg_name.append(lion)
-        lbg_list += f"**{i}.**  `{lion}`\n"
+        owo = os.path.splitext(each.text)[0]
+        bg_name.append(owo)
+        lbg_list += f"**{i}.**  `{owo}`\n"
     if os.path.exists("./temp/bg_img.jpg"):
         os.remove("./temp/bg_img.jpg")
     if cmd == "c":
@@ -172,36 +296,32 @@ async def bad(event):
         if not input_str and event.reply_to_msg_id and reply_message.media:
             if not os.path.isdir("./temp"):
                 os.mkdir("./temp")
-            output = await _liontools.media_to_pic(event, reply_message)
+            output = await _saviortools.media_to_pic(event, reply_message)
             convert_toimage(output[1], filename="./temp/bg_img.jpg")
-            return await edit_delete(
-                event, "This media is successfully set as background."
-            )
+            return await eod(event, "This media is successfully set as background.")
         if not input_str.startswith("https://t"):
-            return await edit_delete(
+            return await eod(
                 event, "Give a valid Telegraph picture link, Or reply to a media."
             )
         addgvar("LOGO_BACKGROUND", input_str)
-        return await edit_delete(
-            event, f"**Background for logo changed to :-** `{input_str}`"
-        )
+        return await eod(event, f"**Background for logo changed to :-** `{input_str}`")
     if not input_str:
-        return await edit_delete(event, lbg_list, time=60)
+        return await eod(event, lbg_list, time=60)
     if input_str not in bg_name:
-        lionevent = await edit_or_reply(event, "`Give me a correct background name...`")
+        saviorevent = await eor(event, "`Give me a correct background name...`")
         await asyncio.sleep(1)
-        await edit_delete(lionevent, lbg_list, time=60)
+        await eod(saviorevent, lbg_list, time=60)
     else:
-        string = f"https://raw.githubusercontent.com/TeamLionX/Files/main/backgroud/{input_str}.jpg"
+        string = f"https://raw.githubusercontent.com/TheSaVior/RESOURCES/master/background/{input_str}.jpg"
         addgvar("LOGO_BACKGROUND", string)
-        await edit_delete(
+        await eod(
             event, f"**Background for logo changed to :-** `{input_str}`", time=10
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"lf(|c|s|h|w|sc|sw)(?:\s|$)([\s\S]*)",
-    command=("lf", plugin_category),
+@savior.savior_cmd(
+    pattern="lf(|c|s|h|w|sc|sw)(?:\s|$)([\s\S]*)",
+    command=("lf", menu_category),
     info={
         "header": "Change text style for logo.",
         "description": "Customise logo font, font size, font position like text hight or width.",
@@ -238,25 +358,27 @@ async def pussy(event):
     cmd = event.pattern_match.group(1).lower()
     input_str = event.pattern_match.group(2)
     if cmd == "":
-        source = requests.get("https://github.com/TeamLionX/Files/tree/main/fonts")
+        source = requests.get(
+            "https://github.com/TheSaVior/RESOURCES/tree/master/fonts"
+        )
         soup = BeautifulSoup(source.text, features="html.parser")
         links = soup.find_all("a", class_="js-navigation-open Link--primary")
         logo_font = []
         font_name = "**Available font names are here:-**\n\n"
         for i, each in enumerate(links, start=1):
-            lion = os.path.splitext(each.text)[0]
-            logo_font.append(lion)
-            font_name += f"**{i}.**  `{lion}`\n"
+            lol = os.path.splitext(each.text)[0]
+            logo_font.append(lol)
+            font_name += f"**{i}.**  `{lol}`\n"
         if not input_str:
-            return await edit_delete(event, font_name, time=80)
+            return await eod(event, font_name, time=80)
         if input_str not in logo_font:
-            lionevent = await edit_or_reply(event, "`Give me a correct font name...`")
+            saviorevent = await eor(event, "`Give me a correct font name...`")
             await asyncio.sleep(1)
-            await edit_delete(lionevent, font_name, time=80)
+            await eod(saviorevent, font_name, time=80)
         else:
             if " " in input_str:
                 input_str = str(input_str).replace(" ", "%20")
-            string = f"https://github.com/TeamLionX/Files/blob/main/fonts/{input_str}.ttf?raw=true"
+            string = f"https://github.com/TheSaVior/RESOURCES/blob/master/fonts/{input_str}.ttf?raw=true"
             if os.path.exists("temp/logo.ttf"):
                 os.remove("temp/logo.ttf")
                 urllib.request.urlretrieve(
@@ -264,56 +386,50 @@ async def pussy(event):
                     "temp/logo.ttf",
                 )
             addgvar("LOGO_FONT", string)
-            await edit_delete(
-                event, f"**Font for logo changed to :-** `{input_str}`", time=10
-            )
+            await eod(event, f"**Font for logo changed to :-** `{input_str}`", time=10)
     elif cmd in ["c", "sc"]:
         fg_name = []
         for name, code in PIL.ImageColor.colormap.items():
             fg_name.append(name)
             fg_list = str(fg_name).replace("'", "`")
         if not input_str:
-            return await edit_delete(
+            return await eod(
                 event,
                 f"**Available color names are here:-**\n\n{fg_list}",
                 time=80,
             )
         if input_str not in fg_name:
-            lionevent = await edit_or_reply(event, "`Give me a correct color name...`")
+            saviorevent = await eor(event, "`Give me a correct color name...`")
             await asyncio.sleep(1)
-            await edit_delete(
-                lionevent,
+            await eod(
+                saviorevent,
                 f"**Available color names are here:-**\n\n{fg_list}",
                 time=80,
             )
         elif cmd == "c":
             addgvar("LOGO_FONT_COLOR", input_str)
-            await edit_delete(
+            await eod(
                 event,
                 f"**Foreground color for logo changed to :-** `{input_str}`",
                 10,
             )
         else:
             addgvar("LOGO_FONT_STROKE_COLOR", input_str)
-            await edit_delete(
+            await eod(
                 event, f"**Stroke color for logo changed to :-** `{input_str}`", 10
             )
     else:
-        lion = re.compile(r"^\-?[1-9][0-9]*\.?[0-9]*")
-        isint = re.match(lion, input_str)
+        savior = re.compile(r"^\-?[1-9][0-9]*\.?[0-9]*")
+        isint = re.match(savior, input_str)
         if not input_str or not isint:
-            return await edit_delete(
-                event, f"**Give an integer value to set**", time=10
-            )
+            return await eod(event, "**Give an integer value to set**", time=10)
         if cmd == "s":
             input_str = int(input_str)
             if input_str > 0 and input_str <= 1000:
                 addgvar("LOGO_FONT_SIZE", input_str)
-                await edit_delete(
-                    event, f"**Font size is changed to :-** `{input_str}`"
-                )
+                await eod(event, f"**Font size is changed to :-** `{input_str}`")
             else:
-                await edit_delete(
+                await eod(
                     event,
                     f"**Font size is between 0 - 1000, You can't set limit to :** `{input_str}`",
                 )
@@ -321,11 +437,9 @@ async def pussy(event):
             input_str = float(input_str)
             if input_str > 0 and input_str <= 100:
                 addgvar("LOGO_FONT_WIDTH", input_str)
-                await edit_delete(
-                    event, f"**Font width is changed to :-** `{input_str}`"
-                )
+                await eod(event, f"**Font width is changed to :-** `{input_str}`")
             else:
-                await edit_delete(
+                await eod(
                     event,
                     f"**Font width is between 0 - 100, You can't set limit to {input_str}",
                 )
@@ -333,11 +447,9 @@ async def pussy(event):
             input_str = float(input_str)
             if input_str > 0 and input_str <= 100:
                 addgvar("LOGO_FONT_HEIGHT", input_str)
-                await edit_delete(
-                    event, f"**Font hight is changed to :-** `{input_str}`"
-                )
+                await eod(event, f"**Font hight is changed to :-** `{input_str}`")
             else:
-                await edit_delete(
+                await eod(
                     event,
                     f"**Font hight is between 0 - 100, You can't set limit to {input_str}",
                 )
@@ -345,19 +457,19 @@ async def pussy(event):
             input_str = int(input_str)
             if input_str > 0 and input_str <= 100:
                 addgvar("LOGO_FONT_STROKE_WIDTH", input_str)
-                await edit_delete(
+                await eod(
                     event, f"**Font stroke width is changed to :-** `{input_str}`"
                 )
             else:
-                await edit_delete(
+                await eod(
                     event,
                     f"**Font stroke width size is between 0 - 100, You can't set limit to :** `{input_str}`",
                 )
 
 
-@lionub.lion_cmd(
-    pattern=r"(g|d|r)lvar(?:\s|$)([\s\S]*)",
-    command=("lvar", plugin_category),
+@savior.savior_cmd(
+    pattern="(g|d|r)lvar(?:\s|$)([\s\S]*)",
+    command=("lvar", menu_category),
     info={
         "header": "Manage values which set for logo",
         "description": "To see which value have been set, or to delete a value , or to reset all values.",
@@ -377,22 +489,22 @@ async def pussy(event):
         ],
     },
 )
-async def lion(event):
+async def savior(event):
     "Manage all values of logo"
     cmd = event.pattern_match.group(1).lower()
     input_str = event.pattern_match.group(2)
-    if input_str in vars_list:
+    if input_str in vars_list.keys():
         var = vars_list[input_str]
         if cmd == "g":
             var_data = gvarstatus(var)
-            await edit_delete(event, f"📑 Value of **{var}** is  `{var_data}`", time=60)
+            await eod(event, f"📑 Value of **{var}** is  `{var_data}`", time=60)
         elif cmd == "d":
             if input_str == "lbg" and os.path.exists("./temp/bg_img.jpg"):
                 os.remove("./temp/bg_img.jpg")
             if input_str == "lf" and os.path.exists("./temp/logo.ttf"):
                 os.remove("./temp/logo.ttf")
             delgvar(var)
-            await edit_delete(
+            await eod(
                 event, f"📑 Value of **{var}** is now deleted & set to default.", time=60
             )
     elif not input_str and cmd == "r":
@@ -408,14 +520,14 @@ async def lion(event):
             os.remove("./temp/bg_img.jpg")
         if os.path.exists("./temp/logo.ttf"):
             os.remove("./temp/logo.ttf")
-        await edit_delete(
+        await eod(
             event,
             "📑 Values for all vars deleted successfully & all settings reset.",
             time=20,
         )
     else:
-        await edit_delete(
+        await eod(
             event,
-            f"**📑 Give correct vars name :**\n__Correct Vars code list is :__\n\n1. `lbg` : **LOGO_BACKGROUND**\n2. `lfc` : **LOGO_FONT_COLOR**\n3. `lf` : **LOGO_FONT**\n4. `lfs` : **LOGO_FONT_SIZE**\n5. `lfh` : **LOGO_FONT_HEIGHT**\n6. `lfw` : **LOGO_FONT_WIDTH**",
+            "**📑 Give correct vars name :**\n__Correct Vars code list is :__\n\n1. `lbg` : **LOGO_BACKGROUND**\n2. `lfc` : **LOGO_FONT_COLOR**\n3. `lf` : **LOGO_FONT**\n4. `lfs` : **LOGO_FONT_SIZE**\n5. `lfh` : **LOGO_FONT_HEIGHT**\n6. `lfw` : **LOGO_FONT_WIDTH**\n7. `lfsw` : **LOGO_FONT_STROKE_WIDTH**\n8. `lfsc` : **LOGO_FONT_STROKE_SCOLOUR**",
             time=60,
         )

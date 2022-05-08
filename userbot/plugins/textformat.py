@@ -1,13 +1,13 @@
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 
-plugin_category = "tools"
+menu_category = "Extra"
 
 
-@lionub.lion_cmd(
-    pattern=r"upper(?: |$)([\s\S]*)",
-    command=("upper", plugin_category),
+@savior.savior_cmd(
+    pattern="upper(?: |$)([\s\S]*)",
+    command=("upper", menu_category),
     info={
         "header": "Text operation change to upper text",
         "usage": "{tr}upper <input text /reply to text>",
@@ -21,16 +21,16 @@ async def some(event):
     if not intxt and reply:
         intxt = reply.text
     if not intxt:
-        return await edit_delete(
+        return await eod(
             event, "**ಠ∀ಠ  Reply to valid text or give text as input...you moron!!**"
         )
     mystring = intxt.upper()
-    await edit_or_reply(event, mystring)
+    await eor(event, mystring)
 
 
-@lionub.lion_cmd(
-    pattern=r"lower(?: |$)([\s\S]*)",
-    command=("lower", plugin_category),
+@savior.savior_cmd(
+    pattern="lower(?: |$)([\s\S]*)",
+    command=("lower", menu_category),
     info={
         "header": "Text operation change to lower text",
         "usage": "{tr}lower <input text /reply to text>",
@@ -44,16 +44,16 @@ async def good(event):
     if not intxt and reply:
         intxt = reply.text
     if not intxt:
-        return await edit_delete(
+        return await eod(
             event, "**ಠ∀ಠ  Reply to valid text or give text as input...you moron!!**"
         )
     mystring = intxt.lower()
-    await edit_or_reply(event, mystring)
+    await eor(event, mystring)
 
 
-@lionub.lion_cmd(
-    pattern=r"title(?: |$)([\s\S]*)",
-    command=("title", plugin_category),
+@savior.savior_cmd(
+    pattern="title(?: |$)([\s\S]*)",
+    command=("title", menu_category),
     info={
         "header": "Text operation change to title text",
         "usage": "{tr}title<input text /reply to text>",
@@ -67,16 +67,16 @@ async def stuff(event):
     if not intxt and reply:
         intxt = reply.text
     if not intxt:
-        return await edit_delete(
+        return await eod(
             event, "**ಠ∀ಠ  Reply to valid text or give text as input...you moron!!**"
         )
     mystring = intxt.title()
-    await edit_or_reply(event, mystring)
+    await eor(event, mystring)
 
 
-@lionub.lion_cmd(
-    pattern=r"(|r)camel(?: |$)([\s\S]*)",
-    command=("camel", plugin_category),
+@savior.savior_cmd(
+    pattern="(|r)camel(?: |$)([\s\S]*)",
+    command=("camel", menu_category),
     info={
         "header": "Text operation change to camel text",
         "usage": [
@@ -97,14 +97,14 @@ async def here(event):
     if not intxt and reply:
         intxt = reply.text
     if not intxt:
-        return await edit_delete(
+        return await eod(
             event, "**ಠ∀ಠ  Reply to valid text or give text as input...you moron!!**"
         )
     if cmd == "r":
         bad = list(intxt.lower())[::2]
-        lion = list(intxt.upper())[1::2]
+        savior = list(intxt.upper())[1::2]
     else:
         bad = list(intxt.upper())[::2]
-        lion = list(intxt.lower())[1::2]
-    mystring = "".join(f"{i}{j}" for i, j in zip(bad, lion))
-    await edit_or_reply(event, mystring)
+        savior = list(intxt.lower())[1::2]
+    mystring = "".join(f"{i}{j}" for i, j in zip(bad, savior))
+    await eor(event, mystring)

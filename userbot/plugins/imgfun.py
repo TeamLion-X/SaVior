@@ -1,23 +1,26 @@
-# by @TeamLionX (@TeamLionX)
+# by @SaViorXBoy (@SaViorXBoy)
 import io
 import os
 from io import BytesIO
 
+import requests
 from PIL import Image, ImageFilter, ImageOps
+from telegraph import upload_file
+from telethon.tl.types import MessageMediaPhoto
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import media_type
 from ..helpers.functions import dotify
-from ..helpers.utils import _liontools
+from ..helpers.utils import _saviortools
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="imirror(s)? ?(-)?(l|r|u|b)?$",
-    command=("imirror", plugin_category),
+    command=("imirror", menu_category),
     info={
         "header": "gives to reflected  image of one part on other part.",
         "description": "Additionaly use along with cmd i.e, imirrors to gib out put as sticker.",
@@ -28,8 +31,8 @@ plugin_category = "fun"
             "-b": "upper half will be reflection of bottom half.",
         },
         "usage": [
-            "{tr}imirror <flag> - gives output as image",
-            "{tr}imirrors <flag> - gives output as sticker",
+            "{tr}imirror <type> - gives output as image",
+            "{tr}imirrors <type> - gives output as sticker",
         ],
         "examples": [
             "{tr}imirror -l",
@@ -42,73 +45,139 @@ async def imirror(event):  # sourcery no-metrics
     reply = await event.get_reply_message()
     mediatype = media_type(reply)
     if not reply or not mediatype or mediatype not in ["Photo", "Sticker"]:
-        return await edit_delete(event, "__Reply to photo or sticker to make mirror.__")
-    lionevent = await event.edit("__Reflecting the image....__")
+        return await eod(event, "__Reply to photo or sticker to make mirror.__")
+    saviorevent = await event.edit("__Reflecting the image....__")
     args = event.pattern_match.group(1)
     if args:
-        filename = "LionX.webp"
+        filename = "SaViorX.webp"
         f_format = "webp"
     else:
-        filename = "LionX.jpg"
+        filename = "SaViorX.jpg"
         f_format = "jpeg"
     try:
-        imag = await _liontools.media_to_pic(lionevent, reply, noedits=True)
+        imag = await _saviortools.media_to_pic(saviorevent, reply, noedits=True)
         if imag[1] is None:
-            return await edit_delete(
+            return await eod(
                 imag[0], "__Unable to extract image from the replied message.__"
             )
         image = Image.open(imag[1])
     except Exception as e:
-        return await edit_delete(lionevent, f"**Error in identifying image:**\n__{e}__")
-    flag = event.pattern_match.group(3) or "r"
+        return await eod(saviorevent, f"**Error in identifying image:**\n__{e}__")
+    type = event.pattern_match.group(3) or "r"
     w, h = image.size
-    if w % 2 != 0 and flag in ["r", "l"] or h % 2 != 0 and flag in ["u", "b"]:
+    if w % 2 != 0 and type in ["r", "l"] or h % 2 != 0 and type in ["u", "b"]:
         image = image.resize((w + 1, h + 1))
         h, w = image.size
-    if flag == "b":
-        upper = h // 2
-        right = w
-        lower = h
-        left = 0
-        nw = left
-        nh = left
-    elif flag == "l":
+    if type == "l":
         left = 0
         upper = 0
         right = w // 2
         lower = h
         nw = right
         nh = left
-    elif flag == "r":
-        upper = 0
+    elif type == "r":
         left = w // 2
+        upper = 0
         right = w
         lower = h
         nw = upper
         nh = upper
-    elif flag == "u":
+    elif type == "u":
+        left = 0
         upper = 0
         right = w
         lower = h // 2
-        left = 0
         nw = left
         nh = lower
+    elif type == "b":
+        left = 0
+        upper = h // 2
+        right = w
+        lower = h
+        nw = left
+        nh = left
     temp = image.crop((left, upper, right, lower))
-    temp = ImageOps.mirror(temp) if flag in ["l", "r"] else ImageOps.flip(temp)
+    temp = ImageOps.mirror(temp) if type in ["l", "r"] else ImageOps.flip(temp)
     image.paste(temp, (nw, nh))
     img = BytesIO()
     img.name = filename
     image.save(img, f_format)
     img.seek(0)
     await event.client.send_file(event.chat_id, img, reply_to=reply)
-    await lionevent.delete()
+    await saviorevent.delete()
 
 
-@lionub.lion_cmd(
-    pattern=r"irotate(?: |$)(\d+)$",
-    command=("irotate", plugin_category),
+@savior.savior_cmd(
+    pattern="trig(?:\s|$)([\s\S]*)",
+    command=("trig", menu_category),
     info={
-        "header": "To rotate the replied image or sticker",
+        "header": "To trig the replied image or sticker",
+        "usage": [
+            "{tr}trig",
+        ],
+    },
+)
+async def dc(event):
+    await event.edit("Making this image 😡triggered😈")
+    dc = await event.get_reply_message()
+    if isinstance(dc.media, MessageMediaPhoto):
+        img = await bot.download_media(dc.media, pathdc)
+    elif "image" in dc.media.document.mime_type.split("/"):
+        img = await bot.download_media(dc.media, pathdc)
+    else:
+        await event.edit("Reply To any Image only 😅😅")
+        return
+    url = upload_file(img)
+    link = f"https://telegra.ph{url[0]}"
+    hmm = f"https://some-random-api.ml/canvas/triggered?avatar={link}"
+    r = requests.get(hmm)
+    open("savior.gif", "wb").write(r.content)
+    hehe = "savior.gif"
+    await bot.send_file(event.chat_id, hehe, caption="Got Triggered 😈😂", reply_to=dc)
+    for files in (hehe, img):
+        if files and os.path.exists(files):
+            os.remove(files)
+    await event.delete()
+
+
+@savior.savior_cmd(
+    pattern="waste(?:\s|$)([\s\S]*)",
+    command=("waste", menu_category),
+    info={
+        "header": "To waste the replied image or sticker",
+        "usage": [
+            "{tr}waste <number>",
+        ],
+    },
+)
+async def dc(event):
+    await event.edit("What a waste 😒😒")
+    dc = await event.get_reply_message()
+    if isinstance(dc.media, MessageMediaPhoto):
+        img = await bot.download_media(dc.media, pathdc)
+    elif "image" in dc.media.document.mime_type.split("/"):
+        img = await bot.download_media(dc.media, pathdc)
+    else:
+        await event.edit("Reply To any Image only 😅😅")
+        return
+    url = upload_file(img)
+    link = f"https://telegra.ph{url[0]}"
+    hmm = f"https://some-random-api.ml/canvas/wasted?avatar={link}"
+    r = requests.get(hmm)
+    open("savior.png", "wb").write(r.content)
+    hehe = "savior.png"
+    await bot.send_file(event.chat_id, hehe, caption="Totally wasted⚰️ 😒", reply_to=dc)
+    for files in (hehe, img):
+        if files and os.path.exists(files):
+            os.remove(files)
+    await event.delete()
+
+
+@savior.savior_cmd(
+    pattern="irotate(?: |$)(\d+)$",
+    command=("irortate", menu_category),
+    info={
+        "header": "To Trig the replied image or sticker",
         "usage": [
             "{tr}irotate <angle>",
         ],
@@ -119,38 +188,38 @@ async def irotate(event):
     reply = await event.get_reply_message()
     mediatype = media_type(reply)
     if not reply or not mediatype or mediatype not in ["Photo", "Sticker"]:
-        return await edit_delete(
+        return await eod(
             event, "__Reply to photo or sticker to rotate it with given angle.__"
         )
     if mediatype == "Sticker" and reply.document.mime_type == "application/i-tgsticker":
-        return await edit_delete(
+        return await eod(
             event,
             "__Reply to photo or sticker to rotate it with given angle. Animated sticker is not supported__",
         )
     args = event.pattern_match.group(1)
-    lionevent = await edit_or_reply(event, "__Rotating the replied media...__")
-    imag = await _liontools.media_to_pic(lionevent, reply, noedits=True)
+    saviorevent = await eor(event, "__Rotating the replied media...__")
+    imag = await _saviortools.media_to_pic(saviorevent, reply, noedits=True)
     if imag[1] is None:
-        return await edit_delete(
+        return await eod(
             imag[0], "__Unable to extract image from the replied message.__"
         )
     image = Image.open(imag[1])
     try:
         image = image.rotate(int(args), expand=True)
     except Exception as e:
-        return await edit_delete(event, "**Error**\n" + str(e))
+        return await eod(event, "**Error**\n" + str(e))
     await event.delete()
     img = io.BytesIO()
-    img.name = "LionX.png"
+    img.name = "SaViorX.png"
     image.save(img, "PNG")
     img.seek(0)
     await event.client.send_file(event.chat_id, img, reply_to=reply)
-    await lionevent.delete()
+    await saviorevent.delete()
 
 
-@lionub.lion_cmd(
-    pattern=r"iresize(?:\s|$)([\s\S]*)$",
-    command=("iresize", plugin_category),
+@savior.savior_cmd(
+    pattern="iresize(?:\s|$)([\s\S]*)$",
+    command=("iresize", menu_category),
     info={
         "header": "To resize the replied image/sticker",
         "usage": [
@@ -165,17 +234,17 @@ async def iresize(event):
     reply = await event.get_reply_message()
     mediatype = media_type(reply)
     if not reply or not mediatype or mediatype not in ["Photo", "Sticker"]:
-        return await edit_delete(event, "__Reply to photo or sticker to resize it.__")
+        return await eod(event, "__Reply to photo or sticker to resize it.__")
     if mediatype == "Sticker" and reply.document.mime_type == "application/i-tgsticker":
-        return await edit_delete(
+        return await eod(
             event,
             "__Reply to photo or sticker to resize it. Animated sticker is not supported__",
         )
     args = (event.pattern_match.group(1)).split()
-    lionevent = await edit_or_reply(event, "__Resizeing the replied media...__")
-    imag = await _liontools.media_to_pic(lionevent, reply, noedits=True)
+    saviorevent = await eor(event, "__Resizeing the replied media...__")
+    imag = await _saviortools.media_to_pic(saviorevent, reply, noedits=True)
     if imag[1] is None:
-        return await edit_delete(
+        return await eod(
             imag[0], "__Unable to extract image from the replied message.__"
         )
     image = Image.open(imag[1])
@@ -185,32 +254,32 @@ async def iresize(event):
         try:
             nw, nh = int(args[0]), int(args[0])
         except ValueError:
-            return await edit_delete(lionevent, "**Error:**\n__Invalid dimension.__")
+            return await eod(saviorevent, "**Error:**\n__Invalid dimension.__")
     else:
         try:
             nw = int(args[0])
         except ValueError:
-            return await edit_delete(lionevent, "**Error:**\n__Invalid width.__")
+            return await eod(saviorevent, "**Error:**\n__Invalid width.__")
         try:
             nh = int(args[1])
         except ValueError:
-            return await edit_delete(lionevent, "**Error:**\n__Invalid height.__")
+            return await eod(saviorevent, "**Error:**\n__Invalid height.__")
     try:
         image = image.resize((nw, nh))
     except Exception as e:
-        return await edit_delete(lionevent, f"**Error:** __While resizing.\n{e}__")
+        return await eod(saviorevent, f"**Error:** __While resizing.\n{e}__")
     await event.delete()
     img = io.BytesIO()
-    img.name = "LionX.png"
+    img.name = "SaViorX.png"
     image.save(img, "PNG")
     img.seek(0)
     await event.client.send_file(event.chat_id, img, reply_to=reply)
-    await lionevent.delete()
+    await saviorevent.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="square$",
-    command=("square", plugin_category),
+    command=("square", menu_category),
     info={
         "header": "Converts replied image to square image.",
         "usage": "{tr}square",
@@ -221,20 +290,20 @@ async def square_cmd(event):
     reply = await event.get_reply_message()
     mediatype = media_type(reply)
     if not reply or not mediatype or mediatype not in ["Photo"]:
-        return await edit_delete(event, "__Reply to photo to make it square image.__")
-    lionevent = await event.edit("__Adding borders to make it square....__")
+        return await eod(event, "__Reply to photo to make it square image.__")
+    saviorevent = await event.edit("__Adding borders to make it square....__")
     try:
-        imag = await _liontools.media_to_pic(lionevent, reply, noedits=True)
+        imag = await _saviortools.media_to_pic(saviorevent, reply, noedits=True)
         if imag[1] is None:
-            return await edit_delete(
+            return await eod(
                 imag[0], "__Unable to extract image from the replied message.__"
             )
         img = Image.open(imag[1])
     except Exception as e:
-        return await edit_delete(lionevent, f"**Error in identifying image:**\n__{e}__")
+        return await eod(saviorevent, f"**Error in identifying image:**\n__{e}__")
     w, h = img.size
     if w == h:
-        return await edit_delete(event, "__The replied image is already in 1:1 ratio__")
+        return await eod(event, "__The replied image is already in 1:1 ratio__")
     _min, _max = min(w, h), max(w, h)
     bg = img.crop(((w - _min) // 2, (h - _min) // 2, (w + _min) // 2, (h + _min) // 2))
     bg = bg.filter(ImageFilter.GaussianBlur(5))
@@ -245,46 +314,85 @@ async def square_cmd(event):
     bg.save(img)
     img.seek(0)
     await event.client.send_file(event.chat_id, img, reply_to=reply)
-    await lionevent.delete()
+    await saviorevent.delete()
 
 
-@lionub.lion_cmd(
-    pattern=r"dotify(?: |$)(\d+)?$",
-    command=("dotify", plugin_category),
+pathdc = "./userbot/"
+if not os.path.isdir(pathdc):
+    os.makedirs(pathdc)
+
+
+@savior.savior_cmd(
+    pattern="bright(?: |$)(\d+)?$",
+    command=("bright", menu_category),
     info={
         "header": "To convert image into doted image",
         "usage": [
-            "{tr}dotify <number>",
+            "{tr}bright",
         ],
     },
 )
-async def pic_gifcmd(event):
+async def dc(event):
+    await event.edit("Adding Brightness 😎")
+    dc = await event.get_reply_message()
+    if isinstance(dc.media, MessageMediaPhoto):
+        img = await bot.download_media(dc.media, pathdc)
+    elif "image" in dc.media.document.mime_type.split("/"):
+        img = await bot.download_media(dc.media, pathdc)
+    else:
+        await event.edit("Reply To any Image only 😅😅")
+        return
+    url = upload_file(img)
+    link = f"https://telegra.ph{url[0]}"
+    hehe = f"https://some-random-api.ml/canvas/brightness?avatar={link}"
+    r = requests.get(hehe)
+    open("savior.png", "wb").write(r.content)
+    hehe = "savior.png"
+    await bot.send_file(
+        event.chat_id, hehe, caption="Brightness increased 😎😎", reply_to=dc
+    )
+    for files in (hehe, img):
+        if files and os.path.exists(files):
+            os.remove(files)
+    await event.delete()
+
+
+@savior.savior_cmd(
+    pattern="otify(?: |$)(\d+)?$",
+    command=("otify", menu_category),
+    info={
+        "header": "To convert image into doted image",
+        "usage": [
+            "{tr}otify <number>",
+        ],
+    },
+)
+async def pic_gmd(event):
     "To convert image into doted image"
     reply = await event.get_reply_message()
     mediatype = media_type(reply)
     if not reply or not mediatype or mediatype not in ["Photo", "Sticker"]:
-        return await edit_delete(
-            event, "__Reply to photo or sticker to make it doted image.__"
-        )
+        return await eod(event, "__Reply to photo or sticker to make it doted image.__")
     if mediatype == "Sticker" and reply.document.mime_type == "application/i-tgsticker":
-        return await edit_delete(
+        return await eod(
             event,
             "__Reply to photo or sticker to make it doted image. Animated sticker is not supported__",
         )
-    if args := event.pattern_match.group(1):
+    args = event.pattern_match.group(1)
+    if args:
         if args.isdigit():
             pix = int(args) if int(args) > 0 else 100
     else:
         pix = 100
-    lionevent = await edit_or_reply(event, "__🎞Dotifying image...__")
-    imag = await _liontools.media_to_pic(lionevent, reply, noedits=True)
+    saviorevent = await eor(event, "__🎞Dotifying image...__")
+    imag = await _saviortools.media_to_pic(saviorevent, reply, noedits=True)
     if imag[1] is None:
-        return await edit_delete(
+        return await eod(
             imag[0], "__Unable to extract image from the replied message.__"
         )
     result = await dotify(imag[1], pix, True)
     await event.client.send_file(event.chat_id, result, reply_to=reply)
-    await lionevent.delete()
+    await saviorevent.delete()
     for i in [imag[1]]:
         if os.path.exists(i):
             os.remove(i)

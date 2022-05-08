@@ -7,20 +7,20 @@ from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 from telethon.tl.types import ChatBannedRights
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.utils import _format
 from ..sql_helper.locks_sql import get_locks, is_locked, update_lock
 from ..utils import is_admin
 from . import BOTLOG, get_user_from_event
 
-plugin_category = "admin"
+menu_category = "admin"
 
 
-@lionub.lion_cmd(
-    pattern=r"lock ([\s\S]*)",
-    command=("lock", plugin_category),
+@savior.savior_cmd(
+    pattern="lock ([\s\S]*)",
+    command=("lock", menu_category),
     info={
         "header": "To lock the given permission for entire group.",
         "description": "Db options will lock for admins also,",
@@ -55,12 +55,12 @@ async def _(event):  # sourcery no-metrics
     input_str = event.pattern_match.group(1)
     peer_id = event.chat_id
     if not event.is_group:
-        return await edit_delete(event, "`Idiot! ,This is not a group to lock things `")
+        return await eod(event, "`Idiot! ,This is not a group to lock things `")
     chat_per = (await event.get_chat()).default_banned_rights
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+    lol = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
     if input_str in (("bots", "commands", "email", "forward", "url")):
         update_lock(peer_id, input_str, True)
-        await edit_or_reply(event, "`Locked {}`".format(input_str))
+        await eor(event, "`Locked {}`".format(input_str))
     else:
         msg = chat_per.send_messages
         media = chat_per.send_media
@@ -75,70 +75,70 @@ async def _(event):  # sourcery no-metrics
         changeinfo = chat_per.change_info
         if input_str == "msg":
             if msg:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with messaging permission`"
                 )
             msg = True
             locktype = "messages"
         elif input_str == "media":
             if media:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with sending media`"
                 )
             media = True
             locktype = "media"
         elif input_str == "sticker":
             if sticker:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with sending stickers`"
                 )
             sticker = True
             locktype = "stickers"
         elif input_str == "preview":
             if embed_link:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with previewing links`"
                 )
             embed_link = True
             locktype = "preview links"
         elif input_str == "gif":
             if gif:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with sending GIFs`"
                 )
             gif = True
             locktype = "GIFs"
         elif input_str == "game":
             if gamee:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with sending games`"
                 )
             gamee = True
             locktype = "games"
         elif input_str == "inline":
             if ainline:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with using inline bots`"
                 )
             ainline = True
             locktype = "inline bots"
         elif input_str == "poll":
             if gpoll:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with sending polls`"
                 )
             gpoll = True
             locktype = "polls"
         elif input_str == "invite":
             if adduser:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already locked with adding members`"
                 )
             adduser = True
             locktype = "invites"
         elif input_str == "pin":
             if cpin:
-                return await edit_delete(
+                return await eod(
                     event,
                     "`This group is already locked with pinning messages by users`",
                 )
@@ -146,7 +146,7 @@ async def _(event):  # sourcery no-metrics
             locktype = "pins"
         elif input_str == "info":
             if changeinfo:
-                return await edit_delete(
+                return await eod(
                     event,
                     "`This group is already locked with Changing group info by users`",
                 )
@@ -166,15 +166,13 @@ async def _(event):  # sourcery no-metrics
             changeinfo = True
             locktype = "everything"
         elif input_str:
-            return await edit_delete(
-                event, f"**Invalid lock type :** `{input_str}`", time=5
-            )
+            return await eod(event, f"**Invalid lock type :** `{input_str}`", time=5)
 
         else:
-            return await edit_or_reply(event, "`I can't lock nothing !!`")
+            return await eor(event, "`I can't lock nothing !!`")
         try:
-            lion = Get(lion)
-            await event.client(lion)
+            lol = Get(lol)
+            await event.client(lol)
         except BaseException:
             pass
         lock_rights = ChatBannedRights(
@@ -197,18 +195,18 @@ async def _(event):  # sourcery no-metrics
                     peer=peer_id, banned_rights=lock_rights
                 )
             )
-            await edit_or_reply(event, f"`Locked {locktype} for this chat !!`")
+            await eor(event, f"`Locked {locktype} for this chat !!`")
         except BaseException as e:
-            await edit_delete(
+            await eod(
                 event,
                 f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
                 time=5,
             )
 
 
-@lionub.lion_cmd(
-    pattern=r"unlock ([\s\S]*)",
-    command=("unlock", plugin_category),
+@savior.savior_cmd(
+    pattern="unlock ([\s\S]*)",
+    command=("unlock", menu_category),
     info={
         "header": "To unlock the given permission for entire group.",
         "description": "Db options/api options will unlock only if they are locked.",
@@ -243,12 +241,12 @@ async def _(event):  # sourcery no-metrics
     input_str = event.pattern_match.group(1)
     peer_id = event.chat_id
     if not event.is_group:
-        return await edit_delete(event, "`Idiot! ,This is not a group to lock things `")
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+        return await eod(event, "`Idiot! ,This is not a group to lock things `")
+    lol = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
     chat_per = (await event.get_chat()).default_banned_rights
     if input_str in (("bots", "commands", "email", "forward", "url")):
         update_lock(peer_id, input_str, False)
-        await edit_or_reply(event, "`UnLocked {}`".format(input_str))
+        await eor(event, "`UnLocked {}`".format(input_str))
     else:
         msg = chat_per.send_messages
         media = chat_per.send_media
@@ -263,70 +261,70 @@ async def _(event):  # sourcery no-metrics
         changeinfo = chat_per.change_info
         if input_str == "msg":
             if not msg:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with messaging permission`"
                 )
             msg = False
             locktype = "messages"
         elif input_str == "media":
             if not media:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with sending media`"
                 )
             media = False
             locktype = "media"
         elif input_str == "sticker":
             if not sticker:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with sending stickers`"
                 )
             sticker = False
             locktype = "stickers"
         elif input_str == "preview":
             if not embed_link:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with preview links`"
                 )
             embed_link = False
             locktype = "preview links"
         elif input_str == "gif":
             if not gif:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with sending GIFs`"
                 )
             gif = False
             locktype = "GIFs"
         elif input_str == "game":
             if not gamee:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with sending games`"
                 )
             gamee = False
             locktype = "games"
         elif input_str == "inline":
             if not ainline:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with using inline bots`"
                 )
             ainline = False
             locktype = "inline bots"
         elif input_str == "poll":
             if not gpoll:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with sending polls`"
                 )
             gpoll = False
             locktype = "polls"
         elif input_str == "invite":
             if not adduser:
-                return await edit_delete(
+                return await eod(
                     event, "`This group is already unlocked with adding members`"
                 )
             adduser = False
             locktype = "invites"
         elif input_str == "pin":
             if not cpin:
-                return await edit_delete(
+                return await eod(
                     event,
                     "`This group is already unlocked with pinning messages by users`",
                 )
@@ -334,7 +332,7 @@ async def _(event):  # sourcery no-metrics
             locktype = "pins"
         elif input_str == "info":
             if not changeinfo:
-                return await edit_delete(
+                return await eod(
                     event,
                     "`This group is already unlocked with Changing grup info by users`",
                 )
@@ -354,15 +352,13 @@ async def _(event):  # sourcery no-metrics
             changeinfo = False
             locktype = "everything"
         elif input_str:
-            return await edit_delete(
-                event, f"**Invalid unlock type :** `{input_str}`", time=5
-            )
+            return await eod(event, f"**Invalid unlock type :** `{input_str}`", time=5)
 
         else:
-            return await edit_or_reply(event, "`I can't unlock nothing !!`")
+            return await eor(event, "`I can't unlock nothing !!`")
         try:
-            lion = Get(lion)
-            await event.client(lion)
+            lol = Get(lol)
+            await event.client(lol)
         except BaseException:
             pass
         unlock_rights = ChatBannedRights(
@@ -385,18 +381,18 @@ async def _(event):  # sourcery no-metrics
                     peer=peer_id, banned_rights=unlock_rights
                 )
             )
-            await edit_or_reply(event, f"`Unlocked {locktype} for this chat !!`")
+            await eor(event, f"`Unlocked {locktype} for this chat !!`")
         except BaseException as e:
-            return await edit_delete(
+            return await eod(
                 event,
                 f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
                 time=5,
             )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="locks$",
-    command=("locks", plugin_category),
+    command=("locks", menu_category),
     info={
         "header": "To see the active locks in the current group",
         "usage": "{tr}locks",
@@ -450,12 +446,12 @@ async def _(event):  # sourcery no-metrics
         res += f"👉 `adduser`: `{uadduser}`\n"
         res += f"👉 `cpin`: `{ucpin}`\n"
         res += f"👉 `changeinfo`: `{uchangeinfo}`\n"
-    await edit_or_reply(event, res)
+    await eor(event, res)
 
 
-@lionub.lion_cmd(
-    pattern=r"plock ([\s\S]*)",
-    command=("plock", plugin_category),
+@savior.savior_cmd(
+    pattern="plock ([\s\S]*)",
+    command=("plock", menu_category),
     info={
         "header": "To lock the given permission for replied person only.",
         "api options": {
@@ -486,8 +482,8 @@ async def _(event):  # sourcery no-metrics
     result = await event.client.get_permissions(peer_id, reply.from_id)
     admincheck = await is_admin(event.client, peer_id, reply.from_id)
     if admincheck:
-        return await edit_delete(event, "`This user is admin you cant play with him`")
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+        return await eod(event, "`This user is admin you cant play with him`")
+    lol = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
     msg = chat_per.send_messages
     media = chat_per.send_media
     sticker = chat_per.send_stickers
@@ -525,111 +521,93 @@ async def _(event):  # sourcery no-metrics
         uchangeinfo = changeinfo
     if input_str == "msg":
         if msg:
-            return await edit_delete(
+            return await eod(
                 event, "`This Group is already locked with messaging permission.`"
             )
         if umsg:
-            return await edit_delete(
+            return await eod(
                 event, "`This User is already locked with messaging permission.`"
             )
         umsg = True
         locktype = "messages"
     elif input_str == "media":
         if media:
-            return await edit_delete(
-                event, "`This group is already locked with sending media`"
-            )
+            return await eod(event, "`This group is already locked with sending media`")
         if umedia:
-            return await edit_delete(
-                event, "`User is already locked with sending media`"
-            )
+            return await eod(event, "`User is already locked with sending media`")
         umedia = True
         locktype = "media"
     elif input_str == "sticker":
         if sticker:
-            return await edit_delete(
+            return await eod(
                 event, "`This group is already locked with sending stickers`"
             )
         if usticker:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already locked with sending stickers`"
             )
         usticker = True
         locktype = "stickers"
     elif input_str == "preview":
         if embed_link:
-            return await edit_delete(
+            return await eod(
                 event, "`This group is already locked with previewing links`"
             )
         if uembed_link:
-            return await edit_delete(
+            return await eod(
                 event, "`This group is already locked with previewing links`"
             )
         uembed_link = True
         locktype = "preview links"
     elif input_str == "gif":
         if gif:
-            return await edit_delete(
-                event, "`This group is already locked with sending GIFs`"
-            )
+            return await eod(event, "`This group is already locked with sending GIFs`")
         if ugif:
-            return await edit_delete(
-                event, "`This user is already locked with sending GIFs`"
-            )
+            return await eod(event, "`This user is already locked with sending GIFs`")
         ugif = True
         locktype = "GIFs"
     elif input_str == "game":
         if gamee:
-            return await edit_delete(
-                event, "`This group is already locked with sending games`"
-            )
+            return await eod(event, "`This group is already locked with sending games`")
         if ugamee:
-            return await edit_delete(
-                event, "`This user is already locked with sending games`"
-            )
+            return await eod(event, "`This user is already locked with sending games`")
         ugamee = True
         locktype = "games"
     elif input_str == "inline":
         if ainline:
-            return await edit_delete(
+            return await eod(
                 event, "`This group is already locked with using inline bots`"
             )
         if uainline:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already locked with using inline bots`"
             )
         uainline = True
         locktype = "inline bots"
     elif input_str == "poll":
         if gpoll:
-            return await edit_delete(
-                event, "`This group is already locked with sending polls`"
-            )
+            return await eod(event, "`This group is already locked with sending polls`")
         if ugpoll:
-            return await edit_delete(
-                event, "`This user is already locked with sending polls`"
-            )
+            return await eod(event, "`This user is already locked with sending polls`")
         ugpoll = True
         locktype = "polls"
     elif input_str == "invite":
         if adduser:
-            return await edit_delete(
+            return await eod(
                 event, "`This group is already locked with adding members`"
             )
         if uadduser:
-            return await edit_delete(
-                event, "`This user is already locked with adding members`"
-            )
+            return await eod(event, "`This user is already locked with adding members`")
         uadduser = True
         locktype = "invites"
     elif input_str == "pin":
         if cpin:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This group is already locked with pinning messages by users`",
             )
         if ucpin:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This user is already locked with pinning messages by users`",
             )
@@ -637,12 +615,12 @@ async def _(event):  # sourcery no-metrics
         locktype = "pins"
     elif input_str == "info":
         if changeinfo:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This group is already locked with Changing group info by users`",
             )
         if uchangeinfo:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This user is already locked with Changing group info by users`",
             )
@@ -662,15 +640,13 @@ async def _(event):  # sourcery no-metrics
         uchangeinfo = True
         locktype = "everything"
     elif input_str:
-        return await edit_delete(
-            event, f"**Invalid lock type :** `{input_str}`", time=5
-        )
+        return await eod(event, f"**Invalid lock type :** `{input_str}`", time=5)
 
     else:
-        return await edit_or_reply(event, "`I can't lock nothing !!`")
+        return await eor(event, "`I can't lock nothing !!`")
     try:
-        lion = Get(lion)
-        await event.client(lion)
+        lol = Get(lol)
+        await event.client(lol)
     except BaseException:
         pass
     lock_rights = ChatBannedRights(
@@ -689,18 +665,18 @@ async def _(event):  # sourcery no-metrics
     )
     try:
         await event.client(EditBannedRequest(peer_id, reply.from_id, lock_rights))
-        await edit_or_reply(event, f"`Locked {locktype} for this user !!`")
+        await eor(event, f"`Locked {locktype} for this user !!`")
     except BaseException as e:
-        await edit_delete(
+        await eod(
             event,
             f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
             time=5,
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"punlock ([\s\S]*)",
-    command=("punlock", plugin_category),
+@savior.savior_cmd(
+    pattern="punlock ([\s\S]*)",
+    command=("punlock", menu_category),
     info={
         "header": "To unlock the given permission for replied person only.",
         "note": "If entire group is locked with that permission then you cant unlock that permission only for him.",
@@ -732,8 +708,8 @@ async def _(event):  # sourcery no-metrics
     result = await event.client.get_permissions(peer_id, reply.from_id)
     admincheck = await is_admin(event.client, peer_id, reply.from_id)
     if admincheck:
-        return await edit_delete(event, "`This user is admin you cant play with him`")
-    lion = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
+        return await eod(event, "`This user is admin you cant play with him`")
+    lol = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
     msg = chat_per.send_messages
     media = chat_per.send_media
     sticker = chat_per.send_stickers
@@ -771,103 +747,89 @@ async def _(event):  # sourcery no-metrics
         uchangeinfo = changeinfo
     if input_str == "msg":
         if msg:
-            return await edit_delete(
-                event, "`This Group is locked with messaging permission.`"
-            )
+            return await eod(event, "`This Group is locked with messaging permission.`")
         if not umsg:
-            return await edit_delete(
+            return await eod(
                 event, "`This User is already unlocked with messaging permission.`"
             )
         umsg = False
         locktype = "messages"
     elif input_str == "media":
         if media:
-            return await edit_delete(event, "`This Group is locked with sending media`")
+            return await eod(event, "`This Group is locked with sending media`")
         if not umedia:
-            return await edit_delete(
-                event, "`User is already unlocked with sending media`"
-            )
+            return await eod(event, "`User is already unlocked with sending media`")
         umedia = False
         locktype = "media"
     elif input_str == "sticker":
         if sticker:
-            return await edit_delete(
-                event, "`This Group is locked with sending stickers`"
-            )
+            return await eod(event, "`This Group is locked with sending stickers`")
         if not usticker:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already unlocked with sending stickers`"
             )
         usticker = False
         locktype = "stickers"
     elif input_str == "preview":
         if embed_link:
-            return await edit_delete(
-                event, "`This Group is locked with previewing links`"
-            )
+            return await eod(event, "`This Group is locked with previewing links`")
         if not uembed_link:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already unlocked with previewing links`"
             )
         uembed_link = False
         locktype = "preview links"
     elif input_str == "gif":
         if gif:
-            return await edit_delete(event, "`This Group is locked with sending GIFs`")
+            return await eod(event, "`This Group is locked with sending GIFs`")
         if not ugif:
-            return await edit_delete(
-                event, "`This user is already unlocked with sending GIFs`"
-            )
+            return await eod(event, "`This user is already unlocked with sending GIFs`")
         ugif = False
         locktype = "GIFs"
     elif input_str == "game":
         if gamee:
-            return await edit_delete(event, "`This Group is locked with sending games`")
+            return await eod(event, "`This Group is locked with sending games`")
         if not ugamee:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already unlocked with sending games`"
             )
         ugamee = False
         locktype = "games"
     elif input_str == "inline":
         if ainline:
-            return await edit_delete(
-                event, "`This Group is locked with using inline bots`"
-            )
+            return await eod(event, "`This Group is locked with using inline bots`")
         if not uainline:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already unlocked with using inline bots`"
             )
         uainline = False
         locktype = "inline bots"
     elif input_str == "poll":
         if gpoll:
-            return await edit_delete(event, "`This Group is locked with sending polls`")
+            return await eod(event, "`This Group is locked with sending polls`")
         if not ugpoll:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already unlocked with sending polls`"
             )
         ugpoll = False
         locktype = "polls"
     elif input_str == "invite":
         if adduser:
-            return await edit_delete(
-                event, "`This Group is locked with adding members`"
-            )
+            return await eod(event, "`This Group is locked with adding members`")
         if not uadduser:
-            return await edit_delete(
+            return await eod(
                 event, "`This user is already unlocked with adding members`"
             )
         uadduser = False
         locktype = "invites"
     elif input_str == "pin":
         if cpin:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This Group is locked with pinning messages by users`",
             )
         if not ucpin:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This user is already unlocked with pinning messages by users`",
             )
@@ -875,12 +837,12 @@ async def _(event):  # sourcery no-metrics
         locktype = "pins"
     elif input_str == "info":
         if changeinfo:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This Group is locked with Changing group info by users`",
             )
         if not uchangeinfo:
-            return await edit_delete(
+            return await eod(
                 event,
                 "`This user is already unlocked with Changing group info by users`",
             )
@@ -911,15 +873,13 @@ async def _(event):  # sourcery no-metrics
             uchangeinfo = False
         locktype = "everything"
     elif input_str:
-        return await edit_delete(
-            event, f"**Invalid lock type :** `{input_str}`", time=5
-        )
+        return await eod(event, f"**Invalid lock type :** `{input_str}`", time=5)
 
     else:
-        return await edit_or_reply(event, "`I can't lock nothing !!`")
+        return await eor(event, "`I can't lock nothing !!`")
     try:
-        lion = Get(lion)
-        await event.client(lion)
+        lol = Get(lol)
+        await event.client(lol)
     except BaseException:
         pass
     lock_rights = ChatBannedRights(
@@ -938,18 +898,18 @@ async def _(event):  # sourcery no-metrics
     )
     try:
         await event.client(EditBannedRequest(peer_id, reply.from_id, lock_rights))
-        await edit_or_reply(event, f"`Unlocked {locktype} for this user !!`")
+        await eor(event, f"`Unlocked {locktype} for this user !!`")
     except BaseException as e:
-        await edit_delete(
+        await eod(
             event,
             f"`Do I have proper rights for that ??`\n\n**Error:** `{e}`",
             time=5,
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"uperm(?:\s|$)([\s\S]*)",
-    command=("uperm", plugin_category),
+@savior.savior_cmd(
+    pattern="uperm(?:\s|$)([\s\S]*)",
+    command=("uperm", menu_category),
     info={
         "header": "To get permissions of replied user or mentioned user in that group.",
         "usage": "{tr}uperm <reply/username>",
@@ -1019,10 +979,10 @@ async def _(event):  # sourcery no-metrics
         output += f"__Add Users :__ {uadduser}\n"
         output += f"__Pin messages :__ {ucpin}\n"
         output += f"__Change Chat Info :__ {uchangeinfo}\n"
-    await edit_or_reply(event, output)
+    await eor(event, output)
 
 
-@lionub.lion_cmd(incoming=True, forword=None)
+@savior.savior_cmd(incoming=True, forword=None)
 async def check_incoming_messages(event):  # sourcery no-metrics
     if not event.is_private:
         chat = await event.get_chat()
@@ -1088,7 +1048,7 @@ async def check_incoming_messages(event):  # sourcery no-metrics
                 update_lock(peer_id, "url", False)
 
 
-@lionub.on(events.ChatAction())
+@savior.on(events.ChatAction())
 async def _(event):
     if not event.is_private:
         chat = await event.get_chat()

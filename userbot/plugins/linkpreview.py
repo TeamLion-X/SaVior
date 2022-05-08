@@ -1,16 +1,16 @@
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="ctg$",
-    command=("ctg", plugin_category),
+    command=("ctg", menu_category),
     info={
         "header": "Reply to link To get link preview using telegrah.s.",
         "usage": "{tr}ctg",
@@ -20,13 +20,13 @@ async def _(event):
     "To get link preview"
     reply_message = await event.get_reply_message()
     if not reply_message:
-        await edit_or_reply(event, "```Reply to a Link.```")
+        await eor(event, "```Reply to a Link.```")
         return
     if not reply_message.text:
-        await edit_or_reply(event, "```Reply to a Link```")
+        await eor(event, "```Reply to a Link```")
         return
     chat = "@chotamreaderbot"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation(chat) as conv:
         try:
             response = conv.wait_event(
@@ -36,12 +36,12 @@ async def _(event):
             response = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await lionevent.edit(
+            await saviorevent.edit(
                 "`RIP Check Your Blacklist Boss and unblock @chotamreaderbot`"
             )
             return
         if response.text.startswith(""):
-            await lionevent.edit("Am I Dumb Or Am I Dumb?")
+            await saviorevent.edit("Am I Dumb Or Am I Dumb?")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.send_message(event.chat_id, response.message)

@@ -2,10 +2,10 @@ import os
 from asyncio.exceptions import CancelledError
 from time import sleep
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..sql_helper.global_collection import (
     add_to_collectionlist,
     del_keyword_collectionlist,
@@ -15,12 +15,12 @@ from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 from . import BOTLOG, BOTLOG_CHATID, HEROKU_APP
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "tools"
+menu_category = "tools"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="restart$",
-    command=("restart", plugin_category),
+    command=("restart", menu_category),
     info={
         "header": "Restarts the bot !!",
         "usage": "{tr}restart",
@@ -31,9 +31,13 @@ async def _(event):
     "Restarts the bot !!"
     if BOTLOG:
         await event.client.send_message(BOTLOG_CHATID, "#RESTART \n" "Bot Restarted")
-    nadan = await edit_or_reply(
+    await event.edit("Restarting **[ ░░░ ]** ...\nωαιτ ƒєω мιиυτє⚠️")
+    await event.edit("Restarting **[ █░░ ]** ...\nωαιτ ƒєω мιиυτє☣️")
+    await event.edit("Restarting **[ ██░ ]** ...\nωαιτ ƒєω мιиυτє☢️")
+    await event.edit("Restarting **[ ███ ]** ...\nωαιτ ƒєω мιиυτєѕ☢️")
+    SAVIOR = await eor(
         event,
-        "Restarted. `.ping` me or `.help` to check if I am online, actually it takes 1-2 min for restarting",
+        "Restarted.\nAfter 2 min Type `.ping` me or `.help` to check if I am online, Actually I Am Going To Restart To Restart All System",
     )
     try:
         ulist = get_collectionlist_items()
@@ -43,21 +47,20 @@ async def _(event):
     except Exception as e:
         LOGS.error(e)
     try:
-        add_to_collectionlist("restart_update", [nadan.chat_id, nadan.id])
+        add_to_collectionlist("restart_update", [SAVIOR.chat_id, SAVIOR.id])
     except Exception as e:
         LOGS.error(e)
     try:
-        delgvar("ipaddress")
-        await lionub.disconnect()
+        await savior.disconnect()
     except CancelledError:
         pass
     except Exception as e:
         LOGS.error(e)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="shutdown$",
-    command=("shutdown", plugin_category),
+    command=("shutdown", menu_category),
     info={
         "header": "Shutdowns the bot !!",
         "description": "To turn off the dyno of heroku. you cant turn on by bot you need to got to heroku and turn on or use @hk_heroku_bot",
@@ -68,16 +71,16 @@ async def _(event):
     "Shutdowns the bot"
     if BOTLOG:
         await event.client.send_message(BOTLOG_CHATID, "#SHUTDOWN \n" "Bot shut down")
-    await edit_or_reply(event, "`Turning off bot now ...Manually turn me on later`")
+    await eor(event, "`Turning off bot now ...Manually turn me on later`")
     if HEROKU_APP is not None:
         HEROKU_APP.process_formation()["worker"].scale(0)
     else:
         os._exit(143)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sleep( [0-9]+)?$",
-    command=("sleep", plugin_category),
+    command=("sleep", menu_category),
     info={
         "header": "Userbot will stop working for the mentioned time.",
         "usage": "{tr}sleep <seconds>",
@@ -87,21 +90,21 @@ async def _(event):
 async def _(event):
     "To sleep the userbot"
     if " " not in event.pattern_match.group(1):
-        return await edit_or_reply(event, "Syntax: `.sleep time`")
+        return await eor(event, "Syntax: `.sleep time`")
     counter = int(event.pattern_match.group(1))
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID,
             "You put the bot to sleep for " + str(counter) + " seconds",
         )
-    event = await edit_or_reply(event, f"`ok, let me sleep for {counter} seconds`")
+    event = await eor(event, f"`ok, let me sleep for {counter} seconds`")
     sleep(counter)
     await event.edit("`OK, I'm awake now.`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="notify (on|off)$",
-    command=("notify", plugin_category),
+    command=("notify", menu_category),
     info={
         "header": "To update the your chat after restart or reload .",
         "description": "Will send the ping cmd as reply to the previous last msg of (restart/reload/update cmds).",
@@ -115,10 +118,10 @@ async def set_pmlog(event):
     input_str = event.pattern_match.group(1)
     if input_str == "off":
         if gvarstatus("restartupdate") is None:
-            return await edit_delete(event, "__Notify was already disabled__")
+            return await eod(event, "__Notify was already disabled__")
         delgvar("restartupdate")
-        return await edit_or_reply(event, "__Notify was disabled successfully.__")
+        return await eor(event, "__Notify was disabled successfully.__")
     if gvarstatus("restartupdate") is None:
         addgvar("restartupdate", "turn-oned")
-        return await edit_or_reply(event, "__Notify was enabled successfully.__")
-    await edit_delete(event, "__Notify was already enabled.__")
+        return await eor(event, "__Notify was enabled successfully.__")
+    await eod(event, "__Notify was already enabled.__")

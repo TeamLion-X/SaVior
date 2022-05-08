@@ -19,12 +19,12 @@ from telethon.tl.types import (
 )
 from telethon.utils import add_surrogate, del_surrogate
 
-from userbot import lionub
+from userbot import savior
 from userbot.funcs.logger import logging
 
 LOGS = logging.getLogger(__name__)
 
-plugin_category = "utils"
+menu_category = "utils"
 
 usernexp = re.compile(r"@(\w{3,32})\[(.+?)\]")
 nameexp = re.compile(r"\[([\w\S]+)\]\(tg://user\?id=(\d+)\)\[(.+?)\]")
@@ -157,7 +157,7 @@ def parse(message, old_entities=None):
         LOGS.info(str(e))
 
 
-@lionub.lion_cmd(outgoing=True)
+@savior.savior_cmd(outgoing=True)
 async def reparse(event):
     old_entities = event.message.entities or []
     parser = partial(parse, old_entities=old_entities)
@@ -179,7 +179,7 @@ async def reparse(event):
         raise events.StopPropagation
 
 
-@lionub.lion_cmd(outgoing=True)
+@savior.savior_cmd(outgoing=True)
 async def mention(event):
     newstr = event.text
     if event.entities:

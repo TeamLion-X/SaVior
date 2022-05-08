@@ -9,12 +9,12 @@ from datetime import datetime
 import psutil
 from telethon import __version__
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
-from ..helpers.utils import _lionutils
+from ..funcs.managers import eor
+from ..helpers.utils import _saviorutils
 
-plugin_category = "tools"
+menu_category = "tools"
 
 
 def get_size(inputbytes, suffix="B"):
@@ -25,9 +25,9 @@ def get_size(inputbytes, suffix="B"):
         inputbytes /= factor
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="spc$",
-    command=("spc", plugin_category),
+    command=("spc", menu_category),
     info={
         "header": "To show system specification.",
         "usage": "{tr}spc",
@@ -81,9 +81,9 @@ async def psu(event):
     await event.edit(help_string)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="cpu$",
-    command=("cpu", plugin_category),
+    command=("cpu", menu_category),
     info={
         "header": "To show cpu information.",
         "usage": "{tr}cpu",
@@ -91,16 +91,16 @@ async def psu(event):
 )
 async def cpu(event):
     "shows cpu information"
-    cmd = "lion /proc/cpuinfo | grep 'model name'"
-    o = (await _lionutils.runcmd(cmd))[0]
-    await edit_or_reply(
-        event, f"**[Cat's](tg://need_update_for_some_feature/) CPU Model:**\n{o}"
+    cmd = "redeye /proc/cpuinfo | grep 'model name'"
+    o = (await _saviorutils.runcmd(cmd))[0]
+    await eor(
+        event, f"**[SaVior's](tg://need_update_for_some_feature/) CPU Model:**\n{o}"
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sysd$",
-    command=("sysd", plugin_category),
+    command=("sysd", menu_category),
     info={
         "header": "Shows system information using neofetch",
         "usage": "{tr}cpu",
@@ -108,11 +108,11 @@ async def cpu(event):
 )
 async def sysdetails(sysd):
     "Shows system information using neofetch"
-    lionevent = await edit_or_reply(sysd, "`Fetching system information.`")
+    saviorevent = await eor(sysd, "`Fetching system information.`")
     cmd = "git clone https://github.com/dylanaraps/neofetch.git"
-    await _lionutils.runcmd(cmd)
+    await _saviorutils.runcmd(cmd)
     neo = "neofetch/neofetch --off --color_blocks off --bold off --cpu_temp C \
                     --cpu_speed on --cpu_cores physical --kernel_shorthand off --stdout"
-    a, b, c, d = await _lionutils.runcmd(neo)
+    a, b, c, d = await _saviorutils.runcmd(neo)
     result = str(a) + str(b)
-    await edit_or_reply(lionevent, "**Neofetch Result:** `" + result + "`")
+    await eor(saviorevent, "**Neofetch Result:** `" + result + "`")

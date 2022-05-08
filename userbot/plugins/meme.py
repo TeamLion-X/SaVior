@@ -1,23 +1,23 @@
 import asyncio
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
-    pattern=r"^\:/$",
-    command=(r"\:", plugin_category),
+@savior.savior_cmd(
+    pattern="^\:/$",
+    command=("\:", menu_category),
     info={
         "header": "Animation command",
-        "usage": r"\:",
+        "usage": "\:",
     },
 )
 async def kek(keks):
     "Animation command"
-    keks = await edit_or_reply(keks, ":\\")
+    keks = await eor(keks, ":\\")
     uio = ["/", "\\"]
     for i in range(15):
         await asyncio.sleep(0.5)
@@ -25,9 +25,9 @@ async def kek(keks):
         await keks.edit(txt)
 
 
-@lionub.lion_cmd(
-    pattern=r"^\-_-$",
-    command=("-_-", plugin_category),
+@savior.savior_cmd(
+    pattern="^\-_-$",
+    command=("-_-", menu_category),
     info={
         "header": "Animation command",
         "usage": "-_-",
@@ -35,7 +35,7 @@ async def kek(keks):
 )
 async def lol(lel):
     "Animation command"
-    lel = await edit_or_reply(lel, "-__-")
+    lel = await eor(lel, "-__-")
     okay = "-__-"
     for _ in range(15):
         await asyncio.sleep(0.5)
@@ -43,9 +43,9 @@ async def lol(lel):
         await lel.edit(okay)
 
 
-@lionub.lion_cmd(
-    pattern=r"^\;_;$",
-    command=(";_;", plugin_category),
+@savior.savior_cmd(
+    pattern="^\;_;$",
+    command=(";_;", menu_category),
     info={
         "header": "Animation command",
         "usage": ";_;",
@@ -53,7 +53,7 @@ async def lol(lel):
 )
 async def fun(e):
     "Animation command"
-    e = await edit_or_reply(e, ";__;")
+    e = await eor(e, ";__;")
     t = ";__;"
     for _ in range(15):
         await asyncio.sleep(0.5)
@@ -61,9 +61,9 @@ async def fun(e):
         await e.edit(t)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="oof$",
-    command=("oof", plugin_category),
+    command=("oof", menu_category),
     info={
         "header": "Animation command",
         "usage": "{tr}oof",
@@ -72,16 +72,16 @@ async def fun(e):
 async def Oof(e):
     "Animation command."
     t = "Oof"
-    lionevent = await edit_or_reply(e, t)
+    saviorevent = await eor(e, t)
     for _ in range(15):
         await asyncio.sleep(0.5)
         t = t[:-1] + "of"
-        await lionevent.edit(t)
+        await saviorevent.edit(t)
 
 
-@lionub.lion_cmd(
-    pattern=r"type ([\s\S]*)",
-    command=("type", plugin_category),
+@savior.savior_cmd(
+    pattern="type ([\s\S]*)",
+    command=("type", menu_category),
     info={
         "header": "Type writter animation.",
         "usage": "{tr}type text",
@@ -93,7 +93,7 @@ async def typewriter(typew):
     sleep_time = 0.2
     typing_symbol = "|"
     old_text = ""
-    typew = await edit_or_reply(typew, typing_symbol)
+    typew = await eor(typew, typing_symbol)
     await asyncio.sleep(sleep_time)
     for character in message:
         old_text = old_text + "" + character
@@ -104,27 +104,27 @@ async def typewriter(typew):
         await asyncio.sleep(sleep_time)
 
 
-@lionub.lion_cmd(
-    pattern=r"repeat (\d*) ([\s\S]*)",
-    command=("repeat", plugin_category),
+@savior.savior_cmd(
+    pattern="repeat (\d*) ([\s\S]*)",
+    command=("repeat", menu_category),
     info={
         "header": "repeats the given text with given no of times.",
         "usage": "{tr}repeat <count> <text>",
-        "examples": "{tr}repeat 10 LionX",
+        "examples": "{tr}repeat 10 SaViorX",
     },
 )
 async def _(event):
     "To repeat the given text."
-    lion = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
-    message = lion[1]
-    count = int(lion[0])
+    lol = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
+    message = lol[1]
+    count = int(lol[0])
     repsmessage = (f"{message} ") * count
-    await edit_or_reply(event, repsmessage)
+    await eor(event, repsmessage)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="meme",
-    command=("meme", plugin_category),
+    command=("meme", menu_category),
     info={
         "header": "Animation command",
         "usage": [
@@ -140,7 +140,7 @@ async def meme(event):
     memeVar = memeVar[6:]
     if not memeVar:
         memeVar = "✈️"
-    event = await edit_or_reply(event, "-------------" + memeVar)
+    event = await eor(event, "-------------" + memeVar)
     await asyncio.sleep(sleepValue)
     await event.edit("------------" + memeVar + "-")
     await asyncio.sleep(sleepValue)
@@ -199,9 +199,9 @@ async def meme(event):
     await event.edit(memeVar)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="give",
-    command=("give", plugin_category),
+    command=("give", menu_category),
     info={
         "header": "Animation command",
         "usage": [
@@ -217,7 +217,7 @@ async def give(event):
     lp = giveVar[6:]
     if not lp:
         lp = " 🍭"
-    event = await edit_or_reply(event, lp + "        ")
+    event = await eor(event, lp + "        ")
     await asyncio.sleep(sleepValue)
     await event.edit(lp + lp + "       ")
     await asyncio.sleep(sleepValue)
@@ -254,9 +254,9 @@ async def give(event):
     await event.edit(lp + lp + lp + lp + lp + lp + lp + lp + lp)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="sadmin$",
-    command=("sadmin", plugin_category),
+    command=("sadmin", menu_category),
     info={
         "header": "Shouts Admin Animation command",
         "usage": "{tr}sadmin",
@@ -265,7 +265,7 @@ async def give(event):
 async def _(event):
     "Shouts Admin Animation command."
     animation_ttl = range(13)
-    event = await edit_or_reply(event, "sadmin")
+    event = await eor(event, "sadmin")
     animation_chars = [
         "@aaaaaaaaaaaaadddddddddddddmmmmmmmmmmmmmiiiiiiiiiiiiinnnnnnnnnnnnn",
         "@aaaaaaaaaaaaddddddddddddmmmmmmmmmmmmiiiiiiiiiiiinnnnnnnnnnnn",

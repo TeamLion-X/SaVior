@@ -1,25 +1,20 @@
-# Random RGB Sticklet by @PhycoNinja13b
-# modified by @UniBorg
-# imported from ppe-remix by @heyworld & @DeletedUser420
-# modified by @TeamLionX
-# added more s
-
 # RegEx by https://t.me/c/1220993104/500653 ( @SnapDragon7410 )
 import io
 import os
 import random
+import re
 import textwrap
 
 from PIL import Image, ImageDraw, ImageFont
 from telethon.tl.types import InputMessagesFilterDocument
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers.functions import deEmojify, hide_inlinebot, waifutxt
 from ..helpers.utils import reply_id
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
 async def get_font_file(client, channel_id, search_kw=""):
@@ -39,9 +34,63 @@ async def get_font_file(client, channel_id, search_kw=""):
     return await client.download_media(font_file_message)
 
 
-@lionub.lion_cmd(
-    pattern=r"sttxt(?:\s|$)([\s\S]*)",
-    command=("sttxt", plugin_category),
+EMOJI_PATTERN = re.compile(
+    "["
+    "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+    "\U0001F300-\U0001F5FF"  # symbols & pictographs
+    "\U0001F600-\U0001F64F"  # emoticons
+    "\U0001F680-\U0001F6FF"  # transport & map symbols
+    "\U0001F700-\U0001F77F"  # alchemical symbols
+    "\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+    "\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+    "\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+    "\U0001FA00-\U0001FA6F"  # Chess Symbols
+    "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+    "\U00002702-\U000027B0"  # Dingbats
+    "]+"
+)
+
+
+def dpEmojify(inputString: str) -> str:
+    """Remove emojis and other non-safe characters from string"""
+    return re.sub(EMOJI_PATTERN, "", inputString)
+
+
+@savior.savior_cmd(
+    pattern="waifu(?:\s|$)([\s\S]*)",
+    command=("waifu", menu_category),
+    info={
+        "header": "Anime that makes your writing fun.",
+        "usage": "{tr}waifu <text>",
+        "examples": "{tr}waifu hello",
+    },
+)
+async def waifu(animu):
+    # """Creates random anime sticker!"""
+
+    text = animu.pattern_match.group(1)
+    if not text:
+        if animu.is_reply:
+            text = (await animu.get_reply_message()).message
+        else:
+            await animu.edit("`You haven't written any article, Waifu is going away.`")
+            return
+    animus = [1, 3, 7, 9, 13, 22, 34, 35, 36, 37, 43, 44, 45, 52, 53, 55]
+    sticcers = await bot.inline_query(
+        "stickerizerbot", f"#{random.choice(animus)}{(dpEmojify(text))}"
+    )
+    await sticcers[0].click(
+        animu.chat_id,
+        reply_to=animu.reply_to_msg_id,
+        silent=True if animu.is_reply else False,
+        hide_via=True,
+    )
+    await animu.delete()
+
+
+@savior.savior_cmd(
+    pattern="sttxt(?:\s|$)([\s\S]*)",
+    command=("sttxt", menu_category),
     info={
         "header": "Anime that makes your writing fun.",
         "usage": "{tr}sttxt <text>",
@@ -56,7 +105,7 @@ async def waifu(animu):
         if animu.is_reply:
             text = (await animu.get_reply_message()).message
         else:
-            return await edit_or_reply(
+            return await eor(
                 animu, "`You haven't written any article, Waifu is going away.`"
             )
     text = deEmojify(text)
@@ -65,9 +114,9 @@ async def waifu(animu):
 
 
 # 12 21 28 30
-@lionub.lion_cmd(
-    pattern=r"stcr ?(?:(.*?) ?; )?([\s\S]*)",
-    command=("stcr", plugin_category),
+@savior.savior_cmd(
+    pattern="stcr ?(?:(.*?) ?; )?([\s\S]*)",
+    command=("stcr", menu_category),
     info={
         "header": "your text as sticker.",
         "usage": [
@@ -94,7 +143,7 @@ async def sticklet(event):
         if event.reply_to_msg_id:
             sticktext = reply_message.message
         else:
-            return await edit_or_reply(event, "need something, hmm")
+            return await eor(event, "need something, hmm")
     # delete the userbot command,
     # i don't know why this is required
     await event.delete()
@@ -106,7 +155,7 @@ async def sticklet(event):
     image = Image.new("RGBA", (512, 512), (255, 255, 255, 0))
     draw = ImageDraw.Draw(image)
     fontsize = 230
-    FONT_FILE = await get_font_file(event.client, "@lionfonts", font_file_name)
+    FONT_FILE = await get_font_file(event.client, "@SaVior_Fonts", font_file_name)
     font = ImageFont.truetype(FONT_FILE, size=fontsize)
     while draw.multiline_textsize(sticktext, font=font) > (512, 512):
         fontsize -= 3
@@ -116,14 +165,14 @@ async def sticklet(event):
         ((512 - width) / 2, (512 - height) / 2), sticktext, font=font, fill=(R, G, B)
     )
     image_stream = io.BytesIO()
-    image_stream.name = "LionX.webp"
+    image_stream.name = "SaViorX.webp"
     image.save(image_stream, "WebP")
     image_stream.seek(0)
     # finally, reply the sticker
     await event.client.send_file(
         event.chat_id,
         image_stream,
-        caption="lion's Sticklet",
+        caption="savior's Sticklet",
         reply_to=reply_to_id,
     )
     # cleanup
@@ -133,9 +182,9 @@ async def sticklet(event):
         pass
 
 
-@lionub.lion_cmd(
-    pattern=r"honk(?:\s|$)([\s\S]*)",
-    command=("honk", plugin_category),
+@savior.savior_cmd(
+    pattern="honk(?:\s|$)([\s\S]*)",
+    command=("honk", menu_category),
     info={
         "header": "Make honk say anything.",
         "usage": "{tr}honk <text/reply to msg>",
@@ -151,21 +200,19 @@ async def honk(event):
         if event.is_reply:
             text = (await event.get_reply_message()).message
         else:
-            return await edit_delete(
-                event, "__What is honk supposed to say? Give some text.__"
-            )
+            return await eod(event, "__What is honk supposed to say? Give some text.__")
     text = deEmojify(text)
     await event.delete()
     await hide_inlinebot(event.client, bot_name, text, event.chat_id, reply_to_id)
 
 
-@lionub.lion_cmd(
-    pattern=r"twt(?:\s|$)([\s\S]*)",
-    command=("twt", plugin_category),
+@savior.savior_cmd(
+    pattern="twt(?:\s|$)([\s\S]*)",
+    command=("twt", menu_category),
     info={
         "header": "Make a cool tweet of your account",
         "usage": "{tr}twt <text/reply to msg>",
-        "examples": "{tr}twt LionX",
+        "examples": "{tr}twt SaViorX",
     },
 )
 async def twt(event):
@@ -177,17 +224,15 @@ async def twt(event):
         if event.is_reply:
             text = (await event.get_reply_message()).message
         else:
-            return await edit_delete(
-                event, "__What am I supposed to Tweet? Give some text.__"
-            )
+            return await eod(event, "__What am I supposed to Tweet? Give some text.__")
     text = deEmojify(text)
     await event.delete()
     await hide_inlinebot(event.client, bot_name, text, event.chat_id, reply_to_id)
 
 
-@lionub.lion_cmd(
-    pattern=r"glax(|r)(?:\s|$)([\s\S]*)",
-    command=("glax", plugin_category),
+@savior.savior_cmd(
+    pattern="glax(|r)(?:\s|$)([\s\S]*)",
+    command=("glax", menu_category),
     info={
         "header": "Make glax the dragon scream your text.",
         "flags": {
@@ -214,9 +259,7 @@ async def glax(event):
         if event.is_reply:
             text = (await event.get_reply_message()).message
         else:
-            return await edit_delete(
-                event, "What is glax supposed to scream? Give text.."
-            )
+            return await eod(event, "What is glax supposed to scream? Give text..")
     text = deEmojify(text)
     await event.delete()
     await hide_inlinebot(
@@ -224,13 +267,13 @@ async def glax(event):
     )
 
 
-@lionub.lion_cmd(
-    pattern=r"googl(?:\s|$)([\s\S]*)",
-    command=("googl", plugin_category),
+@savior.savior_cmd(
+    pattern="googl(?:\s|$)([\s\S]*)",
+    command=("googl", menu_category),
     info={
         "header": "Search in google animation",
         "usage": "{tr}googl <text/reply to msg>",
-        "examples": "{tr}googl LionX",
+        "examples": "{tr}googl SaViorX",
     },
 )
 async def twt(event):
@@ -242,9 +285,7 @@ async def twt(event):
         if event.is_reply:
             text = (await event.get_reply_message()).message
         else:
-            return await edit_delete(
-                event, "__What am I supposed to search? Give some text.__"
-            )
+            return await eod(event, "__What am I supposed to search? Give some text.__")
     text = deEmojify(text)
     await event.delete()
     await hide_inlinebot(event.client, bot_name, text, event.chat_id, reply_to_id)

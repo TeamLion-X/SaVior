@@ -14,16 +14,17 @@ from telethon.errors.rpcerrorlist import FloodWaitError
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.users import GetFullUserRequest
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..helpers.functions import deEmojify, hide_inlinebot
+from ..helpers.functions import hide_inlinebot
+from ..helpers.functions.utils import deEmojify
 from ..helpers.utils import reply_id
 from . import BOTLOG, BOTLOG_CHATID, DEFAULT_BIO
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "tools"
+menu_category = "extra"
 
 
 BIO_PREFIX = Config.BIO_PREFIX
@@ -99,7 +100,7 @@ async def get_curr_track(lfmbio):  # sourcery no-metrics
         try:
             if LASTFM_.USER_ID == 0:
                 LASTFM_.USER_ID = (await lfmbio.client.get_me()).id
-            user_info = await lionub(GetFullUserRequest(LASTFM_.USER_ID))
+            user_info = await savior(GetFullUserRequest(LASTFM_.USER_ID))
             LASTFM_.RUNNING = True
             playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
             LASTFM_.SONG = playing.get_title()
@@ -119,32 +120,32 @@ async def get_curr_track(lfmbio):  # sourcery no-metrics
                     lfmbio = f"🎧: {LASTFM_.ARTIST} - {LASTFM_.SONG}"
                 try:
                     if BOTLOG and LASTFM_.LastLog:
-                        await lionub.send_message(
+                        await savior.send_message(
                             BOTLOG_CHATID, f"Attempted to change bio to\n{lfmbio}"
                         )
-                    await lionub(UpdateProfileRequest(about=lfmbio))
+                    await savior(UpdateProfileRequest(about=lfmbio))
                 except AboutTooLongError:
                     short_bio = f"🎧: {LASTFM_.SONG}"
-                    await lionub(UpdateProfileRequest(about=short_bio))
+                    await savior(UpdateProfileRequest(about=short_bio))
             if playing is None and user_info.about != DEFAULT_BIO:
                 await sleep(6)
-                await lionub(UpdateProfileRequest(about=DEFAULT_BIO))
+                await savior(UpdateProfileRequest(about=DEFAULT_BIO))
                 if BOTLOG and LASTFM_.LastLog:
-                    await lionub.send_message(
+                    await savior.send_message(
                         BOTLOG_CHATID, f"Reset bio back to\n{DEFAULT_BIO}"
                     )
         except AttributeError:
             try:
                 if user_info.about != DEFAULT_BIO:
                     await sleep(6)
-                    await lionub(UpdateProfileRequest(about=DEFAULT_BIO))
+                    await savior(UpdateProfileRequest(about=DEFAULT_BIO))
                     if BOTLOG and LASTFM_.LastLog:
-                        await lionub.send_message(
+                        await savior.send_message(
                             BOTLOG_CHATID, f"Reset bio back to\n{DEFAULT_BIO}"
                         )
             except FloodWaitError as err:
                 if BOTLOG and LASTFM_.LastLog:
-                    await lionub.send_message(
+                    await savior.send_message(
                         BOTLOG_CHATID, f"Error changing bio:\n{err}"
                     )
         except (
@@ -154,14 +155,14 @@ async def get_curr_track(lfmbio):  # sourcery no-metrics
             AboutTooLongError,
         ) as err:
             if BOTLOG and LASTFM_.LastLog:
-                await lionub.send_message(BOTLOG_CHATID, f"Error changing bio:\n{err}")
+                await savior.send_message(BOTLOG_CHATID, f"Error changing bio:\n{err}")
         await sleep(2)
     LASTFM_.RUNNING = False
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lastfm$",
-    command=("lastfm", plugin_category),
+    command=("lastfm", menu_category),
     info={
         "header": "To fetch scrobble data from last.fm",
         "description": "Shows currently scrobbling track or most recent scrobbles if nothing is playing.",
@@ -206,9 +207,9 @@ async def last_fm(lastFM):
         await lastFM.edit(f"{output}", parse_mode="md")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lastbio (on|off)",
-    command=("lastbio", plugin_category),
+    command=("lastbio", menu_category),
     info={
         "header": "To Enable or Disable the last.fm current playing to bio",
         "usage": [
@@ -239,9 +240,9 @@ async def lastbio(lfmbio):
         await lfmbio.edit(LFM_BIO_ERR)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lastlog (on|off)",
-    command=("lastlog", plugin_category),
+    command=("lastlog", menu_category),
     info={
         "header": "To Enable or Disable the last.fm current playing to bot log group",
         "usage": [
@@ -264,9 +265,9 @@ async def lastlog(lstlog):
         await lstlog.edit(LFM_LOG_ERR)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="now$",
-    command=("now", plugin_category),
+    command=("now", menu_category),
     info={
         "header": "Send your current listening song from Lastfm/Spotify/Deezer.",
         "usage": "{tr}now",
@@ -283,9 +284,9 @@ async def now(event):
     await hide_inlinebot(event.client, bot_name, text, event.chat_id, reply_to_id)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="inow$",
-    command=("inow", plugin_category),
+    command=("inow", menu_category),
     info={
         "header": "Show your current listening song in the form of a cool image.",
         "usage": "{tr}inow",

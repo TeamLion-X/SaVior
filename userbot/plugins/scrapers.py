@@ -5,20 +5,20 @@ from pySmartDL import SmartDL
 from wikipedia import summary
 from wikipedia.exceptions import DisambiguationError, PageError
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers.functions import get_cast, get_moviecollections, imdb, mov_titles
 from ..helpers.utils import reply_id
 from . import BOTLOG, BOTLOG_CHATID
 
-plugin_category = "utils"
+menu_category = "utils"
 moviepath = os.path.join(os.getcwd(), "temp", "moviethumb.jpg")
 
 
-@lionub.lion_cmd(
-    pattern=r"wiki ([\s\S]*)",
-    command=("wiki", plugin_category),
+@savior.savior_cmd(
+    pattern="wiki ([\s\S]*)",
+    command=("wiki", menu_category),
     info={
         "header": "To get wikipedia data about query.",
         "usage": "{tr}wiki <query>",
@@ -36,7 +36,7 @@ async def wiki(event):
             f"`{i}`\n" if lineno > 1 else f"**{i}**\n"
             for lineno, i in enumerate(error, start=1)
         )
-        return await edit_or_reply(event, f"**Disambiguated page found.**\n\n{result}")
+        return await eor(event, f"**Disambiguated page found.**\n\n{result}")
     except PageError:
         pass
     if not result:
@@ -48,25 +48,21 @@ async def wiki(event):
                 f"`{i}`\n" if lineno > 1 else f"**{i}**\n"
                 for lineno, i in enumerate(error, start=1)
             )
-            return await edit_or_reply(
-                event, f"**Disambiguated page found.**\n\n{result}"
-            )
+            return await eor(event, f"**Disambiguated page found.**\n\n{result}")
         except PageError:
             return await edit_or_delete(
                 event, f"**Sorry i Can't find any results for **`{match}`"
             )
-    await edit_or_reply(
-        event, "**Search:**\n`" + match + "`\n\n**Result:**\n" + f"__{result}__"
-    )
+    await eor(event, "**Search:**\n`" + match + "`\n\n**Result:**\n" + f"__{result}__")
     if BOTLOG:
         await event.client.send_message(
             BOTLOG_CHATID, f"Wiki query `{match}` was executed successfully"
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"imdb ([\s\S]*)",
-    command=("imdb", plugin_category),
+@savior.savior_cmd(
+    pattern="imdb ([\s\S]*)",
+    command=("imdb", menu_category),
     info={
         "header": "To fetch imdb data about the given movie or series.",
         "usage": "{tr}imdb <movie/series name>",
@@ -74,7 +70,7 @@ async def wiki(event):
 )
 async def imdb_query(event):  # sourcery no-metrics
     """To fetch imdb data about the given movie or series."""
-    lionevent = await edit_or_reply(event, "`searching........`")
+    saviorevent = await eor(event, "`searching........`")
     reply_to = await reply_id(event)
     try:
         movie_name = event.pattern_match.group(1)
@@ -156,13 +152,13 @@ async def imdb_query(event):  # sourcery no-metrics
                 parse_mode="HTML",
             )
             os.remove(moviepath)
-            return await lionevent.delete()
-        await lionevent.edit(
+            return await saviorevent.delete()
+        await saviorevent.edit(
             resulttext,
             link_preview=False,
             parse_mode="HTML",
         )
     except IndexError:
-        await lionevent.edit(f"__No movie found with name {movie_name}.__")
+        await saviorevent.edit(f"__No movie found with name {movie_name}.__")
     except Exception as e:
-        await lionevent.edit(f"**Error:**\n__{e}__")
+        await saviorevent.edit(f"**Error:**\n__{e}__")

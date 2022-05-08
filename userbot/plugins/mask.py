@@ -1,4 +1,4 @@
-# credits to @TeamLionX and @TeamLionX
+# credits to @SaViorXBoy and @SaViorXBoy
 
 import os
 
@@ -6,38 +6,38 @@ from telegraph import exceptions, upload_file
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from . import awooify, baguette, convert_toimage, iphonex, lolice
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="mask$",
-    command=("mask", plugin_category),
+    command=("mask", menu_category),
     info={
         "header": "reply to image to get hazmat suit for that image.",
         "usage": "{tr}mask",
     },
 )
-async def _(lionbot):
+async def _(owobot):
     "Hazmat suit maker"
-    reply_message = await lionbot.get_reply_message()
+    reply_message = await owobot.get_reply_message()
     if not reply_message.media or not reply_message:
-        return await edit_or_reply(lionbot, "```reply to media message```")
+        return await eor(owobot, "```reply to media message```")
     chat = "@hazmat_suit_bot"
     if reply_message.sender.bot:
-        return await edit_or_reply(lionbot, "```Reply to actual users message.```")
-    event = await lionbot.edit("```Processing```")
-    async with lionbot.client.conversation(chat) as conv:
+        return await eor(owobot, "```Reply to actual users message.```")
+    event = await owobot.edit("```Processing```")
+    async with owobot.client.conversation(chat) as conv:
         try:
             response = conv.wait_event(
                 events.NewMessage(incoming=True, from_users=905164246)
             )
-            await lionbot.client.send_message(chat, reply_message)
+            await owobot.client.send_message(chat, reply_message)
             response = await response
         except YouBlockedUserError:
             return await event.edit(
@@ -48,30 +48,30 @@ async def _(lionbot):
                 "```can you kindly disable your forward privacy settings for good?```"
             )
         else:
-            await lionbot.client.send_file(event.chat_id, response.message.media)
+            await owobot.client.send_file(event.chat_id, response.message.media)
             await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="awooify$",
-    command=("awooify", plugin_category),
+    command=("awooify", menu_category),
     info={
         "header": "Check yourself by replying to image.",
         "usage": "{tr}awooify",
     },
 )
-async def lionbot(lionmemes):
+async def owobot(saviormemes):
     "replied Image will be face of other image"
-    replied = await lionmemes.get_reply_message()
+    replied = await saviormemes.get_reply_message()
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     if not replied:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
+        return await eor(saviormemes, "reply to a supported media file")
     if replied.media:
-        lionevent = await edit_or_reply(lionmemes, "passing to telegraph...")
+        saviorevent = await eor(saviormemes, "passing to telegraph...")
     else:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
-    download_location = await lionmemes.client.download_media(
+        return await eor(saviormemes, "reply to a supported media file")
+    download_location = await saviormemes.client.download_media(
         replied, Config.TMP_DOWNLOAD_DIRECTORY
     )
     if download_location.endswith((".webp")):
@@ -80,45 +80,45 @@ async def lionbot(lionmemes):
     if download_location.endswith((".jpg", ".jpeg", ".png", ".bmp", ".ico")):
         if size > 5242880:
             os.remove(download_location)
-            return await lionevent.edit(
+            return await saviorevent.edit(
                 "the replied file size is not supported it must me below 5 mb"
             )
-        await lionevent.edit("generating image..")
+        await saviorevent.edit("generating image..")
     else:
         os.remove(download_location)
-        return await lionevent.edit("the replied file is not supported")
+        return await saviorevent.edit("the replied file is not supported")
     try:
         response = upload_file(download_location)
         os.remove(download_location)
     except exceptions.TelegraphException as exc:
         os.remove(download_location)
-        return await lionevent.edit("ERROR: " + str(exc))
-    lion = f"https://telegra.ph{response[0]}"
-    lion = await awooify(lion)
-    await lionevent.delete()
-    await lionmemes.client.send_file(lionmemes.chat_id, lion, reply_to=replied)
+        return await saviorevent.edit("ERROR: " + str(exc))
+    savior = f"https://telegra.ph{response[0]}"
+    lol = await awooify(savior)
+    await saviorevent.delete()
+    await saviormemes.client.send_file(saviormemes.chat_id, lol, reply_to=replied)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="lolice$",
-    command=("lolice", plugin_category),
+    command=("lolice", menu_category),
     info={
         "header": "image masker check your self by replying to image.",
         "usage": "{tr}lolice",
     },
 )
-async def lionbot(lionmemes):
+async def owobot(saviormemes):
     "replied Image will be face of other image"
-    replied = await lionmemes.get_reply_message()
+    replied = await saviormemes.get_reply_message()
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     if not replied:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
+        return await eor(saviormemes, "reply to a supported media file")
     if replied.media:
-        lionevent = await edit_or_reply(lionmemes, "passing to telegraph...")
+        saviorevent = await eor(saviormemes, "passing to telegraph...")
     else:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
-    download_location = await lionmemes.client.download_media(
+        return await eor(saviormemes, "reply to a supported media file")
+    download_location = await saviormemes.client.download_media(
         replied, Config.TMP_DOWNLOAD_DIRECTORY
     )
     if download_location.endswith((".webp")):
@@ -127,45 +127,45 @@ async def lionbot(lionmemes):
     if download_location.endswith((".jpg", ".jpeg", ".png", ".bmp", ".ico")):
         if size > 5242880:
             os.remove(download_location)
-            return await lionevent.edit(
+            return await saviorevent.edit(
                 "the replied file size is not supported it must me below 5 mb"
             )
-        await lionevent.edit("generating image..")
+        await saviorevent.edit("generating image..")
     else:
         os.remove(download_location)
-        return await lionevent.edit("the replied file is not supported")
+        return await saviorevent.edit("the replied file is not supported")
     try:
         response = upload_file(download_location)
         os.remove(download_location)
     except exceptions.TelegraphException as exc:
         os.remove(download_location)
-        return await lionevent.edit("ERROR: " + str(exc))
-    lion = f"https://telegra.ph{response[0]}"
-    lion = await lolice(lion)
-    await lionevent.delete()
-    await lionmemes.client.send_file(lionmemes.chat_id, lion, reply_to=replied)
+        return await saviorevent.edit("ERROR: " + str(exc))
+    savior = f"https://telegra.ph{response[0]}"
+    lol = await lolice(savior)
+    await saviorevent.delete()
+    await saviormemes.client.send_file(saviormemes.chat_id, lol, reply_to=replied)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bun$",
-    command=("bun", plugin_category),
+    command=("bun", menu_category),
     info={
         "header": "reply to image and check yourself.",
         "usage": "{tr}bun",
     },
 )
-async def lionbot(lionmemes):
+async def owobot(saviormemes):
     "replied Image will be face of other image"
-    replied = await lionmemes.get_reply_message()
+    replied = await saviormemes.get_reply_message()
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     if not replied:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
+        return await eor(saviormemes, "reply to a supported media file")
     if replied.media:
-        lionevent = await edit_or_reply(lionmemes, "passing to telegraph...")
+        saviorevent = await eor(saviormemes, "passing to telegraph...")
     else:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
-    download_location = await lionmemes.client.download_media(
+        return await eor(saviormemes, "reply to a supported media file")
+    download_location = await saviormemes.client.download_media(
         replied, Config.TMP_DOWNLOAD_DIRECTORY
     )
     if download_location.endswith((".webp")):
@@ -174,45 +174,45 @@ async def lionbot(lionmemes):
     if download_location.endswith((".jpg", ".jpeg", ".png", ".bmp", ".ico")):
         if size > 5242880:
             os.remove(download_location)
-            return await lionevent.edit(
+            return await saviorevent.edit(
                 "the replied file size is not supported it must me below 5 mb"
             )
-        await lionevent.edit("generating image..")
+        await saviorevent.edit("generating image..")
     else:
         os.remove(download_location)
-        return await lionevent.edit("the replied file is not supported")
+        return await saviorevent.edit("the replied file is not supported")
     try:
         response = upload_file(download_location)
         os.remove(download_location)
     except exceptions.TelegraphException as exc:
         os.remove(download_location)
-        return await lionevent.edit("ERROR: " + str(exc))
-    lion = f"https://telegra.ph{response[0]}"
-    lion = await baguette(lion)
-    await lionevent.delete()
-    await lionmemes.client.send_file(lionmemes.chat_id, lion, reply_to=replied)
+        return await saviorevent.edit("ERROR: " + str(exc))
+    savior = f"https://telegra.ph{response[0]}"
+    lol = await baguette(savior)
+    await saviorevent.delete()
+    await saviormemes.client.send_file(saviormemes.chat_id, lol, reply_to=replied)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="iphx$",
-    command=("iphx", plugin_category),
+    command=("iphx", menu_category),
     info={
         "header": "replied image as iphone x wallpaper.",
         "usage": "{tr}iphx",
     },
 )
-async def lionbot(lionmemes):
+async def owobot(saviormemes):
     "replied image as iphone x wallpaper."
-    replied = await lionmemes.get_reply_message()
+    replied = await saviormemes.get_reply_message()
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     if not replied:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
+        return await eor(saviormemes, "reply to a supported media file")
     if replied.media:
-        lionevent = await edit_or_reply(lionmemes, "passing to telegraph...")
+        saviorevent = await eor(saviormemes, "passing to telegraph...")
     else:
-        return await edit_or_reply(lionmemes, "reply to a supported media file")
-    download_location = await lionmemes.client.download_media(
+        return await eor(saviormemes, "reply to a supported media file")
+    download_location = await saviormemes.client.download_media(
         replied, Config.TMP_DOWNLOAD_DIRECTORY
     )
     if download_location.endswith((".webp")):
@@ -221,20 +221,20 @@ async def lionbot(lionmemes):
     if download_location.endswith((".jpg", ".jpeg", ".png", ".bmp", ".ico")):
         if size > 5242880:
             os.remove(download_location)
-            return await lionevent.edit(
+            return await saviorevent.edit(
                 "the replied file size is not supported it must me below 5 mb"
             )
-        await lionevent.edit("generating image..")
+        await saviorevent.edit("generating image..")
     else:
         os.remove(download_location)
-        return await lionevent.edit("the replied file is not supported")
+        return await saviorevent.edit("the replied file is not supported")
     try:
         response = upload_file(download_location)
         os.remove(download_location)
     except exceptions.TelegraphException as exc:
         os.remove(download_location)
-        return await lionevent.edit("ERROR: " + str(exc))
-    lion = f"https://telegra.ph{response[0]}"
-    lion = await iphonex(lion)
-    await lionevent.delete()
-    await lionmemes.client.send_file(lionmemes.chat_id, lion, reply_to=replied)
+        return await saviorevent.edit("ERROR: " + str(exc))
+    savior = f"https://telegra.ph{response[0]}"
+    lol = await iphonex(savior)
+    await saviorevent.delete()
+    await saviormemes.client.send_file(saviormemes.chat_id, lol, reply_to=replied)

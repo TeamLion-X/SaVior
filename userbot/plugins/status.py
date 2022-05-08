@@ -3,20 +3,20 @@ import urllib
 
 from telethon.tl import functions
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..sql_helper.globals import addgvar, gvarstatus
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
 OFFLINE_TAG = "[OFFLINE]"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="offline$",
-    command=("offline", plugin_category),
+    command=("offline", menu_category),
     info={
         "header": "To your status as offline",
         "description": " it change your pic as offline, and add offline tag in name.",
@@ -27,8 +27,8 @@ async def pussy(event):
     "make yourself offline"
     user = await event.client.get_entity("me")
     if user.first_name.startswith(OFFLINE_TAG):
-        return await edit_delete(event, "**Already in Offline Mode.**")
-    await edit_or_reply(event, "**Changing Profile to Offline...**")
+        return await eod(event, "**Already in Offline Mode.**")
+    await eor(event, "**Changing Profile to Offline...**")
     photo = "./temp/donottouch.jpg"
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -40,9 +40,9 @@ async def pussy(event):
         try:
             await event.client(functions.photos.UploadProfilePhotoRequest(file))
         except Exception as e:  # pylint:disable=C0103,W0703
-            await edit_or_reply(event, str(e))
+            await eor(event, str(e))
         else:
-            await edit_or_reply(event, "**Changed profile to OffLine.**")
+            await eor(event, "**Changed profile to OffLine.**")
     os.remove(photo)
     first_name = user.first_name
     addgvar("my_first_name", first_name)
@@ -55,25 +55,25 @@ async def pussy(event):
             last_name=first_name, first_name=tag_name
         )
     )
-    await edit_delete(event, f"**`{tag_name} {first_name}`\nI am Offline now.**")
+    await eod(event, f"**`{tag_name} {first_name}`\nI am Offline now.**")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="online$",
-    command=("online", plugin_category),
+    command=("online", menu_category),
     info={
         "header": "To your status as online",
         "description": " it change your pic back normal, and remove offline tag in name.",
         "usage": "{tr}online",
     },
 )
-async def lion(event):
+async def savior(event):
     "make yourself online"
     user = await event.client.get_entity("me")
     if user.first_name.startswith(OFFLINE_TAG):
-        await edit_or_reply(event, "**Changing Profile to Online...**")
+        await eor(event, "**Changing Profile to Online...**")
     else:
-        await edit_delete(event, "**Already Online.**")
+        await eod(event, "**Already Online.**")
         return
     try:
         await event.client(
@@ -82,9 +82,9 @@ async def lion(event):
             )
         )
     except Exception as e:  # pylint:disable=C0103,W0703
-        await edit_or_reply(event, str(e))
+        await eor(event, str(e))
     else:
-        await edit_or_reply(event, "**Changed profile to Online.**")
+        await eor(event, "**Changed profile to Online.**")
     first_name = gvarstatus("my_first_name")
     last_name = gvarstatus("my_last_name") or ""
     await event.client(
@@ -92,4 +92,4 @@ async def lion(event):
             last_name=last_name, first_name=first_name
         )
     )
-    await edit_delete(event, f"**`{first_name} {last_name}`\nI am Online !**")
+    await eod(event, f"**`{first_name} {last_name}`\nI am Online !**")

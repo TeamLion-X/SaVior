@@ -6,12 +6,12 @@ from time import time
 
 import speedtest
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers.utils import reply_id
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
 def convert_from_bytes(size):
@@ -24,9 +24,9 @@ def convert_from_bytes(size):
     return f"{round(size, 2)} {units[n]}"
 
 
-@lionub.lion_cmd(
-    pattern=r"speedtest(?:\s|$)([\s\S]*)",
-    command=("speedtest", plugin_category),
+@savior.savior_cmd(
+    pattern="speedtest(?:\s|$)([\s\S]*)",
+    command=("speedtest", menu_category),
     info={
         "header": "Botserver's speedtest by ookla.",
         "options": {
@@ -51,9 +51,7 @@ async def _(event):
         as_document = True
     elif input_str == "text":
         as_text = True
-    lionevent = await edit_or_reply(
-        event, "`Calculating my internet speed. Please wait!`"
-    )
+    saviorevent = await eor(event, "`Calculating my internet speed. Please wait!`")
     start = time()
     s = speedtest.Speedtest()
     s.get_best_server()
@@ -73,7 +71,7 @@ async def _(event):
         response = s.results.share()
         speedtest_image = response
         if as_text:
-            await lionevent.edit(
+            await saviorevent.edit(
                 """`SpeedTest completed in {} seconds`
 `Download: {} (or) {} MB/s`
 `Upload: {} (or) {} MB/s`
@@ -101,7 +99,7 @@ async def _(event):
             )
             await event.delete()
     except Exception as exc:
-        await lionevent.edit(
+        await saviorevent.edit(
             """**SpeedTest** completed in {} seconds
 Download: {} (or) {} MB/s
 Upload: {} (or) {} MB/s

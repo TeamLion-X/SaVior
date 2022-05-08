@@ -1,16 +1,16 @@
 import random
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
-from . import lionmemes
+from ..funcs.managers import eor
+from . import saviormemes
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="congo$",
-    command=("congo", plugin_category),
+    command=("congo", menu_category),
     info={
         "header": " Congratulate the people..",
         "usage": "{tr}congo",
@@ -18,13 +18,13 @@ plugin_category = "fun"
 )
 async def _(e):
     "Congratulate the people."
-    txt = random.choice(lionmemes.CONGOREACTS)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.CONGOREACTS)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="shg$",
-    command=("shg", plugin_category),
+    command=("shg", menu_category),
     info={
         "header": "Shrug at it !!",
         "usage": "{tr}shg",
@@ -32,13 +32,13 @@ async def _(e):
 )
 async def shrugger(e):
     "Shrug at it !!"
-    txt = random.choice(lionmemes.SHGS)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.SHGS)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="runs$",
-    command=("runs", plugin_category),
+    command=("runs", menu_category),
     info={
         "header": "Run, run, RUNNN!.",
         "usage": "{tr}runs",
@@ -46,13 +46,13 @@ async def shrugger(e):
 )
 async def runner_lol(e):
     "Run, run, RUNNN!"
-    txt = random.choice(lionmemes.RUNSREACTS)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.RUNSREACTS)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="noob$",
-    command=("noob", plugin_category),
+    command=("noob", menu_category),
     info={
         "header": "Whadya want to know? Are you a NOOB?",
         "usage": "{tr}noob",
@@ -60,13 +60,13 @@ async def runner_lol(e):
 )
 async def metoo(e):
     "Whadya want to know? Are you a NOOB?"
-    txt = random.choice(lionmemes.NOOBSTR)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.NOOBSTR)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="insult$",
-    command=("insult", plugin_category),
+    command=("insult", menu_category),
     info={
         "header": "insult someone.",
         "usage": "{tr}insult",
@@ -74,13 +74,13 @@ async def metoo(e):
 )
 async def insult(e):
     "insult someone."
-    txt = random.choice(lionmemes.INSULT_STRINGS)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.INSULT_STRINGS)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="love$",
-    command=("love", plugin_category),
+    command=("love", menu_category),
     info={
         "header": "Chutiyappa suru",
         "usage": "{tr}love",
@@ -88,13 +88,13 @@ async def insult(e):
 )
 async def suru(chutiyappa):
     "Chutiyappa suru"
-    txt = random.choice(lionmemes.LOVESTR)
-    await edit_or_reply(chutiyappa, txt)
+    txt = random.choice(saviormemes.LOVESTR)
+    await eor(chutiyappa, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="dhoka$",
-    command=("dhoka", plugin_category),
+    command=("dhoka", menu_category),
     info={
         "header": "Dhokha kha gya",
         "usage": "{tr}dhoka",
@@ -102,13 +102,13 @@ async def suru(chutiyappa):
 )
 async def katgya(chutiya):
     "Dhokha kha gya"
-    txt = random.choice(lionmemes.DHOKA)
-    await edit_or_reply(chutiya, txt)
+    txt = random.choice(saviormemes.DHOKA)
+    await eor(chutiya, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="hey$",
-    command=("hey", plugin_category),
+    command=("hey", menu_category),
     info={
         "header": "start a conversation with people",
         "usage": "{tr}hey",
@@ -116,13 +116,13 @@ async def katgya(chutiya):
 )
 async def hoi(e):
     "start a conversation with people."
-    txt = random.choice(lionmemes.HELLOSTR)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.HELLOSTR)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="pro$",
-    command=("pro", plugin_category),
+    command=("pro", menu_category),
     info={
         "header": "If you think you're pro, try this.",
         "usage": "{tr}pro",
@@ -130,16 +130,16 @@ async def hoi(e):
 )
 async def proo(e):
     "If you think you're pro, try this."
-    txt = random.choice(lionmemes.PRO_STRINGS)
-    await edit_or_reply(e, txt)
+    txt = random.choice(saviormemes.PRO_STRINGS)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
-    pattern=r"react ?([\s\S]*)",
-    command=("react", plugin_category),
+@savior.savior_cmd(
+    pattern="react ?([\s\S]*)",
+    command=("react", menu_category),
     info={
         "header": "Make your userbot react",
-        "types": [
+        "flags": [
             "happy",
             "think",
             "wave",
@@ -157,32 +157,32 @@ async def _(e):
     "Make your userbot react."
     input_str = e.pattern_match.group(1)
     if input_str in "happy":
-        emoticons = lionmemes.FACEREACTS[0]
+        emoticons = saviormemes.FACEREACTS[0]
     elif input_str in "think":
-        emoticons = lionmemes.FACEREACTS[1]
+        emoticons = saviormemes.FACEREACTS[1]
     elif input_str in "wave":
-        emoticons = lionmemes.FACEREACTS[2]
+        emoticons = saviormemes.FACEREACTS[2]
     elif input_str in "wtf":
-        emoticons = lionmemes.FACEREACTS[3]
+        emoticons = saviormemes.FACEREACTS[3]
     elif input_str in "love":
-        emoticons = lionmemes.FACEREACTS[4]
+        emoticons = saviormemes.FACEREACTS[4]
     elif input_str in "confused":
-        emoticons = lionmemes.FACEREACTS[5]
+        emoticons = saviormemes.FACEREACTS[5]
     elif input_str in "dead":
-        emoticons = lionmemes.FACEREACTS[6]
+        emoticons = saviormemes.FACEREACTS[6]
     elif input_str in "sad":
-        emoticons = lionmemes.FACEREACTS[7]
+        emoticons = saviormemes.FACEREACTS[7]
     elif input_str in "dog":
-        emoticons = lionmemes.FACEREACTS[8]
+        emoticons = saviormemes.FACEREACTS[8]
     else:
-        emoticons = lionmemes.FACEREACTS[9]
+        emoticons = saviormemes.FACEREACTS[9]
     txt = random.choice(emoticons)
-    await edit_or_reply(e, txt)
+    await eor(e, txt)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="10iq$",
-    command=("10iq", plugin_category),
+    command=("10iq", menu_category),
     info={
         "header": "You retard !!",
         "usage": "{tr}10iq",
@@ -190,12 +190,12 @@ async def _(e):
 )
 async def iqless(e):
     "You retard !!"
-    await edit_or_reply(e, "♿")
+    await eor(e, "♿")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="fp$",
-    command=("fp", plugin_category),
+    command=("fp", menu_category),
     info={
         "header": "send you face pam emoji!",
         "usage": "{tr}fp",
@@ -203,12 +203,12 @@ async def iqless(e):
 )
 async def facepalm(e):
     "send you face pam emoji!"
-    await edit_or_reply(e, "🤦‍♂")
+    await eor(e, "🤦‍♂")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="bt$",
-    command=("bt", plugin_category),
+    command=("bt", menu_category),
     info={
         "header": "Believe me, you will find this useful.",
         "usage": "{tr}bt",
@@ -217,16 +217,16 @@ async def facepalm(e):
 )
 async def bluetext(e):
     """Believe me, you will find this useful."""
-    await edit_or_reply(
+    await eor(
         e,
         "/BLUETEXT /MUST /CLICK.\n"
         "/ARE /YOU /A /STUPID /ANIMAL /WHICH /IS /ATTRACTED /TO /COLOURS?",
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="session$",
-    command=("session", plugin_category),
+    command=("session", menu_category),
     info={
         "header": "telethon session error code(fun)",
         "usage": "{tr}session",
@@ -235,4 +235,4 @@ async def bluetext(e):
 async def _(event):
     "telethon session error code(fun)."
     mentions = "**telethon.errors.rpcerrorlist.AuthKeyDuplicatedError: The authorization key (session file) was used under two different IP addresses simultaneously, and can no longer be used. Use the same session exclusively, or use different sessions (caused by GetMessagesRequest)**"
-    await edit_or_reply(event, mentions)
+    await eor(event, mentions)

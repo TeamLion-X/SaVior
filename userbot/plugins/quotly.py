@@ -1,6 +1,6 @@
 """
 imported from nicegrill
-modified by @TeamLionX
+modified by @SaViorXBoy
 QuotLy: Avaible commands: .qbot
 """
 
@@ -16,32 +16,32 @@ from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.utils import get_display_name
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers import convert_tosticker, media_type, process
-from ..helpers.utils import _liontools, reply_id
+from ..helpers.utils import _saviortools, reply_id
 
 FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 
-plugin_category = "fun"
+menu_category = "fun"
 
 
 def get_warp_length(width):
     return int((20.0 / 1024.0) * (width + 0.0))
 
 
-@lionub.lion_cmd(
-    pattern=r"qpic(?:\s|$)([\s\S]*)",
-    command=("qpic", plugin_category),
+@savior.savior_cmd(
+    pattern="qpic(?:\s|$)([\s\S]*)",
+    command=("qpic", menu_category),
     info={
         "header": "Makes quote pic.",
         "flags": {
             "-b": "To get black and white output.",
             "-s": "To output file as sticker",
         },
-        "usage": "{tr}qpic <flag> <input/reply to text msg>",
-        "examples": ["{tr}qpic LionX.", "{tr}qpic -b LionX."],
+        "usage": "{tr}qpic <type> <input/reply to text msg>",
+        "examples": ["{tr}qpic SaViorX.", "{tr}qpic -b SaViorX."],
     },
 )
 async def q_pic(event):  # sourcery no-metrics
@@ -59,10 +59,10 @@ async def q_pic(event):  # sourcery no-metrics
     elif reply and reply.raw_text:
         text = reply.raw_text
     else:
-        return await edit_delete(
+        return await eod(
             event, "__Provide input along with cmd or reply to text message.__"
         )
-    lionevent = await edit_or_reply(event, "__Making Quote pic....__")
+    saviorevent = await eor(event, "__Making Quote pic....__")
     mediatype = media_type(reply)
     if (
         (not reply)
@@ -76,9 +76,9 @@ async def q_pic(event):  # sourcery no-metrics
         user = reply.sender_id if reply else event.client.uid
         pfp = await event.client.download_profile_photo(user)
     else:
-        imag = await _liontools.media_to_pic(event, reply, noedits=True)
+        imag = await _saviortools.media_to_pic(event, reply, noedits=True)
         if imag[1] is None:
-            return await edit_delete(
+            return await eod(
                 imag[0], "__Unable to extract image from the replied message.__"
             )
         user = event.client.uid
@@ -126,96 +126,92 @@ async def q_pic(event):  # sourcery no-metrics
         )
     output = io.BytesIO()
     if sticker:
-        output.name = "LionX.Webp"
+        output.name = "SaViorX.Webp"
         img.save(output, "webp")
     else:
-        output.name = "LionX.png"
+        output.name = "SaViorX.png"
         img.save(output, "PNG")
     output.seek(0)
     await event.client.send_file(event.chat_id, output, reply_to=reply_to)
-    await lionevent.delete()
+    await saviorevent.delete()
     for i in [pfp]:
         if os.path.lexists(i):
             os.remove(i)
 
 
-@lionub.lion_cmd(
-    pattern=r"q(?:\s|$)([\s\S]*)",
-    command=("q", plugin_category),
+@savior.savior_cmd(
+    pattern="q(?:\s|$)([\s\S]*)",
+    command=("q", menu_category),
     info={
         "header": "Makes your message as sticker quote.",
         "usage": "{tr}q",
     },
 )
-async def stickerchat(lionquotes):
+async def stickerchat(owoquotes):
     "Makes your message as sticker quote"
-    reply = await lionquotes.get_reply_message()
+    reply = await owoquotes.get_reply_message()
     if not reply:
-        return await edit_or_reply(
-            lionquotes, "`I cant quote the message . reply to a message`"
-        )
+        return await eor(owoquotes, "`I cant quote the message . reply to a message`")
     fetchmsg = reply.message
     repliedreply = None
     mediatype = media_type(reply)
     if mediatype and mediatype in ["Photo", "Round Video", "Gif"]:
-        return await edit_or_reply(lionquotes, "`Replied message is not supported now`")
-    lionevent = await edit_or_reply(lionquotes, "`Making quote...`")
+        return await eor(owoquotes, "`Replied message is not supported now`")
+    saviorevent = await eor(owoquotes, "`Making quote...`")
     user = (
-        await lionquotes.client.get_entity(reply.forward.sender)
+        await owoquotes.client.get_entity(reply.forward.sender)
         if reply.fwd_from
         else reply.sender
     )
-    res, lionmsg = await process(fetchmsg, user, lionquotes.client, reply, repliedreply)
+    res, saviormsg = await process(fetchmsg, user, owoquotes.client, reply, repliedreply)
     if not res:
         return
     outfi = os.path.join("./temp", "sticker.png")
-    lionmsg.save(outfi)
+    saviormsg.save(outfi)
     endfi = convert_tosticker(outfi)
-    await lionquotes.client.send_file(lionquotes.chat_id, endfi, reply_to=reply)
-    await lionevent.delete()
+    await owoquotes.client.send_file(owoquotes.chat_id, endfi, reply_to=reply)
+    await saviorevent.delete()
     os.remove(endfi)
 
 
-@lionub.lion_cmd(
-    pattern=r"rq(?:\s|$)([\s\S]*)",
-    command=("rq", plugin_category),
+@savior.savior_cmd(
+    pattern="rq(?:\s|$)([\s\S]*)",
+    command=("rq", menu_category),
     info={
         "header": "Makes your message along with the previous replied message as sticker quote",
         "usage": "{tr}rq",
     },
 )
-async def stickerchat(lionquotes):
+async def stickerchat(owoquotes):
     "To make sticker message."
-    reply = await lionquotes.get_reply_message()
+    reply = await owoquotes.get_reply_message()
     if not reply:
-        return await edit_or_reply(
-            lionquotes, "`I cant quote the message . reply to a message`"
-        )
+        return await eor(owoquotes, "`I cant quote the message . reply to a message`")
     fetchmsg = reply.message
     repliedreply = await reply.get_reply_message()
     mediatype = media_type(reply)
     if mediatype and mediatype in ["Photo", "Round Video", "Gif"]:
-        return await edit_or_reply(lionquotes, "`Replied message is not supported now`")
-    lionevent = await edit_or_reply(lionquotes, "`Making quote...`")
+        return await eor(owoquotes, "`Replied message is not supported now`")
+    saviorevent = await eor(owoquotes, "`Making quote...`")
     user = (
-        await lionquotes.client.get_entity(reply.forward.sender)
+        await owoquotes.client.get_entity(reply.forward.sender)
         if reply.fwd_from
         else reply.sender
     )
-    res, lionmsg = await process(fetchmsg, user, lionquotes.client, reply, repliedreply)
+    res, stmsg = await process(fetchmsg, user, owoquotes.client, reply, repliedreply)
     if not res:
         return
     outfi = os.path.join("./temp", "sticker.png")
-    lionmsg.save(outfi)
+    stmsg.save(outfi)
     endfi = convert_tosticker(outfi)
-    await lionquotes.client.send_file(lionquotes.chat_id, endfi, reply_to=reply)
-    await lionevent.delete()
+    await owoquotes.client.send_file(owoquotes.chat_id, endfi, reply_to=reply)
+    await saviorevent.delete()
     os.remove(endfi)
 
 
-@lionub.lion_cmd(
-    pattern=r"qbot(?:\s|$)([\s\S]*)",
-    command=("qbot", plugin_category),
+@savior.savior_cmd(
+    pattern="qbot(?:\s|$)([\s\S]*)",
+    command=("qbot", menu_category),
     info={
         "header": "Makes your message as sticker quote by @quotlybot",
         "usage": "{tr}qbot",
@@ -246,11 +242,11 @@ async def _(event):
     elif input_str:
         message = input_str
     else:
-        return await edit_delete(
+        return await eod(
             event, "`Either reply to message or give input to function properly`"
         )
     chat = "@QuotLyBot"
-    lionevent = await edit_or_reply(event, "```Making a Quote```")
+    saviorevent = await eor(event, "```Making a Quote```")
     async with event.client.conversation(chat) as conv:
         try:
             response = conv.wait_event(
@@ -261,14 +257,16 @@ async def _(event):
             elif message != "":
                 await event.client.send_message(conv.chat_id, message)
             else:
-                return await edit_delete(
-                    lionevent, "`I guess you have used a invalid syntax`"
+                return await eod(
+                    saviorevent, "`I guess you have used a invalid syntax`"
                 )
             response = await response
         except YouBlockedUserError:
-            return await lionevent.edit("```Please unblock me (@QuotLyBot) u Nigga```")
+            return await saviorevent.edit(
+                "```Please unblock me (@QuotLyBot) u Nigga```"
+            )
         await event.client.send_read_acknowledge(conv.chat_id)
-        await lionevent.delete()
+        await saviorevent.delete()
         await event.client.send_message(
             event.chat_id, response.message, reply_to=reply_to
         )

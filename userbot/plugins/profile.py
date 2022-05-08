@@ -7,14 +7,14 @@ from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest
 from telethon.tl.functions.photos import DeletePhotosRequest, GetUserPhotosRequest
 from telethon.tl.types import Channel, Chat, InputPhoto, User
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "utils"
+menu_category = "utils"
 
 
 # ====================== CONSTANT ===============================
@@ -29,9 +29,9 @@ USERNAME_TAKEN = "```This username is already taken.```"
 # ===============================================================
 
 
-@lionub.lion_cmd(
-    pattern=r"pbio ([\s\S]*)",
-    command=("pbio", plugin_category),
+@savior.savior_cmd(
+    pattern="pbio ([\s\S]*)",
+    command=("pbio", menu_category),
     info={
         "header": "To set bio for this account.",
         "usage": "{tr}pbio <your bio>",
@@ -42,14 +42,14 @@ async def _(event):
     bio = event.pattern_match.group(1)
     try:
         await event.client(functions.account.UpdateProfileRequest(about=bio))
-        await edit_delete(event, "`successfully changed my profile bio`")
+        await eod(event, "`successfully changed my profile bio`")
     except Exception as e:
-        await edit_or_reply(event, f"**Error:**\n`{e}`")
+        await eor(event, f"**Error:**\n`{e}`")
 
 
-@lionub.lion_cmd(
-    pattern=r"pname ([\s\S]*)",
-    command=("pname", plugin_category),
+@savior.savior_cmd(
+    pattern="pname ([\s\S]*)",
+    command=("pname", menu_category),
     info={
         "header": "To set/change name for this account.",
         "usage": ["{tr}pname firstname ; last name", "{tr}pname firstname"],
@@ -68,14 +68,14 @@ async def _(event):
                 first_name=first_name, last_name=last_name
             )
         )
-        await edit_delete(event, "`My name was changed successfully`")
+        await eod(event, "`My name was changed successfully`")
     except Exception as e:
-        await edit_or_reply(event, f"**Error:**\n`{e}`")
+        await eor(event, f"**Error:**\n`{e}`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="ppic$",
-    command=("ppic", plugin_category),
+    command=("ppic", menu_category),
     info={
         "header": "To set profile pic for this account.",
         "usage": "{tr}ppic <reply to image or gif>",
@@ -84,9 +84,7 @@ async def _(event):
 async def _(event):
     "To set profile pic for this account."
     reply_message = await event.get_reply_message()
-    lionevent = await edit_or_reply(
-        event, "`Downloading Profile Picture to my local ...`"
-    )
+    saviorevent = await eor(event, "`Downloading Profile Picture to my local ...`")
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     photo = None
@@ -95,43 +93,41 @@ async def _(event):
             reply_message, Config.TMP_DOWNLOAD_DIRECTORY
         )
     except Exception as e:
-        await lionevent.edit(str(e))
+        await saviorevent.edit(str(e))
     else:
         if photo:
-            await lionevent.edit("`now, Uploading to Telegram ...`")
+            await saviorevent.edit("`now, Uploading to Telegram ...`")
             if photo.endswith((".mp4", ".MP4")):
                 # https://t.me/tgbetachat/324694
                 size = os.stat(photo).st_size
                 if size > 2097152:
-                    await lionevent.edit("`size must be less than 2 mb`")
+                    await saviorevent.edit("`size must be less than 2 mb`")
                     os.remove(photo)
                     return
-                lionpic = None
-                lionvideo = await event.client.upload_file(photo)
+                lolpic = None
+                lolvideo = await event.client.upload_file(photo)
             else:
-                lionpic = await event.client.upload_file(photo)
-                lionvideo = None
+                lolpic = await event.client.upload_file(photo)
+                lolvideo = None
             try:
                 await event.client(
                     functions.photos.UploadProfilePhotoRequest(
-                        file=lionpic, video=lionvideo, video_start_ts=0.01
+                        file=lolpic, video=lolvideo, video_start_ts=0.01
                     )
                 )
             except Exception as e:
-                await lionevent.edit(f"**Error:**\n`{e}`")
+                await saviorevent.edit(f"**Error:**\n`{e}`")
             else:
-                await edit_or_reply(
-                    lionevent, "`My profile picture was successfully changed`"
-                )
+                await eor(saviorevent, "`My profile picture was successfully changed`")
     try:
         os.remove(photo)
     except Exception as e:
         LOGS.info(str(e))
 
 
-@lionub.lion_cmd(
-    pattern=r"pusername ([\s\S]*)",
-    command=("pusername", plugin_category),
+@savior.savior_cmd(
+    pattern="pusername ([\s\S]*)",
+    command=("pusername", menu_category),
     info={
         "header": "To set/update username for this account.",
         "usage": "{tr}pusername <new username>",
@@ -142,16 +138,16 @@ async def update_username(event):
     newusername = event.pattern_match.group(1)
     try:
         await event.client(UpdateUsernameRequest(newusername))
-        await edit_delete(event, USERNAME_SUCCESS)
+        await eod(event, USERNAME_SUCCESS)
     except UsernameOccupiedError:
-        await edit_or_reply(event, USERNAME_TAKEN)
+        await eor(event, USERNAME_TAKEN)
     except Exception as e:
-        await edit_or_reply(event, f"**Error:**\n`{e}`")
+        await eor(event, f"**Error:**\n`{e}`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="count$",
-    command=("count", plugin_category),
+    command=("count", menu_category),
     info={
         "header": "To get your profile stats for this account.",
         "usage": "{tr}count",
@@ -165,7 +161,7 @@ async def count(event):
     bc = 0
     b = 0
     result = ""
-    lionevent = await edit_or_reply(event, "`Processing..`")
+    saviorevent = await eor(event, "`Processing..`")
     dialogs = await event.client.get_dialogs(limit=None, ignore_migrated=True)
     for d in dialogs:
         currrent_entity = d.entity
@@ -190,12 +186,12 @@ async def count(event):
     result += f"`Channels:`\t**{bc}**\n"
     result += f"`Bots:`\t**{b}**"
 
-    await lionevent.edit(result)
+    await saviorevent.edit(result)
 
 
-@lionub.lion_cmd(
-    pattern=r"delpfp ?([\s\S]*)",
-    command=("delpfp", plugin_category),
+@savior.savior_cmd(
+    pattern="delpfp ?([\s\S]*)",
+    command=("delpfp", menu_category),
     info={
         "header": "To delete profile pic for this account.",
         "description": "If you havent mentioned no of profile pics then only 1 will be deleted.",
@@ -223,14 +219,12 @@ async def remove_profilepic(delpfp):
         for sep in pfplist.photos
     ]
     await delpfp.client(DeletePhotosRequest(id=input_photos))
-    await edit_delete(
-        delpfp, f"`Successfully deleted {len(input_photos)} profile picture(s).`"
-    )
+    await eod(delpfp, f"`Successfully deleted {len(input_photos)} profile picture(s).`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="myusernames$",
-    command=("myusernames", plugin_category),
+    command=("myusernames", menu_category),
     info={
         "header": "To list public channels or groups created by this account.",
         "usage": "{tr}myusernames",
@@ -244,4 +238,4 @@ async def _(event):
         f" - {channel_obj.title} @{channel_obj.username} \n"
         for channel_obj in result.chats
     )
-    await edit_or_reply(event, output_str)
+    await eor(event, output_str)

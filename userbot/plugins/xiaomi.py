@@ -1,19 +1,19 @@
 # created by @eve_enryu
-# edited & fix by @SimpleBoy786
+# edited & fix by @SaViorXBoy
 
 from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 
-plugin_category = "tools"
+menu_category = "extra"
 
 
-@lionub.lion_cmd(
-    pattern=r"firmware ([\s\S]*)",
-    command=("firmware", plugin_category),
+@savior.savior_cmd(
+    pattern="firmware ([\s\S]*)",
+    command=("firmware", menu_category),
     info={
         "header": "To get lastest Firmware.",
         "description": "Works for Xiaomeme devices only",
@@ -25,7 +25,7 @@ async def _(event):
     "To get lastest Firmware."
     link = event.pattern_match.group(1)
     firmware = "firmware"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -35,15 +35,15 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)
 
 
-@lionub.lion_cmd(
-    pattern=r"vendor ([\s\S]*)",
-    command=("vendor", plugin_category),
+@savior.savior_cmd(
+    pattern="vendor ([\s\S]*)",
+    command=("vendor", menu_category),
     info={
         "header": "To get lastest Vendor.",
         "description": "Works for Xiaomeme devices only",
@@ -55,7 +55,7 @@ async def _(event):
     "To get lastest Vendor."
     link = event.pattern_match.group(1)
     vendor = "vendor"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -65,15 +65,15 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)
 
 
-@lionub.lion_cmd(
-    pattern=r"xspecs ([\s\S]*)",
-    command=("xspecs", plugin_category),
+@savior.savior_cmd(
+    pattern="xspecs ([\s\S]*)",
+    command=("xspecs", menu_category),
     info={
         "header": "To get quick spec information about device",
         "description": "Works for Xiaomeme devices only",
@@ -85,7 +85,7 @@ async def _(event):
     "To get quick spec information about device"
     link = event.pattern_match.group(1)
     specs = "specs"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -95,15 +95,15 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)
 
 
-@lionub.lion_cmd(
-    pattern=r"fastboot ([\s\S]*)",
-    command=("fastboot", plugin_category),
+@savior.savior_cmd(
+    pattern="fastboot ([\s\S]*)",
+    command=("fastboot", menu_category),
     info={
         "header": "To get latest fastboot MIUI.",
         "description": "Works for Xiaomeme devices only",
@@ -115,7 +115,7 @@ async def _(event):
     "To get latest fastboot MIUI."
     link = event.pattern_match.group(1)
     fboot = "fastboot"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -125,15 +125,15 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)
 
 
-@lionub.lion_cmd(
-    pattern=r"recovery ([\s\S]*)",
-    command=("recovery", plugin_category),
+@savior.savior_cmd(
+    pattern="recovery ([\s\S]*)",
+    command=("recovery", menu_category),
     info={
         "header": "To get latest recovery MIUI.",
         "description": "Works for Xiaomeme devices only",
@@ -145,7 +145,7 @@ async def _(event):
     "To get latest recovery MIUI."
     link = event.pattern_match.group(1)
     recovery = "recovery"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -155,15 +155,15 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)
 
 
-@lionub.lion_cmd(
-    pattern=r"pb ([\s\S]*)",
-    command=("pb", plugin_category),
+@savior.savior_cmd(
+    pattern="pb ([\s\S]*)",
+    command=("pb", menu_category),
     info={
         "header": "To get latest PBRP.",
         "description": "Works for Xiaomeme devices only",
@@ -175,7 +175,7 @@ async def _(event):
     "To get latest PBRP."
     link = event.pattern_match.group(1)
     pitch = "pb"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -185,15 +185,15 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)
 
 
-@lionub.lion_cmd(
-    pattern=r"of ([\s\S]*)",
-    command=("of", plugin_category),
+@savior.savior_cmd(
+    pattern="of ([\s\S]*)",
+    command=("of", menu_category),
     info={
         "header": "To get latest ORangeFox Recover.",
         "description": "Works for Xiaomeme devices only",
@@ -205,7 +205,7 @@ async def _(event):
     "To get latest ORangeFox Recover."
     link = event.pattern_match.group(1)
     ofox = "of"
-    lionevent = await edit_or_reply(event, "```Processing```")
+    saviorevent = await eor(event, "```Processing```")
     async with event.client.conversation("@XiaomiGeeksBot") as conv:
         try:
             response = conv.wait_event(
@@ -215,7 +215,7 @@ async def _(event):
             respond = await response
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            return await lionevent.edit("```Unblock @XiaomiGeeksBot plox```")
+            return await saviorevent.edit("```Unblock @XiaomiGeeksBot plox```")
         else:
-            await lionevent.delete()
+            await saviorevent.delete()
             await event.client.forward_messages(event.chat_id, respond.message)

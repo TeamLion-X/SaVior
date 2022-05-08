@@ -9,17 +9,17 @@ from datetime import datetime
 
 from gtts import gTTS
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from . import deEmojify, reply_id
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"tts(?:\s|$)([\s\S]*)",
-    command=("tts", plugin_category),
+@savior.savior_cmd(
+    pattern="tts(?:\s|$)([\s\S]*)",
+    command=("tts", menu_category),
     info={
         "header": "Text to speech command.",
         "usage": [
@@ -42,10 +42,10 @@ async def _(event):
         lan = input_str or "en"
     else:
         if not input_str:
-            return await edit_or_reply(event, "Invalid Syntax. Module stopping.")
+            return await eor(event, "Invalid Syntax. Module stopping.")
         text = input_str
         lan = "en"
-    lionevent = await edit_or_reply(event, "`Recording......`")
+    saviorevent = await eor(event, "`Recording......`")
     text = deEmojify(text.strip())
     lan = lan.strip()
     if not os.path.isdir("./temp/"):
@@ -74,7 +74,7 @@ async def _(event):
                 command_to_execute, stderr=subprocess.STDOUT
             )
         except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
-            await lionevent.edit(str(exc))
+            await saviorevent.edit(str(exc))
             # continue sending required_file_name
         else:
             os.remove(required_file_name)
@@ -89,9 +89,9 @@ async def _(event):
             voice_note=True,
         )
         os.remove(required_file_name)
-        await edit_delete(
-            lionevent,
+        await eod(
+            saviorevent,
             "`Processed text {} into voice in {} seconds!`".format(text[0:20], ms),
         )
     except Exception as e:
-        await edit_or_reply(lionevent, f"**Error:**\n`{e}`")
+        await eor(saviorevent, f"**Error:**\n`{e}`")

@@ -6,13 +6,13 @@ from pytz import country_names as c_n
 from pytz import country_timezones as c_tz
 from pytz import timezone as tz
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from . import reply_id
 
-plugin_category = "utils"
+menu_category = "utils"
 
 # Userbot timezone
 
@@ -44,9 +44,9 @@ async def get_tz(con):
         return
 
 
-@lionub.lion_cmd(
-    pattern=r"ctime(?:\s|$)([\s\S]*)(?<![0-9])(?: |$)([0-9]+)?",
-    command=("ctime", plugin_category),
+@savior.savior_cmd(
+    pattern="ctime(?:\s|$)([\s\S]*)(?<![0-9])(?: |$)([0-9]+)?",
+    command=("ctime", menu_category),
     info={
         "header": "To get current time of a paticular country",
         "note": "For country names check [this link](https://telegra.ph/country-names-10-24)",
@@ -72,12 +72,12 @@ async def time_func(tdata):
         tz_num = Config.TZ_NUMBER
         timezones = await get_tz(Config.COUNTRY)
     else:
-        return await edit_or_reply(
+        return await eor(
             tdata,
             f"`It's`  **{dt.now().strftime(t_form)}**` on `**{dt.now().strftime(d_form)}** `here.`",
         )
     if not timezones:
-        return await edit_or_reply(tdata, "`Invaild country.`")
+        return await eor(tdata, "`Invaild country.`")
     if len(timezones) == 1:
         time_zone = timezones[0]
     elif len(timezones) > 1:
@@ -94,26 +94,26 @@ async def time_func(tdata):
             return_str += "in the command.`\n"
             return_str += f"`Example: .ctime {c_name} 2`"
 
-            return await edit_or_reply(tdata, return_str)
+            return await eor(tdata, return_str)
 
     dtnow1 = dt.now(tz(time_zone)).strftime(t_form)
     dtnow2 = dt.now(tz(time_zone)).strftime(d_form)
     if c_name != Config.COUNTRY:
-        await edit_or_reply(
+        await eor(
             tdata,
             f"`It's`  **{dtnow1}**` on `**{dtnow2}**  `in {c_name} ({time_zone} timezone).`",
         )
     if Config.COUNTRY:
-        await edit_or_reply(
+        await eor(
             tdata,
             f"`It's`  **{dtnow1}**` on `**{dtnow2}**  `here, in {Config.COUNTRY}"
             f"({time_zone} timezone).`",
         )
 
 
-@lionub.lion_cmd(
-    pattern=r"time(?:\s|$)([\s\S]*)",
-    command=("time", plugin_category),
+@savior.savior_cmd(
+    pattern="time(?:\s|$)([\s\S]*)",
+    command=("time", menu_category),
     info={
         "header": "To show current time.",
         "description": "shows current default time you can change by changing TZ in heroku vars.",

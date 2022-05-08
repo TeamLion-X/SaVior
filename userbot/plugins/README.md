@@ -1,53 +1,52 @@
 ## Mandatory Imports
 ```python3
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 
-plugin_category="extra"
+menu_category="extra"
 ```
 
 ### Formation
 This below one is Sample format of making plugin
 ```python3
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 
-plugin_category="extra"
+menu_category="extra"
 
-@lionub.lion_cmd(
-    pattern="hibuddy(?:\s|$)([\s\S]*)",
-    command=("hibuddy", plugin_category),
+#regex 
+
+@savior.savior_cmd(
+    pattern="hisavior(?:\s|$)([\s\S]*)",
+    command=("hisavior", menu_category),
     info={
         "header": "Just to say hi to other user.",
         "description": "input string along with cmd will be added to your hi text",
-        "usage": "{tr}hibuddy <text>",
-        "examples": "{tr}hibuddy how are you doing",
+        "usage": "{tr}hisavior <text>",
+        "examples": "{tr}hisavior how are you bro",
     },
 )
-async def hi_buddy(event):
+async def hi_savior(event):
     "Just to say hi to other user."
     input_str= event.pattern_match.group(1)
     if not input_str:
-        await edit_delete(event,"No input is found. Use proper syntax.")
+        await eod(event,"No input is found. Use proper syntax.")
         return
     outputtext= f"+-+-+-+-+-+\n|h|e|l|l|o|\n+-+-+-+-+-+\n{input_str}"
-    await edit_or_reply(event,outputtext)
+    await eor(event,outputtext)
 ```
 
-For more information refer this [Docs](https://docs.telethon.dev/en/latest/)
-
-
-Arguments in lion_cmd are as follows:
+Arguments in savior_cmd are as follows:
 ```
 
 pattern="Regex for command"
-command=("Just command name", plugin_category) use plugin_category name from predefined names (admin,bot,utils,tools,extra,fun,misc)
+command=("Just command name", menu_category) use menu_category name from predefined names (admin,bot,utils,tools,extra,fun,misc)
 info={
         "header":string - "intro for command",
         "description": string - "Description for command",
-        "flags": dict or string - "Flags u are using in your plugin",
+        "flags": dict or string - "Types u are using in your plugin",
         "options": dict or string - "Options u are using in your plugin",
         "types": list or string - "types u are using in your plugin",
         "usage": "Usage for your command",

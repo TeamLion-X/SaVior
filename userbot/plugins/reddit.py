@@ -7,27 +7,27 @@
 
 import requests
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete
+from ..funcs.managers import eod
 from ..helpers.functions import age_verification
-from ..helpers.utils import _lionutils, reply_id
+from ..helpers.utils import _saviorutils, reply_id
 from . import BOTLOG, BOTLOG_CHATID
 
 LOGS = logging.getLogger(__name__)
 API = "https://meme-api.herokuapp.com/gimme"
 
-plugin_category = "utils"
+menu_category = "misc"
 
 
-@lionub.lion_cmd(
-    pattern=r"reddit(?:\s|$)([\s\S]*)",
-    command=("reddit", plugin_category),
+@savior.savior_cmd(
+    pattern="reddit(?:\s|$)([\s\S]*)",
+    command=("reddit", menu_category),
     info={
         "header": "get a random reddit post.",
         "usage": "{tr}reddit <subreddit>",
-        "examples": "{tr}reddit dankmemes",
+        "examples": "{tr}reddit memes",
     },
 )
 async def reddit_fetch(event):
@@ -39,7 +39,7 @@ async def reddit_fetch(event):
         cn = requests.get(subreddit_api)
         r = cn.json()
     except ValueError:
-        return await edit_delete(event, "Value error!.")
+        return await eod(event, "Value error!.")
     if "code" in r:
         if BOTLOG:
             code = r["code"]
@@ -47,10 +47,10 @@ async def reddit_fetch(event):
             await event.client.send_message(
                 BOTLOG_CHATID, f"**Error Code: {code}**\n`{code_message}`"
             )
-            await edit_delete(event, f"**Error Code: {code}**\n`{code_message}`")
+            await eod(event, f"**Error Code: {code}**\n`{code_message}`")
     else:
         if "url" not in r:
-            return await edit_delete(
+            return await eod(
                 event,
                 "Coudn't Find a post with Image, Please Try Again",
             )
@@ -73,8 +73,8 @@ async def reddit_fetch(event):
 
         await event.delete()
         captionx += f"Source: [r/{subreddit}]({postlink})"
-        nadan = await event.client.send_file(
+        SAVIOR = await event.client.send_file(
             event.chat_id, media_url, caption=captionx, reply_to=reply_to
         )
         if media_url.endswith(".gif"):
-            await _lionutils.unsavegif(event, nadan)
+            await _saviorutils.unsavegif(event, SAVIOR)

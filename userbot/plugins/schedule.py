@@ -1,13 +1,13 @@
 from asyncio import sleep
 
-from userbot import lionub
+from userbot import savior
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
-@lionub.lion_cmd(
-    pattern=r"schd (\d*) ([\s\S]*)",
-    command=("schd", plugin_category),
+@savior.savior_cmd(
+    pattern="schd (\d*) ([\s\S]*)",
+    command=("schd", menu_category),
     info={
         "header": "To schedule a message after given time(in seconds).",
         "usage": "{tr}schd <time_in_seconds>  <message to send>",
@@ -16,9 +16,9 @@ plugin_category = "utils"
 )
 async def _(event):
     "To schedule a message after given time"
-    lion = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
-    message = lion[1]
-    ttl = int(lion[0])
+    savior = ("".join(event.text.split(maxsplit=1)[1:])).split(" ", 1)
+    message = savior[1]
+    ttl = int(savior[0])
     await event.delete()
     await sleep(ttl)
     await event.respond(message)

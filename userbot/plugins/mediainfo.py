@@ -1,16 +1,16 @@
 # plugin by @deleteduser420
-# ported to telethon by @TeamLionX (@TeamLionX)
+# ported to telethon by @SaViorXBoy (@SaViorXBoy)
 import os
 
-from userbot import lionub
+from userbot import savior
 from userbot.funcs.logger import logging
 
 from ..Config import Config
-from ..funcs.managers import edit_or_reply
+from ..funcs.managers import eor
 from ..helpers import humanbytes, post_to_telegraph
-from ..helpers.utils import _format, _lionutils
+from ..helpers.utils import _format, _saviorutils
 
-plugin_category = "utils"
+menu_category = "utils"
 LOGS = logging.getLogger(__name__)
 
 
@@ -52,9 +52,9 @@ async def file_data(reply):
     return hmm
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="minfo$",
-    command=("minfo", plugin_category),
+    command=("minfo", menu_category),
     info={
         "header": "To get media information.",
         "description": "reply to media to get information about it",
@@ -66,18 +66,18 @@ async def mediainfo(event):
     X_MEDIA = None
     reply = await event.get_reply_message()
     if not reply:
-        await edit_or_reply(event, "reply to media to get info")
+        await eor(event, "reply to media to get info")
         return
     if not reply.media:
-        await edit_or_reply(event, "reply to media to get info")
+        await eor(event, "reply to media to get info")
         return
-    lionevent = await edit_or_reply(event, "`Gathering ...`")
+    saviorevent = await eor(event, "`Gathering ...`")
     X_MEDIA = reply.file.mime_type
     if (not X_MEDIA) or (X_MEDIA.startswith(("text"))):
-        return await lionevent.edit("Reply To a supported Media Format")
+        return await saviorevent.edit("Reply To a supported Media Format")
     hmm = await file_data(reply)
     file_path = await reply.download_media(Config.TEMP_DIR)
-    out, err, ret, pid = await _lionutils.runcmd(f"mediainfo '{file_path}'")
+    out, err, ret, pid = await _saviorutils.runcmd(f"mediainfo '{file_path}'")
     if not out:
         out = "Not Supported"
     body_text = f"""
@@ -90,7 +90,7 @@ async def mediainfo(event):
 {out} 
 </code>"""
     link = await post_to_telegraph(f"{X_MEDIA}", body_text)
-    await lionevent.edit(
+    await saviorevent.edit(
         f"ℹ️  <b>MEDIA INFO:  <a href ='{link}' > {X_MEDIA}</a></b>",
         parse_mode="HTML",
         link_preview=True,

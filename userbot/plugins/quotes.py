@@ -1,21 +1,21 @@
 # inspired from uniborg Quotes plugin
 import random
 
-from userbot import lionub
+from userbot import savior
 
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
-from ..helpers import lionmemes
+from ..funcs.managers import eod, eor
+from ..helpers import saviormemes
 from ..helpers.functions import random_quote, search_quotes
 from ..helpers.utils import parse_pre
 
 LOGS = logging.getLogger(__name__)
-plugin_category = "tools"
+menu_category = "extra"
 
 
-@lionub.lion_cmd(
-    pattern=r"quote(?:\s|$)([\s\S]*)",
-    command=("quote", plugin_category),
+@savior.savior_cmd(
+    pattern="quote(?:\s|$)([\s\S]*)",
+    command=("quote", menu_category),
     info={
         "header": "To get random quotes on given topic.",
         "description": "An api that Fetchs random Quote from `goodreads.com`",
@@ -29,13 +29,13 @@ async def quote_search(event):
     try:
         response = await search_quotes(input_str) if input_str else await random_quote()
     except Exception:
-        return await edit_delete(event, "`Sorry Zero results found`", 5)
-    await edit_or_reply(event, response, parse_mode=parse_pre)
+        return await eod(event, "`Sorry Zero results found`", 5)
+    await eor(event, response, parse_mode=parse_pre)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="pquote$",
-    command=("pquote", plugin_category),
+    command=("pquote", menu_category),
     info={
         "header": "To get random quotes on programming.",
         "usage": "{tr}pquote",
@@ -43,5 +43,5 @@ async def quote_search(event):
 )
 async def _(event):
     "Shows random programming quotes"
-    txt = random.choice(lionmemes.PROGQUOTES)
-    await edit_or_reply(event, txt)
+    txt = random.choice(saviormemes.PROGQUOTES)
+    await eor(event, txt)

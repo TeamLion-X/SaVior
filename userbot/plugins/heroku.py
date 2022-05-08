@@ -1,10 +1,3 @@
-# Heroku manager for your LionX
-
-# CC- @refundisillegal\nSyntax:-\n.get var NAME\n.del var NAME\n.set var NAME
-
-# Copyright (C) 2020 Adek Maulana.
-# All rights reserved.
-
 import asyncio
 import math
 import os
@@ -13,25 +6,25 @@ import heroku3
 import requests
 import urllib3
 
-from userbot import lionub
+from userbot import savior
 
 from ..Config import Config
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 
-plugin_category = "tools"
+menu_category = "tools"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # =================
 
-Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
+Heroku = heroku3.from_key(Config.API_KEY)
 heroku_api = "https://api.heroku.com"
-HEROKU_APP_NAME = Config.HEROKU_APP_NAME
-HEROKU_API_KEY = Config.HEROKU_API_KEY
+APP_NAME = Config.APP_NAME
+API_KEY = Config.API_KEY
 
 
-@lionub.lion_cmd(
-    pattern=r"(set|get|del) var ([\s\S]*)",
-    command=("var", plugin_category),
+@savior.savior_cmd(
+    pattern="(set|get|del) var ([\s\S]*)",
+    command=("var", menu_category),
     info={
         "header": "To manage heroku vars.",
         "flags": {
@@ -53,34 +46,39 @@ async def variable(var):  # sourcery no-metrics
     """
     Manage most of ConfigVars setting, set new var, get current var, or delete var...
     """
-    if (Config.HEROKU_API_KEY is None) or (Config.HEROKU_APP_NAME is None):
-        return await edit_delete(
+    if (Config.API_KEY is None) or (Config.APP_NAME is None):
+        return await eod(
             var,
-            "Set the required vars in heroku to function this normally `HEROKU_API_KEY` and `HEROKU_APP_NAME`.",
+            "Set the required vars in heroku to function this normally `API_KEY` and `APP_NAME`.",
         )
-    app = Heroku.app(Config.HEROKU_APP_NAME)
+    app = Heroku.app(Config.APP_NAME)
     exe = var.pattern_match.group(1)
     heroku_var = app.config()
     if exe == "get":
-        lion = await edit_or_reply(var, "`Getting information...`")
+        savior = await eor(var, "`Getting information...`")
         await asyncio.sleep(1.0)
         try:
             variable = var.pattern_match.group(2).split()[0]
-            if variable in heroku_var:
-                return await lion.edit(
-                    "**ConfigVars**:" f"\n\n`{variable}` = `{heroku_var[variable]}`\n"
+            savior = "**ConfigVars**:" f"\n\n {variable} = `{heroku_var[variable]}`\n"
+            if "SAVIOR_STRING" in variable:
+                await eor(
+                    var, "SaVior String is a Sensetive Data.\nProtected By SaVior"
                 )
-            await lion.edit(
-                "**ConfigVars**:" f"\n\n__Error:\n-> __`{variable}`__ don't exists__"
-            )
+                return
+            elif variable in heroku_var:
+                await eor(var, savior)
+            else:
+                return await var.edit(
+                    "**ConfigVars**:" f"\n\n`Error:\n-> {variable} don't exists`"
+                )
         except IndexError:
             configs = prettyjson(heroku_var.to_dict(), indent=2)
             with open("configs.json", "w") as fp:
                 fp.write(configs)
             with open("configs.json", "r") as fp:
                 result = fp.read()
-                await edit_or_reply(
-                    lion,
+                await eor(
+                    var,
                     "`[HEROKU]` ConfigVars:\n\n"
                     "================================"
                     f"\n```{result}```\n"
@@ -89,38 +87,43 @@ async def variable(var):  # sourcery no-metrics
             os.remove("configs.json")
     elif exe == "set":
         variable = "".join(var.text.split(maxsplit=2)[2:])
-        lion = await edit_or_reply(var, "`Setting information...`")
+        savior = await eor(var, "`Setting information...`")
         if not variable:
-            return await lion.edit("`.set var <ConfigVars-name> <value>`")
+            return await savior.edit("`.set var <ConfigVars-name> <value>`")
         value = "".join(variable.split(maxsplit=1)[1:])
         variable = "".join(variable.split(maxsplit=1)[0])
         if not value:
-            return await lion.edit("`.set var <ConfigVars-name> <value>`")
+            return await savior.edit("`.set var <ConfigVars-name> <value>`")
         await asyncio.sleep(1.5)
+        if "SAVIOR_STRING" in variable:
+            await savior.edit("Successfully Changed")
+            return
         if variable in heroku_var:
-            await lion.edit(f"`{variable}` **successfully changed to  ->  **`{value}`")
+            await savior.edit(
+                f"`{variable}` **successfully changed to  ->  **`{value}`"
+            )
         else:
-            await lion.edit(
+            await savior.edit(
                 f"`{variable}`**  successfully added with value`  ->  **{value}`"
             )
         heroku_var[variable] = value
     elif exe == "del":
-        lion = await edit_or_reply(var, "`Getting information to deleting variable...`")
+        savior = await eor(var, "`Getting information to deleting variable...`")
         try:
             variable = var.pattern_match.group(2).split()[0]
         except IndexError:
-            return await lion.edit("`Please specify ConfigVars you want to delete`")
+            return await savior.edit("`Please specify ConfigVars you want to delete`")
         await asyncio.sleep(1.5)
         if variable not in heroku_var:
-            return await lion.edit(f"`{variable}`**  does not exist**")
+            return await savior.edit(f"`{variable}`**  does not exist**")
 
-        await lion.edit(f"`{variable}`  **successfully deleted**")
+        await savior.edit(f"`{variable}`  **successfully deleted**")
         del heroku_var[variable]
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="usage$",
-    command=("usage", plugin_category),
+    command=("usage", menu_category),
     info={
         "header": "To Check dyno usage of userbot and also to know how much left.",
         "usage": "{tr}usage",
@@ -130,12 +133,12 @@ async def dyno_usage(dyno):
     """
     Get your account Dyno Usage
     """
-    if (HEROKU_APP_NAME is None) or (HEROKU_API_KEY is None):
-        return await edit_delete(
+    if (Config.APP_NAME is None) or (Config.API_KEY is None):
+        return await eod(
             dyno,
-            "Set the required vars in heroku to function this normally `HEROKU_API_KEY` and `HEROKU_APP_NAME`.",
+            "Set the required vars in heroku to function this normally `API_KEY` and `APP_NAME`.",
         )
-    dyno = await edit_or_reply(dyno, "`Processing...`")
+    dyno = await eor(dyno, "`Processing...`")
     useragent = (
         "Mozilla/5.0 (Linux; Android 10; SM-G975F) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -144,10 +147,10 @@ async def dyno_usage(dyno):
     user_id = Heroku.account().id
     headers = {
         "User-Agent": useragent,
-        "Authorization": f"Bearer {Config.HEROKU_API_KEY}",
+        "Authorization": f"Bearer {Config.API_KEY}",
         "Accept": "application/vnd.heroku+json; version=3.account-quotas",
     }
-    path = f"/accounts/{user_id}/actions/get-quota"
+    path = "/accounts/" + user_id + "/actions/get-quota"
     r = requests.get(heroku_api + path, headers=headers)
     if r.status_code != 200:
         return await dyno.edit(
@@ -178,7 +181,7 @@ async def dyno_usage(dyno):
     await asyncio.sleep(1.5)
     return await dyno.edit(
         "**Dyno Usage**:\n\n"
-        f" -> `Dyno usage for`  **{Config.HEROKU_APP_NAME}**:\n"
+        f" 🗒 `Dyno usage for`  **{Config.APP_NAME}**:\n"
         f"     •  `{AppHours}`**h**  `{AppMinutes}`**m**  "
         f"**|**  [`{AppPercentage}`**%**]"
         "\n\n"
@@ -188,9 +191,9 @@ async def dyno_usage(dyno):
     )
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="(herokulogs|logs)$",
-    command=("logs", plugin_category),
+    command=("logs", menu_category),
     info={
         "header": "To get recent 100 lines logs from heroku.",
         "usage": ["{tr}herokulogs", "{tr}logs"],
@@ -198,20 +201,20 @@ async def dyno_usage(dyno):
 )
 async def _(dyno):
     "To get recent 100 lines logs from heroku"
-    if (HEROKU_APP_NAME is None) or (HEROKU_API_KEY is None):
-        return await edit_delete(
+    if (Config.APP_NAME is None) or (Config.API_KEY is None):
+        return await eod(
             dyno,
-            "Set the required vars in heroku to function this normally `HEROKU_API_KEY` and `HEROKU_APP_NAME`.",
+            "Set the required vars in heroku to function this normally `API_KEY` and `APP_NAME`.",
         )
     try:
-        Heroku = heroku3.from_key(HEROKU_API_KEY)
-        app = Heroku.app(HEROKU_APP_NAME)
+        Heroku = heroku3.from_key(API_KEY)
+        app = Heroku.app(APP_NAME)
     except BaseException:
         return await dyno.reply(
             " Please make sure your Heroku API Key, Your App name are configured correctly in the heroku"
         )
     data = app.get_log()
-    await edit_or_reply(
+    await eor(
         dyno, data, deflink=True, linktext="**Recent 100 lines of heroku logs: **"
     )
 

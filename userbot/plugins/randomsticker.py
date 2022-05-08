@@ -3,50 +3,24 @@ from os import remove
 from random import choice
 from urllib import parse
 
-import nekos
 import requests
-from PIL import Image
 from telethon import functions, types, utils
 
-from userbot import lionub
+from userbot import savior
 
 from ..helpers import reply_id
 
-plugin_category = "tools"
+menu_category = "extra"
 
 BASE_URL = "https://headp.at/pats/{}"
 PAT_IMAGE = "pat.webp"
 
-
-@lionub.lion_cmd(
-    pattern="lion$",
-    command=("lion", plugin_category),
-    info={
-        "header": "To get random lion stickers.",
-        "usage": "{tr}lion",
-    },
-)
-async def _(event):
-    "To get random lion stickers."
-    await event.delete()
-    reply_to_id = await reply_id(event)
-    with open("temp.png", "wb") as f:
-        f.write(requests.get(nekos.lion()).content)
-    img = Image.open("temp.png")
-    img.save("temp.webp", "webp")
-    img.seek(0)
-    await event.client.send_file(
-        event.chat_id, open("temp.webp", "rb"), reply_to=reply_to_id
-    )
-    remove("temp.webp")
-
-
 # credit to @r4v4n4
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="dab$",
-    command=("dab", plugin_category),
+    command=("dab", menu_category),
     info={
         "header": "To get random dabbing pose stickers.",
         "usage": "{tr}dab",
@@ -86,9 +60,9 @@ async def _(event):
     await event.respond(file=random.choice(docs), reply_to=reply_to_id)
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="brain$",
-    command=("brain", plugin_category),
+    command=("brain", menu_category),
     info={
         "header": "To get random brain stickers.",
         "usage": "{tr}brain",
@@ -118,9 +92,9 @@ async def handler(event):
 # By:- git: jaskaranSM tg: @Zero_cool7870
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="pat$",
-    command=("pat", plugin_category),
+    command=("pat", menu_category),
     info={
         "header": "To get random pat stickers.",
         "usage": "{tr}pat",

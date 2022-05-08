@@ -4,31 +4,44 @@ import sys
 from asyncio.exceptions import CancelledError
 
 import heroku3
+import requests
 import urllib3
 from git import Repo
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
-from userbot import HEROKU_APP, UPSTREAM_REPO_URL, lionub
+from userbot import HEROKU_APP, UPSTREAM_REPO_URL, savior
 
 from ..Config import Config
 from ..funcs.logger import logging
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..sql_helper.global_collection import (
     add_to_collectionlist,
     del_keyword_collectionlist,
     get_collectionlist_items,
 )
-from ..sql_helper.globals import delgvar
 
-plugin_category = "tools"
-cmdhd = Config.COMMAND_HAND_LER
+lb_info = "https://raw.githubusercontent.com/TheSaVior/SAVIOR/master/SaVior-info.json"
+
+
+async def ld_info(lb_info):
+    infos = requests.get(lb_info).json()
+    _version = infos["SAVIOR-INFO"]["version"]
+    _release = infos["SAVIOR-INFO"]["release-date"]
+    _branch = infos["SAVIOR-INFO"]["branch"]
+    _author = infos["SAVIOR-INFO"]["author"]
+    _auturl = infos["SAVIOR-INFO"]["author-url"]
+    return _version, _release, _branch, _author, _auturl
+
+
+menu_category = "tools"
+cmdhd = Config.HANDLER
 
 LOGS = logging.getLogger(__name__)
 # -- Constants -- #
 
-HEROKU_APP_NAME = Config.HEROKU_APP_NAME or None
-HEROKU_API_KEY = Config.HEROKU_API_KEY or None
-Heroku = heroku3.from_key(Config.HEROKU_API_KEY)
+APP_NAME = Config.APP_NAME or None
+API_KEY = Config.API_KEY or None
+Heroku = heroku3.from_key(Config.API_KEY)
 heroku_api = "https://api.heroku.com"
 
 UPSTREAM_REPO_BRANCH = Config.UPSTREAM_REPO_BRANCH
@@ -65,7 +78,7 @@ async def gen_chlog(repo, diff):
 
 async def print_changelogs(event, ac_br, changelog):
     changelog_str = (
-        f"**New UPDATE available for [{ac_br}]:\n\nCHANGELOG:**\n`{changelog}`"
+        f"**🤖 New Update available for [{ac_br}]:\n\nChangeLogs:**\n`{changelog}`"
     )
     if len(changelog_str) > 4096:
         await event.edit("`Changelog is too big, view the file to see it.`")
@@ -106,35 +119,35 @@ async def update(event, repo, ups_rem, ac_br):
     except GitCommandError:
         repo.git.reset("--hard", "FETCH_HEAD")
     await update_requirements()
-    nadan = await event.edit(
-        "`Successfully Updated!\n" "Bot is restarting... Wait for a minute!`"
+    SAVIOR = await event.edit(
+        "`✅ Successfully Updated SaVior!\n"
+        "Bot is restarting... Wait for a minute!`"
     )
-    await event.client.reload(nadan)
+    await event.client.reload(SAVIOR)
 
 
 async def deploy(event, repo, ups_rem, ac_br, txt):
-    if HEROKU_API_KEY is None:
-        return await event.edit("`Please set up`  **HEROKU_API_KEY**  ` Var...`")
-    heroku = heroku3.from_key(HEROKU_API_KEY)
-    heroku_app = None
+    if API_KEY is None:
+        return await event.edit("`Please set up`  **API_KEY**  ` Var...`")
+    heroku = heroku3.from_key(API_KEY)
     heroku_applications = heroku.apps()
-    if HEROKU_APP_NAME is None:
+    if APP_NAME is None:
         await event.edit(
-            "`Please set up the` **HEROKU_APP_NAME** `Var`"
-            " to be able to deploy your userbot...`"
+            "`Please set up the` **APP_NAME** `Var`"
+            " to be able to deploy your SaVior Userbo†...`"
         )
         repo.__del__()
         return
-    for app in heroku_applications:
-        if app.name == HEROKU_APP_NAME:
-            heroku_app = app
-            break
+    heroku_app = next(
+        (app for app in heroku_applications if app.name == APP_NAME),
+        None,
+    )
     if heroku_app is None:
         await event.edit(
             f"{txt}\n" "`Invalid Heroku credentials for deploying userbot dyno.`"
         )
         return repo.__del__()
-    nadan = await event.edit(
+    SAVIOR = await event.edit(
         "`Userbot dyno build in progress, please wait until the process finishes it usually takes 4 to 5 minutes .`"
     )
     try:
@@ -145,14 +158,12 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
     except Exception as e:
         LOGS.error(e)
     try:
-        add_to_collectionlist("restart_update", [nadan.chat_id, nadan.id])
+        add_to_collectionlist("restart_update", [SAVIOR.chat_id, SAVIOR.id])
     except Exception as e:
         LOGS.error(e)
     ups_rem.fetch(ac_br)
     repo.git.reset("--hard", "FETCH_HEAD")
-    heroku_git_url = heroku_app.git_url.replace(
-        "https://", "https://api:" + HEROKU_API_KEY + "@"
-    )
+    heroku_git_url = heroku_app.git_url.replace("https://", f"https://api:{API_KEY}@")
     if "heroku" in repo.remotes:
         remote = repo.remote("heroku")
         remote.set_url(heroku_git_url)
@@ -165,8 +176,8 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         return repo.__del__()
     build_status = heroku_app.builds(order_by="created_at", sort="desc")[0]
     if build_status.status == "failed":
-        return await edit_delete(
-            event, "`Build failed!\n" "Cancelled or there were some errors...`"
+        return await eod(
+            event, "`Build failed ⚠️!\n" "Cancelled or there were some errors...`"
         )
     try:
         remote.push("master:main", force=True)
@@ -174,7 +185,6 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         await event.edit(f"{txt}\n**Here is the error log:**\n`{error}`")
         return repo.__del__()
     await event.edit("`Deploy was failed. So restarting to update`")
-    delgvar("ipaddress")
     try:
         await event.client.disconnect()
         if HEROKU_APP is not None:
@@ -183,9 +193,9 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
         pass
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="update(| now)?$",
-    command=("update", plugin_category),
+    command=("update", menu_category),
     info={
         "header": "To update userbot.",
         "description": "I recommend you to do update deploy atlest once a week.",
@@ -203,16 +213,20 @@ async def deploy(event, repo, ups_rem, ac_br, txt):
 async def upstream(event):
     "To check if the bot is up to date and update if specified"
     conf = event.pattern_match.group(1).strip()
-    event = await edit_or_reply(event, "`Checking for updates, please wait....`")
+    event = await eor(event, "`Checking for updates, please wait....`")
     off_repo = UPSTREAM_REPO_URL
+    _version, _release, _branch, _author, _auturl = await ld_info(lb_info)
     force_update = False
-    if HEROKU_API_KEY is None or HEROKU_APP_NAME is None:
-        return await edit_or_reply(
-            event, "`Set the required vars first to update the bot`"
+    if API_KEY is None or APP_NAME is None:
+        return await eor(
+            event,
+            "`✨Set the required vars first to Update the [ṠḀṼḭṏṙ](https://t.me/SaViorUpdates/292)`",
         )
     try:
-        txt = "`Oops.. Updater cannot continue due to "
-        txt += "some problems occured`\n\n**LOGTRACE:**\n"
+        txt = (
+            "`Oops.. Updater cannot continue due to "
+            + "some problems occured`\n\n**LOGTRACE:**\n"
+        )
         repo = Repo()
     except NoSuchPathError as error:
         await event.edit(f"{txt}\n`directory {error} is not found`")
@@ -223,10 +237,7 @@ async def upstream(event):
     except InvalidGitRepositoryError as error:
         if conf is None:
             return await event.edit(
-                f"`Unfortunately, the directory {error} "
-                "does not seem to be a git repository.\n"
-                "But we can fix that by force updating the userbot using "
-                ".update now.`"
+                f"`Unfortunately, the directory {error} does not seem to be a git repository.\nBut we can fix that by force updating the userbot using .update now.`"
             )
         repo = Repo.init()
         origin = repo.create_remote("upstream", off_repo)
@@ -255,15 +266,21 @@ async def upstream(event):
     # Special case for deploy
     if changelog == "" and not force_update:
         await event.edit(
-            "\n`LIONUSERBOT is`  **up-to-date**  `with`  "
-            f"**{UPSTREAM_REPO_BRANCH}**\n"
+            f"<b><i>ṠḀṼḭṏṙ Is UP-TO-DATE !!</b></i> \n\n<b><i><u>Update Information :</b></i></u> \n<b>• Branch :</b> {_branch} \n<b>• Release Date :</b> {_release} \n<b>• Version :</b> {_version} \n<b>• Author :</b> <a href='{_auturl}'>{_author}</a>",
+            link_preview=False,
+            parse_mode="HTML",
         )
+        """await event.edit(
+            "\n`SaViorX is`  **up-to-date**  `with`  "
+            f"**{UPSTREAM_REPO_BRANCH}**\n"
+        )"""
         return repo.__del__()
     if conf == "" and not force_update:
         await print_changelogs(event, ac_br, changelog)
         await event.delete()
-        return await event.respond(f"do `{cmdhd}update deploy` to update the LionX")
-
+        return await event.respond(
+            f"✨To __UP-TO-DATE__ ṠḀṼḭṏṙ do `{cmdhd}update deploy` "
+        )
     if force_update:
         await event.edit(
             "`Force-Syncing to latest stable userbot code, please wait...`"
@@ -274,17 +291,21 @@ async def upstream(event):
     return
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="update deploy$",
 )
 async def upstream(event):
-    event = await edit_or_reply(event, "`Pulling the nekopack repo wait a sec ....`")
-    off_repo = "https://github.com/TeamLionX/LionX"
+    event = await eor(event, "`Pulling the SAVIOR repo wait a sec ....`")
+    off_repo = "https://github.com/TheSaVior/SAVIOR"
     os.chdir("/app")
     try:
-        txt = "`Oops.. Updater cannot continue due to "
-        txt += "some problems occured`\n\n**LOGTRACE:**\n"
+        txt = (
+            "`Oops.. Updater cannot continue due to "
+            + "some problems occured`\n\n**LOGTRACE:**\n"
+        )
+
         repo = Repo()
+
     except NoSuchPathError as error:
         await event.edit(f"{txt}\n`directory {error} is not found`")
         return repo.__del__()
@@ -307,3 +328,30 @@ async def upstream(event):
     ups_rem.fetch(ac_br)
     await event.edit("`Deploying userbot, please wait....`")
     await deploy(event, repo, ups_rem, ac_br, txt)
+
+
+@savior.savior_cmd(
+    pattern="MULTI$",
+    command=("MULTI", menu_category),
+    info={
+        "header": "To update to Multi Its Features Currently Not Available Soon Add.Ok ",
+        "usage": "{tr}MULTI",
+    },
+)
+async def variable(var):
+    "To update to goosavior."
+    if Config.API_KEY is None:
+        return await eod(
+            var,
+            "Set the required var in heroku to function this normally `API_KEY`.",
+        )
+    if Config.APP_NAME is not None:
+        app = Heroku.app(Config.APP_NAME)
+    else:
+        return await eod(
+            var,
+            "Set the required var in heroku to function this normally `APP_NAME`.",
+        )
+    heroku_var = app.config()
+    await eor(var, "`Changing PRO to MULTI wait for 2-3 minutes.`")
+    heroku_var["UPSTREAM_REPO"] = "https://github.com/TheSaVior/SaViorX"

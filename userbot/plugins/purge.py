@@ -16,13 +16,13 @@ from telethon.tl.types import (
     InputMessagesFilterVoice,
 )
 
-from userbot import lionub
+from userbot import savior
 
-from ..funcs.managers import edit_delete, edit_or_reply
+from ..funcs.managers import eod, eor
 from ..helpers.utils import reply_id
 from . import BOTLOG, BOTLOG_CHATID
 
-plugin_category = "utils"
+menu_category = "utils"
 
 
 purgelist = {}
@@ -42,9 +42,9 @@ purgetype = {
 }
 
 
-@lionub.lion_cmd(
-    pattern=r"del(\s*| \d+)$",
-    command=("del", plugin_category),
+@savior.savior_cmd(
+    pattern="del(\s*| \d+)$",
+    command=("del", menu_category),
     info={
         "header": "To delete replied message.",
         "description": "Deletes the message you replied to in x(count) seconds if count is not used then deletes immediately",
@@ -74,7 +74,7 @@ async def delete_it(event):
                     )
         elif input_str:
             if not input_str.startswith("var"):
-                await edit_or_reply(event, "`Well the time you mentioned is invalid.`")
+                await eor(event, "`Well the time you mentioned is invalid.`")
         else:
             try:
                 await msg_src.delete()
@@ -84,17 +84,17 @@ async def delete_it(event):
                         BOTLOG_CHATID, "#DEL \n`Deletion of message was successful`"
                     )
             except rpcbaseerrors.BadRequestError:
-                await edit_or_reply(event, "`Well, I can't delete a message`")
+                await eor(event, "`Well, I can't delete a message`")
     elif not input_str:
         await event.delete()
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="purgefrom$",
-    command=("purgefrom", plugin_category),
+    command=("purgefrom", menu_category),
     info={
         "header": "To mark the replied message as starting message of purge list.",
-        "description": "After using this u must use purgeto command also so that the messages in between this will delete.",
+        "description": "Suppose U Want To Delete Between Message Then First Use Command purgefrom then use purgeto also so that the messages in between this will delete.",
         "usage": "{tr}purgefrom",
     },
 )
@@ -104,17 +104,17 @@ async def purge_from(event):
     if reply:
         reply_message = await reply_id(event)
         purgelist[event.chat_id] = reply_message
-        await edit_delete(
+        await eod(
             event,
             "`This Message marked for deletion. Reply to another message with purgeto to delete all messages in between.`",
         )
     else:
-        await edit_delete(event, "`Reply to a message to let me know what to delete.`")
+        await eod(event, "`Reply to a message to let me know what to delete.`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="purgeto$",
-    command=("purgeto", plugin_category),
+    command=("purgeto", menu_category),
     info={
         "header": "To mark the replied message as end message of purge list.",
         "description": "U need to use purgefrom command before using this command to function this.",
@@ -128,12 +128,12 @@ async def purge_to(event):
     try:
         from_message = purgelist[event.chat_id]
     except KeyError:
-        return await edit_delete(
+        return await eod(
             event,
             "`First mark the messsage with purgefrom and then mark purgeto .So, I can delete in between Messages`",
         )
     if not reply or not from_message:
-        return await edit_delete(
+        return await eod(
             event,
             "`First mark the messsage with purgefrom and then mark purgeto .So, I can delete in between Messages`",
         )
@@ -152,7 +152,7 @@ async def purge_to(event):
                 msgs = []
         if msgs:
             await event.client.delete_messages(chat, msgs)
-        await edit_delete(
+        await eod(
             event,
             "`Fast purge complete!\nPurged " + str(count) + " messages.`",
         )
@@ -162,12 +162,12 @@ async def purge_to(event):
                 "#PURGE \n`Purge of " + str(count) + " messages done successfully.`",
             )
     except Exception as e:
-        await edit_delete(event, f"**Error**\n`{e}`")
+        await eod(event, f"**Error**\n`{e}`")
 
 
-@lionub.lion_cmd(
+@savior.savior_cmd(
     pattern="purgeme",
-    command=("purgeme", plugin_category),
+    command=("purgeme", menu_category),
     info={
         "header": "To purge your latest messages.",
         "description": "Deletes x(count) amount of your latest messages.",
@@ -196,21 +196,22 @@ async def purgeme(event):
             "#PURGEME \n`Purge of " + str(count) + " messages done successfully.`",
         )
     await sleep(5)
+    i = 1
     await smsg.delete()
 
 
 # TODO: only sticker messages.
-@lionub.lion_cmd(
-    pattern=r"purge(?:\s|$)([\s\S]*)",
-    command=("purge", plugin_category),
+@savior.savior_cmd(
+    pattern="purge(?:\s|$)([\s\S]*)",
+    command=("purge", menu_category),
     info={
         "header": "To purge messages from the replied message.",
         "description": "•  Deletes the x(count) amount of messages from the replied message\
         \n•  If you don't use count then deletes all messages from the replied messages\
         \n•  If you haven't replied to any message and used count then deletes recent x messages.\
-        \n•  If you haven't replied to any message or havent mentioned any flag or count then doesnt do anything\
-        \n•  If flag is used then selects that type of messages else will select all types\
-        \n•  You can use multiple flags like -gi 10 (It will delete 10 images and 10 gifs but not 10 messages of combination images and gifs.)\
+        \n•  If you haven't replied to any message or havent mentioned any type or count then doesnt do anything\
+        \n•  If type is used then selects that type of messages else will select all types\
+        \n•  You can use multiple types like -gi 10 (It will delete 10 images and 10 gifs but not 10 messages of combination images and gifs.)\
         ",
         "flags": {
             "a": "To delete Voice messages.",
@@ -226,8 +227,8 @@ async def purgeme(event):
             "s": "To search paticular message and delete",
         },
         "usage": [
-            "{tr}purge <flag(optional)> <count(x)> <reply> - to delete x flagged messages after reply",
-            "{tr}purge <flag> <count(x)> - to delete recent x messages",
+            "{tr}purge <type(optional)> <count(x)> <reply> - to delete x typeged messages after reply",
+            "{tr}purge <type> <count(x)> - to delete recent x messages",
         ],
         "examples": [
             "{tr}purge 10",
@@ -272,9 +273,9 @@ async def fastpurger(event):  # sourcery no-metrics
                         if msgs:
                             await event.client.delete_messages(chat, msgs)
                     elif ty == "s":
-                        error += "\n• __You can't use s flag along with otherflags.__"
+                        error += "\n• __You can't use s type along with othertypes.__"
                     else:
-                        error += f"\n• `{ty}` __is Invalid flag.__"
+                        error += f"\n• `{ty}` __is Invalid type.__"
             else:
                 count += 1
                 async for msg in event.client.iter_messages(
@@ -327,7 +328,7 @@ async def fastpurger(event):  # sourcery no-metrics
                 if msgs:
                     await event.client.delete_messages(chat, msgs)
             else:
-                error += f"\n• `{ty}` __is Invalid flag.__"
+                error += f"\n• `{ty}` __is Invalid type.__"
         elif input_str:
             error += f"\n• `.purge {input_str}` __is invalid syntax try again by reading__ `.help -c purge`"
         elif p_type is not None:
@@ -346,7 +347,7 @@ async def fastpurger(event):  # sourcery no-metrics
                     if msgs:
                         await event.client.delete_messages(chat, msgs)
                 else:
-                    error += f"\n• `{ty}` __is Invalid flag.__"
+                    error += f"\n• `{ty}` __is Invalid type.__"
         else:
             async for msg in event.client.iter_messages(
                 chat, min_id=event.reply_to_msg_id - 1
@@ -373,10 +374,10 @@ async def fastpurger(event):  # sourcery no-metrics
                     if msgs:
                         await event.client.delete_messages(chat, msgs)
                 elif ty == "s":
-                    error += "\n• __You can't use s with other flags or you haven't given search query.__"
+                    error += "\n• __You can't use s with other types or you haven't given search query.__"
 
                 else:
-                    error += f"\n• `{ty}` __is Invalid flag.__"
+                    error += f"\n• `{ty}` __is Invalid type.__"
         elif p_type == "s":
             try:
                 cont, inputstr = input_str.split(" ")
@@ -406,7 +407,7 @@ async def fastpurger(event):  # sourcery no-metrics
             if msgs:
                 await event.client.delete_messages(chat, msgs)
         else:
-            error += f"\n• `{ty}` __is Invalid flag.__"
+            error += f"\n• `{ty}` __is Invalid type.__"
     elif p_type is not None:
         for ty in p_type:
             if ty in purgetype:
@@ -421,10 +422,10 @@ async def fastpurger(event):  # sourcery no-metrics
                 if msgs:
                     await event.client.delete_messages(chat, msgs)
             elif ty == "s":
-                error += "\n• __You can't use s with other flags or you haven't given search query.__"
+                error += "\n• __You can't use s with other types or you haven't given search query.__"
 
             else:
-                error += f"\n• `{ty}` __is Invalid flag.__"
+                error += f"\n• `{ty}` __is Invalid type.__"
     elif input_str.isnumeric():
         async for msg in event.client.iter_messages(chat, limit=int(input_str) + 1):
             count += 1
@@ -454,16 +455,16 @@ async def fastpurger(event):  # sourcery no-metrics
     await hi.delete()
 
 
-@lionub.lion_cmd(
-    pattern=r"upurge( -a)?(?:\s|$)([\s\S]*)",
-    command=("upurge", plugin_category),
+@savior.savior_cmd(
+    pattern="upurge( -a)?(?:\s|$)([\s\S]*)",
+    command=("upurge", menu_category),
     info={
         "header": "To purge messages from the replied message of replied user.",
         "description": "•  Deletes the x(count) amount of messages from the replied message of replied user\
         \n•  If you don't use count then deletes all messages from the replied messages of replied user\
-        \n•  Use -a flag to delete all his messages or mention x to delete x recent messages of his\
-        \n•  Use -s flag to delete all his messages which contatins given word.\
-        \n•  You cann't use both flags at a time\
+        \n•  Use -a type to delete all his messages or mention x to delete x recent messages of his\
+        \n•  Use -s type to delete all his messages which contatins given word.\
+        \n•  You cann't use both types at a time\
         ",
         "flags": {
             "a": "To delete all messages of replied user.",
@@ -486,7 +487,7 @@ async def fast_purger(event):  # sourcery no-metrics
     chat = await event.get_input_chat()
     msgs = []
     count = 0
-    flag = event.pattern_match.group(1)
+    type = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
     ptype = re.findall(r"-\w+", input_str)
     try:
@@ -499,10 +500,10 @@ async def fast_purger(event):  # sourcery no-metrics
     await event.delete()
     reply = await event.get_reply_message()
     if not reply or reply.sender_id is None:
-        return await edit_delete(
+        return await eod(
             event, "**Error**\n__This cmd Works only if you reply to user message.__"
         )
-    if not flag:
+    if not type:
         if input_str and p_type == "s":
             async for msg in event.client.iter_messages(
                 event.chat_id,
