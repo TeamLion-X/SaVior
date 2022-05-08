@@ -5,7 +5,7 @@ from moviepy.editor import VideoFileClip
 from PIL import Image
 
 from ...funcs.logger import logging
-from ...funcs.managers import edit_or_reply
+from ...funcs.managers import eor
 from ..tools import media_type
 from .utils import runcmd
 
@@ -25,52 +25,58 @@ async def media_to_pic(event, reply, noedits=False):  # sourcery no-metrics
         "Document",
     ]:
         return event, None
-    lionevent = (
-        event
-        if noedits
-        else await edit_or_reply(event, "`Transfiguration Time! Converting to ....`")
-    )
-    lionmedia = None
-    lionfile = os.path.join("./temp/", "meme.png")
-    if os.path.exists(lionfile):
-        os.remove(lionfile)
+    if not noedits:
+        saviorevent = await eor(event, "`Transfiguration Time! Converting to ....`")
+
+    else:
+        saviorevent = event
+    saviormedia = None
+    swtfile = os.path.join("./temp/", "meme.png")
+    if os.path.exists(swtfile):
+        os.remove(swtfile)
     if mediatype == "Photo":
-        lionmedia = await reply.download_media(file="./temp")
-        im = Image.open(lionmedia)
-        im.save(lionfile)
+        saviormedia = await reply.download_media(file="./temp")
+        im = Image.open(saviormedia)
+        im.save(swtfile)
     elif mediatype in ["Audio", "Voice"]:
-        await event.client.download_media(reply, lionfile, thumb=-1)
+        await event.client.download_media(reply, swtfile, thumb=-1)
     elif mediatype == "Sticker":
-        lionmedia = await reply.download_media(file="./temp")
-        if lionmedia.endswith(".tgs"):
-            lioncmd = f"lottie_convert.py --frame 0 -if lottie -of png '{lionmedia}' '{lionfile}'"
-            stdout, stderr = (await runcmd(lioncmd))[:2]
+        saviormedia = await reply.download_media(file="./temp")
+        if saviormedia.endswith(".tgs"):
+            swtcmd = f"lottie_convert.py --frame 0 -if lottie -of png '{saviormedia}' '{swtfile}'"
+            stdout, stderr = (await runcmd(swtcmd))[:2]
             if stderr:
                 LOGS.info(stdout + stderr)
-        elif lionmedia.endswith(".webp"):
-            im = Image.open(lionmedia)
-            im.save(lionfile)
-    elif mediatype in ["Round Video", "Video", "Gif"]:
-        await event.client.download_media(reply, lionfile, thumb=-1)
-        if not os.path.exists(lionfile):
-            lionmedia = await reply.download_media(file="./temp")
-            clip = VideoFileClip(media)
+        elif saviormedia.endswith(".webm"):
+            clip = VideoFileClip(saviormedia)
             try:
-                clip = clip.save_frame(lionfile, 0.1)
+                clip = clip.save_frame(swtfile, 0.1)
             except Exception:
-                clip = clip.save_frame(lionfile, 0)
+                clip = clip.save_frame(swtfile, 0)
+        elif saviormedia.endswith(".webp"):
+            im = Image.open(saviormedia)
+            im.save(swtfile)
+    elif mediatype in ["Round Video", "Video", "Gif"]:
+        await event.client.download_media(reply, swtfile, thumb=-1)
+        if not os.path.exists(swtfile):
+            saviormedia = await reply.download_media(file="./temp")
+            clip = VideoFileClip(saviormedia)
+            try:
+                clip = clip.save_frame(swtfile, 0.1)
+            except Exception:
+                clip = clip.save_frame(swtfile, 0)
     elif mediatype == "Document":
         mimetype = reply.document.mime_type
         mtype = mimetype.split("/")
         if mtype[0].lower() == "image":
-            lionmedia = await reply.download_media(file="./temp")
-            im = Image.open(lionmedia)
-            im.save(lionfile)
-    if lionmedia and os.path.lexists(lionmedia):
-        os.remove(lionmedia)
-    if os.path.lexists(lionfile):
-        return lionevent, lionfile, mediatype
-    return lionevent, None
+            saviormedia = await reply.download_media(file="./temp")
+            im = Image.open(saviormedia)
+            im.save(swtfile)
+    if saviormedia and os.path.lexists(saviormedia):
+        os.remove(saviormedia)
+    if os.path.lexists(swtfile):
+        return saviorevent, swtfile, mediatype
+    return saviorevent, None
 
 
 async def take_screen_shot(

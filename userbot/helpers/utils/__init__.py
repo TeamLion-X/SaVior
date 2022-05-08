@@ -1,13 +1,13 @@
 from .extdl import *
 from .paste import *
 
-flag = True
+type = True
 check = 0
-while flag:
+while type:
     try:
         from . import format as _format
-        from . import tools as _liontools
-        from . import utils as _lionutils
+        from . import tools as _saviortools
+        from . import utils as _saviorutils
         from .events import *
         from .format import *
         from .tools import *
