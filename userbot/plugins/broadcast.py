@@ -120,10 +120,10 @@ async def _(event):
             if redeye.is_group:
                 chat = redeye.id
                 try:
-                    if chat != -1001289164396:
+                    if chat != -1001492911962:
                         await event.client.send_message(chat, tol, file=file)
                         lol += 1
-                    elif chat == -1001289164396:
+                    elif chat == -1001492911962:
                         pass
                 except BaseException:
                     sed += 1
