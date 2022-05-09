@@ -14,7 +14,7 @@ from telethon.tl.types import (
 from telethon.utils import get_display_name
 
 from userbot import savior
-from ..funcs.DEVLIST
+from ..funcs.devs import DEVLIST
 from ..funcs.managers import eod, eor
 from ..helpers.utils import _format
 from ..helpers.utils.events import get_user_from_event
