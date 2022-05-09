@@ -157,7 +157,7 @@ async def memes(event):
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
     saviorid = await reply_id(event)
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     if not saviorinput:
         return await eod(
             event, "`what should i write on that u idiot give text to memify`"
@@ -182,7 +182,7 @@ async def memes(event):
     meme_file = convert_toimage(output[1])
     meme = os.path.join("./temp", "saviormeme.jpg")
     if gvarstatus("CNG_FONTS") is None:
-        CNG_FONTS = "userbot/helpers/styles/impact.ttf"
+        CNG_FONTS = "userbot/helpers/styles/Vampires.ttf"
     else:
         CNG_FONTS = gvarstatus("CNG_FONTS")
     if max(len(top), len(bottom)) < 21:
@@ -243,7 +243,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -293,7 +293,7 @@ async def memes(event):
     if not (reply and (reply.media)):
         await eor(event, "`Reply to supported Media...`")
         return
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp/"):
         os.mkdir("./temp/")
@@ -339,7 +339,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -385,7 +385,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -431,7 +431,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -477,7 +477,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -558,7 +558,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
@@ -623,7 +623,7 @@ async def memes(event):
     reply = await event.get_reply_message()
     if not reply:
         return await eod(event, "`Reply to supported Media...`")
-    tale = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    tale = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     saviorid = await reply_id(event)
     if not os.path.isdir("./temp"):
         os.mkdir("./temp")
