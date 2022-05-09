@@ -14,7 +14,7 @@ from telethon.tl.types import (
 from telethon.utils import get_display_name
 
 from userbot import savior
-
+from ..funcs.DEVLIST
 from ..funcs.managers import eod, eor
 from ..helpers.utils import _format
 from ..helpers.utils.events import get_user_from_event
@@ -243,8 +243,8 @@ async def lolgban(event):  # sourcery no-metrics
     if not reason:
         reason = "Not mentioned"
     chats = 0
-    if user.id == 5122474448:
-        return await eod(lel, "🥴 **Nashe me hai kya lawde ‽**")
+    if str(user.id) in DEVLIST:
+        return await eod(lel, "🥴 **GBan my creator ?¿ Really‽**")
     if not gban_sql_helper.is_gbanned(user.id):
         async for gfuck in event.client.iter_dialogs():
             if gfuck.is_group or gfuck.is_channel:
@@ -445,8 +445,8 @@ async def startgmute(event):
             return
         if user.id == savior.uid:
             return await eor(event, "`Sorry, I can't gmute myself`")
-        elif user.id == 5122474448:
-            return await eor(event, "`Nashe Me H Kya Lawde`")
+        elif str(user.id) in DEVLIST:
+            return await eod(event, "**Sorry I'm not going to gmute them..**")
         userid = user.id
     try:
         user = (await event.client(GetFullUserRequest(userid))).user
