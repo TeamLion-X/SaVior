@@ -46,17 +46,17 @@ savior_mention = f"[{SAVIOR_USER}](tg://user?id={SaVior_Boy})"
 
 
 # pic
-gban_pic = "./userbot/resources/pics/gban.mp4"
-main_pic = "./userbot/resources/pics/main.jpg"
-core_pic = "./userbot/resources/pics/core.jpg"
-chup_pic = "./userbot/resources/pics/chup.mp4"
-bsdk_pic = "./userbot/resources/pics/bsdk.jpg"
-bsdkwale_pic = "./userbot/resources/pics/bsdk_wale.jpg"
-chutiya_pic = "./userbot/resources/pics/chutiya.jpg"
-promote_pic = "./userbot/resources/pics/promote.jpg"
-demote_pic = "./userbot/resources/pics/demote.jpg"
-mute_pic = "./userbot/resources/pics/mute.jpg"
-ban_pic = "./userbot/resources/pics/ban.jpg"
+gban_pic = "./userbot/helpers/resources/pics/gban.mp4"
+main_pic = "./userbot/helpers/resources/pics/main.jpg"
+core_pic = "./userbot/helpers/resources/pics/core.jpg"
+chup_pic = "./userbot/helpers/resources/pics/chup.mp4"
+bsdk_pic = "./userbot/helpers/resources/pics/bsdk.jpg"
+bsdkwale_pic = "./userbot/helpers/resources/pics/bsdk_wale.jpg"
+chutiya_pic = "./userbot/helpers/resources/pics/chutiya.jpeg"
+promote_pic = "./userbot/helpers/resources/pics/promote.mp4"
+demote_pic = "./userbot/helpers/resources/pics/demote.jpg"
+mute_pic = "./userbot/helpers/resources/pics/mute.jpg"
+ban_pic = "./userbot/helpers/resources/pics/ban.mp4"
 
 
 # channel
