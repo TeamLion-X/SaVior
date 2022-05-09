@@ -174,7 +174,7 @@ async def stats(event):  # sourcery no-metrics
     saviorcmd = event.pattern_match.group(1)
     saviorevent = await eor(event, STAT_INDICATION)
     start_time = time.time()
-    savior = base64.b64decode("MFdZS2llTVloTjAzWVdNeA==")
+    savior = base64.b64decode("bXRMS1hMVWtadHhrTXpSaA==")
     hi = []
     higa = []
     higo = []
